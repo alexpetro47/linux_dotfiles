@@ -1,0 +1,26 @@
+
+[window]
+decorations = "Full"
+startup_mode = "Windowed"
+opacity = 0.9
+dynamic_padding = true
+dimensions = { columns = 192, lines = 55 }
+padding = { x = 0, y = 0 }
+
+[scrolling]
+history = 5000
+multiplier = 5
+
+[font]
+size = 12
+normal = {family = "JetBrainsMono NF", style = "Regular"}
+bold = {family = "JetBrainsMono NF", style = "Bold"}
+italic = {family = "JetBrainsMono NF", style = "Italic"}
+bold_italic = {family = "JetBrainsMono NF", style = "Bold Italic"}
+
+[terminal]
+
+[terminal.shell]
+program= "/usr/bin/tmux"
+args = ["new-session", "-A"]
+
