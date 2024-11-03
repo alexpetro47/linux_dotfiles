@@ -23,6 +23,7 @@ apps=(
   polybar
   fzf
   flameshot
+  rofi
   --edge reaper
 )
 
