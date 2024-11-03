@@ -91,3 +91,14 @@ fc-cache -fv
 echo "changing default shell to zsh"
 chsh -s $(which zsh)
 source ~/.zshrc
+
+echo "link xmodmap to ~/"
+ln -s ~/.config/.Xmodmap ~/.Xmodmap
+
+
+# # install chrome for keychron config
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# sudo dpkg -i google-chrome-stable_current_amd64.deb
+# sudo apt-get install -f                                                       
+# # the following is occasionally hidraw3 
+# sudo chmod a+rw /dev/hidraw2  
