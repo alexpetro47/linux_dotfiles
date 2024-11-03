@@ -23,12 +23,19 @@ apps=(
   polybar
   fzf
   flameshot
+  --edge reaper
 )
 
 for app in "${apps[@]}"; do
     echo "Installing $app..."
     sudo apt install -y "$app"
 done
+
+echo "installing neovim from source"
+git clone https://github.com/neovim/neovim.git
+cd neovim
+make CMAKE_BUILD_TYPE=RelWithDebInfo 
+sudo make install
 
 snap_apps=(
   --classic go
