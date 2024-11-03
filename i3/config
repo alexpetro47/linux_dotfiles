@@ -24,6 +24,10 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 ############## MY CONFIGS ###################
 #############################################
 
+bindsym XF86AudioPlay exec playerctl -p spotify play-pause
+bindsym XF86AudioNext exec playerctl -p spotify next
+bindsym XF86AudioPrev exec playerctl -p spotify previous
+
 font pango:JetBrains Mono NF 12
 gaps inner 12
 gaps top 34  

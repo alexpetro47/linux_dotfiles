@@ -24,6 +24,7 @@ apps=(
   fzf
   flameshot
   rofi
+  playerctl
   --edge reaper
 )
 
@@ -101,5 +102,5 @@ ln -s ~/.config/.Xmodmap ~/.Xmodmap
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 # sudo dpkg -i google-chrome-stable_current_amd64.deb
 # sudo apt-get install -f                                                       
-# # the following is occasionally hidraw3 
+# # the following is occasionally hidraw3 or 1
 # sudo chmod a+rw /dev/hidraw2  
