@@ -12,10 +12,10 @@ fi
 # linux: "/home/username/.oh-my-zsh"
 export ZSH="/home/alexpetro/.oh-my-zsh"
 export EDITOR=nvim
-# export PGDATABASE=postgres #for default postgres entry
+export PGDATABASE=postgres #for default postgres entry
 
 #rust and cargo path
-# export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 
 ZSH_THEME="powerlevel10k/powerlevel10k" 
 HISTORY=10000
@@ -23,7 +23,7 @@ SAVEHIST=10000
 
 touch .hushlogin
 
-# plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -47,7 +47,7 @@ alias j2="cmatrix" #matrix
 # alias j3="macchina" #system info
 
 #fuzzy finder source
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
