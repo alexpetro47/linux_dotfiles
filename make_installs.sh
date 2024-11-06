@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "Welcome to my installation script..."
+
+while true; do
+  read -n 1 -p "Continue? (y/n): " answer
+  case $answer in
+    [Yy]* ) echo "Continuing..."; break;;
+    [Nn]* ) echo "Exiting..."; exit;;
+    * ) echo "  Please answer y or n.";;
+  esac
+done
+
 # Update package index
 echo "Updating package index..."
 sudo apt update
@@ -25,19 +36,11 @@ apps=(
   flameshot
   rofi
   playerctl
+  ripgrep
+  lldb
+  xclip
   --edge reaper
 )
-
-for app in "${apps[@]}"; do
-    echo "Installing $app..."
-    sudo apt install -y "$app"
-done
-
-echo "installing neovim from source"
-git clone https://github.com/neovim/neovim.git
-cd neovim
-make CMAKE_BUILD_TYPE=RelWithDebInfo 
-sudo make install
 
 snap_apps=(
   --classic go
@@ -45,12 +48,93 @@ snap_apps=(
   alacritty
 )
 
+for app in "${apps[@]}"; do
+    echo "Installing $app..."
+    sudo apt install -y "$app"
+done
+
 for app in "${snap_apps[@]}"; do
     echo "Snap installing $app..."
     sudo snap install "$app"
 done
 
-echo "entering a zsh shell for next installs"
+
+
+echo "Neovim, built from source, next up"
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
+
+git clone https://github.com/neovim/neovim.git
+cd neovim
+make CMAKE_BUILD_TYPE=RelWithDebInfo 
+sudo make install
+
+
+echo "Clone github dotfiles into ~/.config ..."
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
+echo "cloning from my github dotfiles (linux) into ~/temp_dotfiles"
+git clone https://github.com/justatoaster47/linux_dotfiles.git ~/temp_dotfiles
+cp -r ~/temp_dotfiles/* ~/.config/
+
+
+
+echo "Install JetBrains Mono Nerd Font.. "
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
+mkdir -p ~/.local/share/fonts
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
+unzip JetBrainsMono.zip -d ~/.local/share/fonts/ && \
+rm JetBrainsMono.zip
+fc-cache -fv
+
+
+echo "Use xmodmap to set keybinds.. "
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
+ln -s ~/.config/.Xmodmap ~/.Xmodmap
+
+
+
+
+echo "Configure zsh as shell.. "
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
 zsh
 
 echo "installing oh-my-zsh"
@@ -63,17 +147,10 @@ git_clones=(
   https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 )
 
-# Loop through and install each application
+echo "doing git clones for autosuggestions, syntax highlighting, and p10k"
 for repo in "${git_clones[@]}"; do
   git clone $repo
 done
-
-echo "All installs complete!"
-echo "Attempting to configure"
-
-echo "cloning from my github dotfiles (linux) into ~/temp_dotfiles"
-git clone https://github.com/justatoaster47/linux_dotfiles.git ~/temp_dotfiles
-cp -r ~/temp_dotfiles/* ~/.config/
 
 echo "linking zsh and p10k from config to ~/"
 rm ~/.zshrc
@@ -82,21 +159,9 @@ ln -s ~/.config/zsh/.zshrc ~/.zshrc
 ln -s ~/.config/zsh/.p10k.zsh ~/.p10k.zsh
 source ~/.zshrc
 
-echo "installing JetBrains Mono Nerd Font"
-mkdir -p ~/.local/share/fonts
-curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
-unzip JetBrainsMono.zip -d ~/.local/share/fonts/ && \
-rm JetBrainsMono.zip
-fc-cache -fv
-
-
 echo "changing default shell to zsh"
 chsh -s $(which zsh)
 source ~/.zshrc
-
-echo "link xmodmap to ~/"
-ln -s ~/.config/.Xmodmap ~/.Xmodmap
-
 
 # # install chrome for keychron config
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
