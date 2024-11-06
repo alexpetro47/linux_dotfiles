@@ -28,7 +28,7 @@ apps=(
   arandr
   snap
   feh
-  picom
+  xcompmgr
   clang
   python3
   polybar

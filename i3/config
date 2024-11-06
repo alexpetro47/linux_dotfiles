@@ -30,7 +30,15 @@ bindsym XF86AudioPrev exec playerctl -p spotify previous
 
 font pango:JetBrains Mono NF 12
 gaps inner 12
-new_window pixel 0
+gaps top 26
+
+for_window [class="^.*"] border pixel 2
+for_window [class="^.*"] title_format ""
+
+client.focused          #FF0000 #FFFFFF #000000
+client.unfocused        #888888 #222222 #888888
+client.urgent           #FF0000 #FFFFFF #000000
+
 
 bindsym Ctrl+j workspace 1
 bindsym Ctrl+k workspace 2
@@ -65,8 +73,8 @@ bindsym $mod+e exec --no-startup-id nemo
 bindsym $mod+m exec --no-startup-id thunderbird
 
 exec --no-startup-id xset r rate 200 30
-exec --no-startup-id picom 
-exec --no-startup-id feh --bg-scale ~/.config/wallpapers/wallpaper1.jpeg
+exec --no-startup-id xcompmgr -C
+exec --no-startup-id feh --bg-scale ~/.config/wallpapers/wallpaper2.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id ~/.config/i3/load_screen_layout.sh 
 exec --no-startup-id xmodmap ~/.Xmodmap
