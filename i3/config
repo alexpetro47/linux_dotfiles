@@ -30,7 +30,6 @@ bindsym XF86AudioPrev exec playerctl -p spotify previous
 
 font pango:JetBrains Mono NF 12
 gaps inner 12
-gaps top 34  
 new_window pixel 0
 
 bindsym Ctrl+j workspace 1
@@ -63,6 +62,7 @@ bindsym $mod+a exec --no-startup-id alacritty
 bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
 bindsym $mod+e exec --no-startup-id nemo
+bindsym $mod+m exec --no-startup-id thunderbird
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id picom 

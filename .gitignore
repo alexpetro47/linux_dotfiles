@@ -43,6 +43,7 @@ picom/*
 !wallpapers/
 wallpapers/*
 !wallpapers/wallpaper1.jpeg
+!wallpapers/wallpaper2.jpeg
 !wallpapers/wallpaper3.jpeg
 !wallpapers/wallpaper4.jpeg
 !wallpapers/wallpaper5.jpeg
