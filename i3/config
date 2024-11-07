@@ -39,7 +39,6 @@ client.focused          #FF0000 #FFFFFF #000000
 client.unfocused        #888888 #222222 #888888
 client.urgent           #FF0000 #FFFFFF #000000
 
-
 bindsym Ctrl+j workspace 1
 bindsym Ctrl+k workspace 2
 bindsym Ctrl+l workspace 3
@@ -87,7 +86,9 @@ exec --no-startup-id i3-msg "workspace 2; exec firefox"
 bindsym $mod+Shift+r restart
 
 # purely for rice activity
-# mod + left click to move window, mod+right click to resize
+# mod+left click to move floating window
+# mod+right click to resize floating window
+# mod+left click to re-position tiled window
 floating_modifier $mod
 bindsym $mod+ctrl+f floating toggle
 bindsym $mod+r resize set 600 750, move position center
