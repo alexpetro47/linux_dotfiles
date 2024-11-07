@@ -86,6 +86,7 @@ exec --no-startup-id i3-msg "workspace 2; exec firefox"
 bindsym $mod+Shift+r restart
 
 # purely for rice activity
-bindsym $mod+ctrl+f floating toggle
+# mod + left click to move window, mod+right click to resize
 floating_modifier $mod
-for_window [floating] floating enable, resize set 700 700
+bindsym $mod+ctrl+f floating toggle
+bindsym $mod+r resize set 600 750, move position center
