@@ -73,6 +73,7 @@ bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
 bindsym $mod+e exec --no-startup-id nemo
 bindsym $mod+m exec --no-startup-id thunderbird
+bindsym $mod+k exec --no-startup-id kdeconnect-app
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C

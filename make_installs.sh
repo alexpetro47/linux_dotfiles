@@ -40,6 +40,7 @@ apps=(
   lldb
   xclip
   cbonsai
+  kdeconnect
   --edge reaper
 )
 
