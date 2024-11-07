@@ -48,3 +48,7 @@ screenlayout/*
 !screenlayout/laptop_only.sh
 !screenlayout/external_only.sh
 !screenlayout/dual.sh
+
+!rofi
+rofi/*
+!rofi/config.rasi

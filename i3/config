@@ -61,7 +61,7 @@ bindsym $mod+shift+F fullscreen toggle
 bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
-bindsym $mod+d exec --no-startup-id rofi -show run
+bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+c exec --no-startup-id flameshot gui
 bindsym $mod+l exec --no-startup-id arandr
 bindsym $mod+shift+l exec --no-startup-id ~/.screenlayout/laptop_only.sh
