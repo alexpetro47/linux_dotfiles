@@ -43,7 +43,6 @@ alias f="fzf"
 alias ls="ls -Glah" #improved ls
 alias ip="ipconfig getifaddr en0" #get ip address
 alias j1="cbonsai -l -i -S" #ascii tree
-alias j2="cmatrix" #matrix
 # alias j3="macchina" #system info
 
 #fuzzy finder source

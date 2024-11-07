@@ -64,7 +64,9 @@ bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
 bindsym $mod+d exec --no-startup-id rofi -show run
 bindsym $mod+c exec --no-startup-id flameshot gui
-bindsym $mod+l exec --no-startup-id arandr
+bindsym $mod+l+1 exec --no-startup-id ~/.screenlayout/laptop_only.sh
+bindsym $mod+l+2 exec --no-startup-id ~/screenlayout/external_only.sh
+bindsym $mod+l+3 exec --no-startup-id ~/screenlayout/dual.sh
 bindsym $mod+f exec --no-startup-id firefox
 bindsym $mod+a exec --no-startup-id alacritty
 bindsym $mod+s exec --no-startup-id spotify
@@ -83,3 +85,7 @@ exec --no-startup-id i3-msg "workspace 2; exec firefox"
 
 bindsym $mod+Shift+r restart
 
+# purely for rice activity
+bindsym $mod+ctrl+f floating toggle
+floating_modifier $mod
+for_window [floating] floating enable, resize set 700 700

@@ -39,6 +39,7 @@ apps=(
   ripgrep
   lldb
   xclip
+  cbonsai
   --edge reaper
 )
 
@@ -162,6 +163,22 @@ source ~/.zshrc
 echo "changing default shell to zsh"
 chsh -s $(which zsh)
 source ~/.zshrc
+
+
+echo "Configure screen layouts (laptop, external, both).. "
+while true; do
+    read -n 1 -p "Continue? (y/n): " answer
+    case $answer in
+        [Yy]* ) echo "Continuing..."; break;;
+        [Nn]* ) echo "Exiting..."; exit;;
+        * ) echo "  Please answer y or n.";;
+    esac
+done
+
+echo "configuring screen layouts"
+mkdir ~/.screenlayouts
+cp * ~/.config/screenlayouts ~/.screenlayouts
+chmod +x ~/.screenlayouts/*
 
 # # install chrome for keychron config
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb

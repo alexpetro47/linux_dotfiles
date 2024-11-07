@@ -42,3 +42,9 @@ wallpapers/*
 !wallpapers/wallpaper2.png
 
 !.Xmodmap
+
+!screenlayout
+screenlayout/*
+!screenlayout/laptop_only.sh
+!screenlayout/external_only.sh
+!screenlayout/dual.sh
