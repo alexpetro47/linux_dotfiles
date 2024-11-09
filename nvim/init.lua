@@ -100,6 +100,7 @@ vim.keymap.set('n', '<leader>L', ':let @" = expand("%")<CR>', { noremap = true, 
 vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'}) --
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'}) --
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
+vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
 -- vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :term python3 %<CR>a ', {desc = 'run python'})
 vim.keymap.set('n', '<leader>dc', ':Ex ~/Documents/code<CR>', {desc = 'code'}) -- go to code directory
 vim.keymap.set('n', '<leader>ds', ':Ex ~/Documents/notes/school<CR>', {desc = 'school'}) -- go to code directory
@@ -129,6 +130,7 @@ vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --g
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
 vim.keymap.set('n', '<leader>gRf', ':Gread<CR>', { desc = 'git Reset current file' }) --git reset file
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' }) --git push
+vim.keymap.set('n', '<leader>gP', ':Git pull<CR>', { desc = 'git pull' }) --git push
 vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit message' }) --git commit message
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' }) --git commit standard
 vim.keymap.set('n', '<leader>gro', ':Git rebase origin/main<CR>', { desc = 'git rebase origin/main' }) --git rebase origin/main

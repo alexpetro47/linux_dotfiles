@@ -78,7 +78,7 @@ exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/.config/wallpapers/wallpaper2.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id ~/.config/i3/load_screen_layout.sh 
+# exec --no-startup-id ~/.config/i3/load_screen_layout.sh 
 exec --no-startup-id xmodmap ~/.Xmodmap
 exec --no-startup-id i3-msg "workspace 1; exec alacritty"
 exec --no-startup-id i3-msg "workspace 2; exec firefox"

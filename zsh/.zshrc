@@ -41,7 +41,7 @@ alias pe="source myEnv/bin/activate" #activate python env
 alias de="deactivate" #deactivate python env
 alias f="fzf"
 alias ls="ls -Glah" #improved ls
-alias ip="ipconfig getifaddr en0" #get ip address
+# alias ip="ipconfig getifaddr en0" #get ip address
 alias j1="clear; cbonsai -l -i -S" #ascii tree, clearing messy term beforehand
 # alias j3="macchina" #system info
 
