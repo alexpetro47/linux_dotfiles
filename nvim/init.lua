@@ -83,7 +83,7 @@ vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true }) --easier terminal e
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing panes
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
-vim.keymap.set('n', '<leader>f', 'vaB$ozz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
+vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
 vim.keymap.set('n', '<leader>p', '"*p', {desc="paste from clipboard", noremap = true, silent = true}) --visually selects an entire function/class
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true}) -- write to buffer
 vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'}) --make executable
@@ -119,7 +119,7 @@ vim.keymap.set("n", "<leader>Rp", ":!pandoc -V geometry:margin=1in % -o %:r.pdf<
 vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to docx'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'}) --pandoc renders
-vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H<C-w>60<', { desc = 'git status' }) --git status
+vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' }) --git status
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' }) --git browser
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' }) --git branch
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'git Stash save' }) --git stash
