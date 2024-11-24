@@ -93,7 +93,7 @@ vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
 vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
-vim.keymap.set('n', '<leader>t', ':lcd %:p:h<CR> <C-w>v<C-w>l :term<CR>a', {desc = 'terminal'}) --terminal
+vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'}) --terminal
 vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
 vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'}) -- c++ compile w clang
 vim.keymap.set('n', '<leader>L', ':let @" = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'}) --get path to current file
