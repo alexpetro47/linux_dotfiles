@@ -43,7 +43,23 @@ alias f="fzf"
 alias ls="ls -Glah" #improved ls
 # alias ip="ipconfig getifaddr en0" #get ip address
 alias j1="clear; cbonsai -l -i -S" #ascii tree, clearing messy term beforehand
+alias j2="clear; neofetch" #ascii tree, clearing messy term beforehand
 # alias j3="macchina" #system info
+
+
+# Use fzf for history search
+bindkey '^R' fzf-history-widget
+
+# Function to integrate fzf with history
+fzf-history-widget() {
+    BUFFER=$(fc -rl 1 | fzf | sed 's/^[ 0-9]*//')
+    CURSOR=$#BUFFER
+    zle accept-line
+}
+zle -N fzf-history-widget
+
+
+
 
 #fuzzy finder source
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -53,3 +69,6 @@ alias j1="clear; cbonsai -l -i -S" #ascii tree, clearing messy term beforehand
 
 # clear
 # macchina
+
+# Created by `pipx` on 2024-12-20 19:53:49
+export PATH="$PATH:/home/alexpetro/.local/bin"

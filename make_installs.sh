@@ -41,6 +41,7 @@ apps=(
   xclip
   cbonsai
   kdeconnect
+  fd-find
   --edge reaper
 )
 

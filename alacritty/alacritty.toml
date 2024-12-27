@@ -12,7 +12,7 @@ history = 5000
 multiplier = 5
 
 [font]
-size = 12
+size = 8
 normal = {family = "JetBrainsMono NF", style = "Regular"}
 bold = {family = "JetBrainsMono NF", style = "Bold"}
 italic = {family = "JetBrainsMono NF", style = "Italic"}

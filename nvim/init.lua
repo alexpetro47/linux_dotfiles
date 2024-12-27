@@ -62,6 +62,8 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true})
 
 --keybinds
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
+vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
+vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true}) --keeps half page jumps centered 
 vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true, silent = true})  --keeps half page jumps centered
 vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true}) --keeps next in the middgle of the page 
@@ -84,7 +86,7 @@ vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing 
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
 vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
-vim.keymap.set('n', '<leader>p', '"*p', {desc="paste from clipboard", noremap = true, silent = true}) --visually selects an entire function/class
+vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true}) --visually selects an entire function/class
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true}) -- write to buffer
 vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'}) --make executable
 vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'}) --new buffer
@@ -120,11 +122,12 @@ vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Do
 vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'}) --pandoc renders
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' }) --git status
+vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'git merge' }) --git status
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' }) --git browser
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' }) --git branch
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'git Stash save' }) --git stash
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'git Stash pop' }) --git stash
-vim.keymap.set('n', '<leader>gl', ':Git log<CR><C-w>H<C-w>20<', { desc = 'git log' }) --git log
+vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = 'git log' }) --git log
 vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff (hash/branch needed)'}) --git diff
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --git checkout
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
@@ -150,7 +153,7 @@ vim.cmd[[
 
 --sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=94
+autocmd FileType markdown setlocal textwidth=78
 ]])
 
 -- Package Manager
@@ -191,10 +194,10 @@ require('lazy').setup({
     --fzf integration into vim for larger searches
     'junegunn/fzf',
     'junegunn/fzf.vim',
-    vim.keymap.set('n', '<leader>sc', ':Commands<CR>' ,{ desc = 'search commands' }),
-    vim.keymap.set('n', '<leader>sf', ':Files<CR>' ,{ desc = 'search files' }),
-    vim.keymap.set('n', '<leader>sg', ':RG<CR>' ,{ desc = 'search grep' }),
-    vim.keymap.set('n', '<leader>so', ':History<CR>' ,{ desc = 'search old files' }),
+    -- vim.keymap.set('n', '<leadr>sc', ':Commands<CR>' ,{ desc = 'search commands' }),
+    -- vim.keymap.set('n', '<leader>sf', ':Files<CR>' ,{ desc = 'search files' }),
+    -- vim.keymap.set('n', '<leader>sg', ':RG<CR>' ,{ desc = 'search grep' }),
+    -- vim.keymap.set('n', '<leader>so', ':History<CR>' ,{ desc = 'search old files' }),
   },
 
   'tpope/vim-repeat',
@@ -242,6 +245,9 @@ require('lazy').setup({
   vim.keymap.set('n', '<leader>u', ':UndotreeToggle<CR>', { desc = 'undotree toggle' }),
   },
 
+  --telescope upgrades
+  'BurntSushi/ripgrep',
+  'sharkdp/fd',
 
   --DEFAULTS-----------------------------------
   -- Git related plugins
@@ -513,13 +519,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- [[ Configure Telescope ]]
 require('telescope').setup {
-  defaults = {},
+  defaults = {
+    file_ignore_patterns = {
+      "node_modules",
+      "venv", -- assume python venv name
+    }
+  },
 }
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
 --putting the telescope keymaps after telescope configures
+vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files , { desc = 'search files' })
+vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').oldfiles, { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>si', require('telescope.builtin').git_files , { desc = 'search git Files' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = 'search diagnostics' })
