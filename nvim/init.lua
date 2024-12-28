@@ -525,6 +525,11 @@ require('telescope').setup {
       "venv", -- assume python venv name
     }
   },
+  pickers = {
+    find_files = {
+      hidden = true,
+    },
+  },
 }
 
 -- Enable telescope fzf native, if installed
@@ -618,8 +623,6 @@ cmp.setup {
     end,
   },
   mapping = cmp.mapping.preset.insert {
-    ['<C-j>'] = cmp.mapping.select_next_item(),
-    ['<C-k>'] = cmp.mapping.select_prev_item(),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
       select = false, --doesn't mess with your indents when nothings selected
