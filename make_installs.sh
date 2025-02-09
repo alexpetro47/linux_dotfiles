@@ -43,6 +43,8 @@ apps=(
   kdeconnect
   fd-find
   --edge reaper
+  mintupgrade
+  htop
 )
 
 snap_apps=(

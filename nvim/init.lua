@@ -85,12 +85,17 @@ vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true }) --easier terminal e
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing panes
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
-vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
+vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true}) -- fullscreen blank for privacy
+-- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
+--shortcut that searches a visual range for any unused characters to be used
+--with vertical view in order to find unmapped keys. analyze the whole sequence
+--inside of the ' ' 
 vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true}) --visually selects an entire function/class
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true}) -- write to buffer
 vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'}) --make executable
 vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'}) --new buffer
 vim.keymap.set('n', '<leader>a', ':%y+<CR>', {desc = 'copy all to sys clipboard'}) --copy all to system clipboard
+vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'}) --copy all to system clipboard
 vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}) --explore current directory
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
@@ -131,6 +136,7 @@ vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = '
 vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff (hash/branch needed)'}) --git diff
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --git checkout
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
+vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'git add all' }) --git add file
 vim.keymap.set('n', '<leader>gRf', ':Gread<CR>', { desc = 'git Reset current file' }) --git reset file
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' }) --git push
 vim.keymap.set('n', '<leader>gP', ':Git pull<CR>', { desc = 'git pull' }) --git push
@@ -153,7 +159,7 @@ vim.cmd[[
 
 --sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=78
+autocmd FileType markdown setlocal textwidth=77
 ]])
 
 -- Package Manager
