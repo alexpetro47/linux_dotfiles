@@ -374,11 +374,11 @@ require('lazy').setup({
       },
       sections = {
         lualine_a = {'mode'},
-        lualine_b = {},
-        lualine_c = {{'filename', path = 2}},
+        lualine_b = {{'filename', path = 2}},
+        lualine_c = {},
         lualine_x = {'branch', 'diff', 'diagnostics'},
         lualine_y = {'filetype'},
-        lualine_z = {'location'}
+        lualine_z = {'location', 'progress'}
       },
     },
   },
