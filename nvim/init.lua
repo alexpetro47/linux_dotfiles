@@ -85,7 +85,9 @@ vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true }) --easier terminal e
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing panes
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
-vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true}) -- fullscreen blank for privacy
+vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
+vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
+vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "}) -- fullscreen blank for privacy
 -- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
 --shortcut that searches a visual range for any unused characters to be used
 --with vertical view in order to find unmapped keys. analyze the whole sequence
