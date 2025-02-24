@@ -153,7 +153,9 @@ vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a 
 vim.keymap.set('n', '<leader>gRH', ':Git reset --hard ', { desc = 'git Reset Hard <hash>. wipes everything past this commit.' })
 vim.keymap.set('n', '<leader>gRm', ':Git reset --mixed ', { desc = 'git reset <filename or hash>. wipes commit history until this commit, stages those changes.'})
 vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. new commit, stages only the excluded changes from this specificed commit' })
-vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>', { desc = 'git wipe current file unstaged/staged' })
+vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged/staged' })
+vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
+vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
