@@ -27,6 +27,7 @@ vim.o.expandtab = true
 vim.o.shiftwidth = 2
 vim.o.softtabstop = 2
 vim.o.tabstop = 2
+vim.o.cindent = true
 vim.o.completeopt = 'menuone,noselect'
 vim.o.wildmode = 'longest:full,full'
 vim.o.wildignorecase = true
@@ -86,7 +87,7 @@ vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing 
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
 vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
-vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
+vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
 vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "}) -- fullscreen blank for privacy
 -- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
 --shortcut that searches a visual range for any unused characters to be used
@@ -110,6 +111,7 @@ vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = 
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'}) --
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
+vim.keymap.set('n', '<leader>rl', ':e!<CR>', {desc = 'reload buffer'})
 -- vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :term python3 %<CR>a ', {desc = 'run python'})
 vim.keymap.set('n', '<leader>dc', ':Ex ~/Documents/code<CR>', {desc = 'code'}) -- go to code directory
 vim.keymap.set('n', '<leader>ds', ':Ex ~/Documents/notes/school<CR>', {desc = 'school'}) -- go to code directory
@@ -135,23 +137,23 @@ vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' }) --gi
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'git Stash save' }) --git stash
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'git Stash pop' }) --git stash
 vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = 'git log' }) --git log
-vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff (hash/branch needed)'}) --git diff
+vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff <hash/branch needed>'}) --git diff
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --git checkout
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'git add all' }) --git add file
-vim.keymap.set('n', '<leader>gRf', ':Gread<CR>', { desc = 'git Reset current file' }) --git reset file
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' }) --git push
 vim.keymap.set('n', '<leader>gP', ':Git pull<CR>', { desc = 'git pull' }) --git push
+vim.keymap.set('n', '<leader>gff', ':Git fetch ', { desc = 'git fetch' }) --git fetch
 vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit message' }) --git commit message
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' }) --git commit standard
-vim.keymap.set('n', '<leader>gro', ':Git rebase origin/main<CR>', { desc = 'git rebase origin/main' }) --git rebase origin/main
-vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'git rebase ' }) --git rebase
-vim.keymap.set('n', '<leader>gfo', ':Git fetch origin<CR>', { desc = 'git fetch origin' }) --git fetch origin
-vim.keymap.set('n', '<leader>gff', ':Git fetch ', { desc = 'git fetch' }) --git fetch
-vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (need path/name) except last commit' }) --git filter
-vim.keymap.set('n', '<leader>gRh', ':Git reset --hard ', { desc = 'git Reset hard (hash needed)' }) --git reset hard
-vim.keymap.set('n', '<leader>gRs', ':Git restore ', { desc = 'git Reset staged (filename or . for cd)' }) --git restore file
+vim.keymap.set('n', '<leader>gca', ":Git commit --amend --no-edit<CR>", { desc = 'amend last commit with staged changes' }) --git commit standard
 vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'git toggle signs'}) -- git toggle signs
+vim.keymap.set('n', '<leader>gr', ':Git rebase ', { desc = 'git rebase' }) --git rebase
+vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (use <path/to/file>) leaves current working dir intact' }) --git filter
+vim.keymap.set('n', '<leader>gRH', ':Git reset --hard ', { desc = 'git Reset Hard <hash>. wipes everything past this commit.' })
+vim.keymap.set('n', '<leader>gRm', ':Git reset --mixed ', { desc = 'git reset <filename or hash>. wipes commit history until this commit, stages those changes.'})
+vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. new commit, stages only the excluded changes from this specificed commit' })
+vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>', { desc = 'git wipe current file unstaged/staged' })
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
