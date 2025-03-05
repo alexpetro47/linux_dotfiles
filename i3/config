@@ -72,8 +72,13 @@ bindsym $mod+a exec --no-startup-id alacritty
 bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
 bindsym $mod+e exec --no-startup-id nemo
-bindsym $mod+m exec --no-startup-id thunderbird
-bindsym $mod+k exec --no-startup-id kdeconnect-app
+
+# need to add...
+#   alexpetro ALL=(ALL) NOPASSWD: /usr/bin/brightnessctl
+# to bottom of sudo file, via...
+#   sudo EDITOR=nvim visudo
+bindsym $mod+plus exec sudo brightnessctl set +10%
+bindsym $mod+minus exec sudo brightnessctl set 10%-
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C
