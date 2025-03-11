@@ -63,6 +63,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true})
 
 --keybinds
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
+vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
 vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true}) --keeps half page jumps centered 
@@ -142,7 +143,7 @@ vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --g
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'git add all' }) --git add file
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' }) --git push
-vim.keymap.set('n', '<leader>gP', ':Git pull<CR>', { desc = 'git pull' }) --git push
+vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'git pull' }) --git push
 vim.keymap.set('n', '<leader>gff', ':Git fetch ', { desc = 'git fetch' }) --git fetch
 vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit message' }) --git commit message
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' }) --git commit standard

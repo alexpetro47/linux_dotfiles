@@ -79,6 +79,7 @@ bindsym $mod+e exec --no-startup-id nemo
 #   sudo EDITOR=nvim visudo
 bindsym $mod+plus exec sudo brightnessctl set +10%
 bindsym $mod+minus exec sudo brightnessctl set 10%-
+bindsym $mod+shift+plus exec sudo brightnessctl set 50%
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C
