@@ -63,6 +63,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true})
 
 --keybinds
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
+vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
 vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
 vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
@@ -74,7 +75,7 @@ vim.keymap.set("n", "g;", "g;zz", {noremap = true, silent = true}) --keeps middl
 vim.keymap.set('n', '*', '*zzzv', { noremap = true, silent = true }) -- keeps word search in middle of page
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true }) --move highlighted lines 
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true }) --move highlighted lines 
-vim.keymap.set("v", "Y", [["+y]], {desc = 'Yank to clipboard'}) --yank to clipboard
+vim.keymap.set("v", "Y", '"+y', {desc = 'Yank to clipboard'}) --yank to clipboard
 vim.keymap.set("n", "P", '"+p', { desc = 'paste from clipboard' }) --paste from clipboard
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true }) --faster escapes
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true }) --redo mapped to U
