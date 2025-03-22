@@ -67,6 +67,13 @@ zle -N fzf-history-widget
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# this automatically exports any environment variables you have in ~/.config/.env
+# such as API keys for llm's etc
+if [ -f ~/.config/.env ]; then
+  source ~/.config/.env
+fi
+
+
 # clear
 # macchina
 
