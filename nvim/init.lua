@@ -99,7 +99,7 @@ vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = 
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true}) -- write to buffer
 vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'}) --make executable
 vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'}) --new buffer
-vim.keymap.set('n', '<leader>a', ':%y+<CR>', {desc = 'copy all to sys clipboard'}) --copy all to system clipboard
+vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'}) --copy all to system clipboard
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'}) --copy all to system clipboard
 vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}) --explore current directory
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
