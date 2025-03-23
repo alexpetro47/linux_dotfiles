@@ -106,7 +106,7 @@ vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
 vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'}) --terminal
-vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
+-- vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
 vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'}) -- c++ compile w clang
 vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'}) --get path to current file
 vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'}) --
@@ -327,6 +327,17 @@ require('lazy').setup({
       ft = { "markdown", "Avante" },
     },
   },
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "leoluz/nvim-dap-go",
+      "rcarriga/nvim-dap-ui",
+      "theHamsta/nvim-dap-virtual-text",
+      "nvim-neotest/nvim-nio",
+      "williamboman/mason.nvim",
+    },
   },
 
   --DEFAULTS-----------------------------------
@@ -675,6 +686,7 @@ local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
+  -- automatic_installation = true,
   vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true}),
   vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true}),
   vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true}),
@@ -689,6 +701,49 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
+
+
+local dap = require "dap"
+local ui = require "dapui"
+
+require("dapui").setup()
+require("dap-go").setup()
+
+require("nvim-dap-virtual-text").setup()
+
+vim.keymap.set('n', '<leader>Dd', ':DapContinue<CR>', { desc = 'Dap Continue (need 1+ breakpoints)' })
+vim.keymap.set('n', '<leader>Db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
+vim.keymap.set('n', '<leader>Dc', ':lua require"dap".continue()<CR>', { desc = 'continue' })
+vim.keymap.set('n', '<leader>Ds', ':lua require"dap".step_over()<CR>', { desc = 'step over' })
+vim.keymap.set('n', '<leader>Dr', ':lua require"dap".repl.toggle()<CR>', { desc = 'repl' })
+vim.keymap.set('n', '<leader>Di', ':lua require"dap".step_into()<CR>', { desc = 'step into' })
+vim.keymap.set('n', '<leader>DO', ':lua require"dap".step_out()<CR>', { desc = 'step out' })
+vim.keymap.set('n', '<leader>DD', ':lua require"dap".disconnect({ terminateDebuggee = true }); require"dap".close()<CR>', { desc = 'disconnect' })
+
+-- -- Handled by nvim-dap-go
+-- dap.adapters.go = {
+--   type = "server",
+--   port = "${port}",
+--   executable = {
+--     command = "dlv",
+--     args = { "dap", "-l", "127.0.0.1:${port}" },
+--   },
+-- }
+
+dap.listeners.before.attach.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  ui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  ui.close()
+end
+
+
 
 --  Configure nvim-cmp 
 local cmp = require 'cmp'
