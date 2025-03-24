@@ -597,6 +597,10 @@ require('harpoon').setup{
   vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' }),
 }
 
+require('avante').setup({
+  vim.keymap.set('n', '<leader>ar', ':AvanteClear<CR>', {desc = 'avante reset chat'}),
+})
+
 --DEFAULT CONFIGS----------------------------------
 -- [[ Highlight on yank ]]
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
