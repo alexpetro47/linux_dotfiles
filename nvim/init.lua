@@ -158,7 +158,7 @@ vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. 
 vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged/staged' })
 vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
-vim.keymap.set('n', '<leader>ar', ':AvanteClear<CR>', {desc = 'avante reset chat'})
+vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -334,30 +334,31 @@ require('lazy').setup({
   {
     "mfussenegger/nvim-dap",
     dependencies = {
-      "rcarriga/nvim-dap-ui",
-      "theHamsta/nvim-dap-virtual-text",
-      "nvim-neotest/nvim-nio",
-      "williamboman/mason.nvim",
-      "leoluz/nvim-dap-go",
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-neotest/nvim-nio',
+      'williamboman/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
+
+      'leoluz/nvim-dap-go',
+      'mfussenegger/nvim-dap-python',
     },
   },
-  { -- DAP PYTHON
-    -- requires debugpy installation (obv python install too)
-    -- python3 -m venv ~/.debugpy-env 
-    -- source ~/.debugpy-env/bin/activate
-    -- pip install debugpy
-    -- deactivate
-    -- add into .zshrc:  export PATH="$HOME/.debugpy-env/bin:$PATH"
-    -- source ~/.zshrc
-    'mfussenegger/nvim-dap-python',
+  -- ADPATERS FOR DAP VIA MASON
+  {
+    'jay-babu/mason-nvim-dap.nvim',
     dependencies = {
+      'williamboman/mason.nvim',
       'mfussenegger/nvim-dap',
     },
-    ft = 'python',
-    config = function()
-      local path = '~/.debugpy-env/bin/python'
-      require('dap-python').setup(path)
-    end,
+    opts= {
+      handlers = {},
+      ensure_installed = {
+        'codelldb',
+        -- 'delve', -- fucks it up lw
+        'debugpy'
+      },
+    },
   },
 
   --DEFAULTS-----------------------------------
@@ -381,7 +382,6 @@ require('lazy').setup({
             'clangd',
             'clang-format',
             'marksman',
-            -- 'pyright',
             'typescript-language-server',
             'eslint-lsp',
             'prettier',
@@ -741,16 +741,6 @@ vim.keymap.set('n', 'ds', ':lua require"dap".step_over()<CR>', { desc = 'step ov
 vim.keymap.set('n', 'dI', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
 vim.keymap.set('n', 'dO', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
 vim.keymap.set('n', 'dh', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
-
--- -- Handled by nvim-dap-go
--- dap.adapters.go = {
---   type = "server",
---   port = "${port}",
---   executable = {
---     command = "dlv",
---     args = { "dap", "-l", "127.0.0.1:${port}" },
---   },
--- }
 
 dap.listeners.before.attach.dapui_config = function()
   ui.open()
