@@ -158,6 +158,7 @@ vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. 
 vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged/staged' })
 vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
+vim.keymap.set('n', '<leader>ar', ':AvanteClear<CR>', {desc = 'avante reset chat'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -597,9 +598,6 @@ require('harpoon').setup{
   vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' }),
 }
 
-require('avante').setup({
-  vim.keymap.set('n', '<leader>ar', ':AvanteClear<CR>', {desc = 'avante reset chat'}),
-})
 
 --DEFAULT CONFIGS----------------------------------
 -- [[ Highlight on yank ]]
