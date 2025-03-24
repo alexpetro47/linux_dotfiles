@@ -711,14 +711,15 @@ require("dap-go").setup()
 
 require("nvim-dap-virtual-text").setup()
 
-vim.keymap.set('n', '<leader>Dd', ':DapContinue<CR>', { desc = 'Dap Continue (need 1+ breakpoints)' })
-vim.keymap.set('n', '<leader>Db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
-vim.keymap.set('n', '<leader>Dc', ':lua require"dap".continue()<CR>', { desc = 'continue' })
-vim.keymap.set('n', '<leader>Ds', ':lua require"dap".step_over()<CR>', { desc = 'step over' })
-vim.keymap.set('n', '<leader>Dr', ':lua require"dap".repl.toggle()<CR>', { desc = 'repl' })
-vim.keymap.set('n', '<leader>Di', ':lua require"dap".step_into()<CR>', { desc = 'step into' })
-vim.keymap.set('n', '<leader>DO', ':lua require"dap".step_out()<CR>', { desc = 'step out' })
-vim.keymap.set('n', '<leader>DD', ':lua require"dap".disconnect({ terminateDebuggee = true }); require"dap".close()<CR>', { desc = 'disconnect' })
+vim.keymap.set('n', '<leader>Dd', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
+vim.keymap.set('n', '<leader>DD', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
+vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
+vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
+vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
+vim.keymap.set('n', 'ds', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
+vim.keymap.set('n', 'dI', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
+vim.keymap.set('n', 'dO', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
+vim.keymap.set('n', 'dh', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
 
 -- -- Handled by nvim-dap-go
 -- dap.adapters.go = {
