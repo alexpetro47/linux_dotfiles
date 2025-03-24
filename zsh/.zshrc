@@ -14,6 +14,9 @@ export ZSH="/home/alexpetro/.oh-my-zsh"
 export EDITOR=nvim
 export PGDATABASE=postgres #for default postgres entry
 
+#for debugpy path
+export PATH="$HOME/.debugpy-env/bin:$PATH"
+
 #rust and cargo path
 export PATH="$HOME/.cargo/bin:$PATH"
 

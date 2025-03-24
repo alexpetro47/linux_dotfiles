@@ -330,15 +330,34 @@ require('lazy').setup({
   },
   },
 
+  --DAP / DEBUGGING
   {
     "mfussenegger/nvim-dap",
     dependencies = {
-      "leoluz/nvim-dap-go",
       "rcarriga/nvim-dap-ui",
       "theHamsta/nvim-dap-virtual-text",
       "nvim-neotest/nvim-nio",
       "williamboman/mason.nvim",
+      "leoluz/nvim-dap-go",
     },
+  },
+  { -- DAP PYTHON
+    -- requires debugpy installation (obv python install too)
+    -- python3 -m venv ~/.debugpy-env 
+    -- source ~/.debugpy-env/bin/activate
+    -- pip install debugpy
+    -- deactivate
+    -- add into .zshrc:  export PATH="$HOME/.debugpy-env/bin:$PATH"
+    -- source ~/.zshrc
+    'mfussenegger/nvim-dap-python',
+    dependencies = {
+      'mfussenegger/nvim-dap',
+    },
+    ft = 'python',
+    config = function()
+      local path = '~/.debugpy-env/bin/python'
+      require('dap-python').setup(path)
+    end,
   },
 
   --DEFAULTS-----------------------------------
