@@ -124,7 +124,7 @@ vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot dis
 vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobileNotes.md<CR>:Copilot disable<CR>', {desc = 'mobile notes'}) -- go to notes directory
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'}) -- new journal entry
 vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>", {desc = 'init.lua'}) -- edit init.lua
-vim.keymap.set('n', '<leader>do', ':! open ./<CR>', {desc = 'open current directory in finder'}) -- open in finder
+vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>! open ./<CR>u', {desc = 'open current directory in finder'}) -- open in finder
 vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'}) --toggle database ui
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'}) --mason lsp menu
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'}) --lazy package manager / lsp
@@ -159,6 +159,7 @@ vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>
 vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
 vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
+vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -284,7 +285,6 @@ require('lazy').setup({
     gemini = {
       -- @see https://ai.google.dev/gemini-api/docs/models/gemini
       model = "gemini-2.0-flash",
-      -- model = "gemini-1.5-flash",
       temperature = 0,
       max_tokens = 4096,
     },
