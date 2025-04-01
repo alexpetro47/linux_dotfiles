@@ -104,6 +104,7 @@ vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'}) --copy all to
 vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}) --explore current directory
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
+vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'surround visual selection in **, markdown bold'})
 vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'}) --terminal
 -- vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
@@ -160,6 +161,7 @@ vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo 
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
 vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('n', '<leader>3', 'I#<Esc>', {desc = 'insert bullet point *'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -355,7 +357,7 @@ require('lazy').setup({
       handlers = {},
       ensure_installed = {
         'codelldb',
-        -- 'delve', -- fucks it up lw
+        -- 'delve', -- fucks up go debugging lw
         'debugpy'
       },
     },
@@ -737,7 +739,7 @@ vim.keymap.set('n', '<leader>DD', ':DapTerminate<CR>', { desc = 'Dap disconect '
 vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
 vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
 vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
-vim.keymap.set('n', 'ds', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
+vim.keymap.set('n', 'dl', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
 vim.keymap.set('n', 'dI', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
 vim.keymap.set('n', 'dO', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
 vim.keymap.set('n', 'dh', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
