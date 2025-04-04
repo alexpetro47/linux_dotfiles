@@ -90,6 +90,7 @@ vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing 
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
 vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
 vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
+vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="insert one space at start of line"}) -- fullscreen blank for privacy
 vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "}) -- fullscreen blank for privacy
 -- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
 --shortcut that searches a visual range for any unused characters to be used
@@ -130,6 +131,7 @@ vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'}) --to
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'}) --mason lsp menu
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'}) --lazy package manager / lsp
 vim.keymap.set("n", "<leader>Rp", ":!pandoc -V geometry:margin=1in % -o %:r.pdf<CR> :!mv %:r.pdf ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to pdf'}) --pandoc renders
+vim.keymap.set("n", "<leader>Rm", ":MarkdownPreview<CR>", {noremap = true, silent = true, desc = 'markdown preview in browser'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to docx'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'}) --pandoc renders
 vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'}) --pandoc renders
@@ -151,7 +153,8 @@ vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit mess
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' }) --git commit standard
 vim.keymap.set('n', '<leader>gca', ":Git commit --amend --no-edit<CR>", { desc = 'amend last commit with staged changes' }) --git commit standard
 vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'git toggle signs'}) -- git toggle signs
-vim.keymap.set('n', '<leader>gr', ':Git rebase ', { desc = 'git rebase' }) --git rebase
+vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'git rebase continue' }) --git rebase
+vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'git rebase abort' }) --git rebase
 vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (use <path/to/file>) leaves current working dir intact' }) --git filter
 vim.keymap.set('n', '<leader>gRH', ':Git reset --hard ', { desc = 'git Reset Hard <hash>. wipes everything past this commit.' })
 vim.keymap.set('n', '<leader>gRm', ':Git reset --mixed ', { desc = 'git reset <filename or hash>. wipes commit history until this commit, stages those changes.'})
@@ -161,7 +164,9 @@ vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo 
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
 vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
-vim.keymap.set('n', '<leader>3', 'I#<Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
+vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l<C-w>s:term<CR><C-w>j:term<CR><C-w>h:term<CR><C-w>k', {desc = 'set up 3 terminals and one blank in vim splits'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -363,6 +368,14 @@ require('lazy').setup({
     },
   },
 
+  {
+    "iamcco/markdown-preview.nvim",
+    build = "cd app && npm install",
+    ft = "markdown",
+    cmd = "MarkdownPreview"
+  },
+
+
   --DEFAULTS-----------------------------------
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -542,6 +555,7 @@ wk.add({
   { "<leader>d", group = "directories" },
   { "<leader>d_", hidden = true },
   { "<leader>g", group = "git" },
+  { "<leader>gr", group = "git rebase" },
   { "<leader>gR", group = "resets" },
   { "<leader>gR_", hidden = true },
   { "<leader>g_", hidden = true },
