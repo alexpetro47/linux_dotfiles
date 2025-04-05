@@ -119,7 +119,7 @@ vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/general/todos.md<CR>:Cop
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'workspace'})
 vim.keymap.set('n', '<leader>dr', ':e ~/Documents/notes/general/reminders-ideas.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})
-vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'init.lua'})
+vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
 vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
