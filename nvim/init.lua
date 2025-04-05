@@ -39,20 +39,20 @@ vim.g['gruvbox_material_transparent_background'] = 2
 
 --Keybind Removals 
 vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
-vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true}) --desktop nav
-vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true}) --desktop nav
-vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true}) --desktop nav
-vim.keymap.set({'n', 'v'}, '<C-;>', '<Nop>', {silent = true}) --desktop nav
-vim.keymap.set({'i'}, '<C-a>', '<Nop>', {silent = true}) -- copilot increment by word
-vim.keymap.set({'n', 't'}, '<C-w>[', '<Nop>', {silent = true}) -- reisizing panes
-vim.keymap.set({'n', 't'}, '<C-w>]', '<Nop>', {silent = true}) -- reisizing panes
-vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true}) --redo mapped to U
-vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true}) --yank to clipboard
-vim.keymap.set({'n', 'v'}, 'H', '<Nop>', {silent = true}) -- harpoon menu
-vim.keymap.set({'n', 'v'}, 'J', '<Nop>', {silent = true}) -- harpoon file 1
-vim.keymap.set({'n', 'v'}, 'K', '<Nop>', {silent = true}) -- harpoon file 2
-vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true}) -- harpoon file 3
-vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true}) -- harpoon mark
+vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, '<C-;>', '<Nop>', {silent = true})
+vim.keymap.set({'i'}, '<C-a>', '<Nop>', {silent = true})
+vim.keymap.set({'n', 't'}, '<C-w>[', '<Nop>', {silent = true})
+vim.keymap.set({'n', 't'}, '<C-w>]', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'H', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'J', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'K', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true})
 
 -- remap for jumplist forward before any tab remaps, tab == C-i
 vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true})
@@ -67,96 +67,89 @@ vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
 vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
 vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
-vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true}) --keeps half page jumps centered 
-vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true, silent = true})  --keeps half page jumps centered
-vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true}) --keeps next in the middgle of the page 
-vim.keymap.set("n", "n", "nzzzv", {noremap = true, silent = true}) --keeps next in the middle of the page
-vim.keymap.set("n", "g;", "g;zz", {noremap = true, silent = true}) --keeps middle of page
-vim.keymap.set('n', '*', '*zzzv', { noremap = true, silent = true }) -- keeps word search in middle of page
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true }) --move highlighted lines 
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true }) --move highlighted lines 
-vim.keymap.set("v", "Y", '"+y', {desc = 'Yank to clipboard'}) --yank to clipboard
-vim.keymap.set("n", "P", '"+p', { desc = 'paste from clipboard' }) --paste from clipboard
-vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true }) --faster escapes
-vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true }) --redo mapped to U
-vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true }) --enables window management by tab
-vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true }) -- enables window managemennt in vim terminal
-vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { noremap = true }) -- enables window managemennt in vim terminal
-vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true }) --fullsize. tab = or ctrl-w = to equalize
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true }) --easier terminal escapes
-vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true }) --easier terminal escapes
-vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true }) --resizing panes
-vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing panes
-vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
-vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
-vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
-vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
-vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "}) -- fullscreen blank for privacy
--- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
---shortcut that searches a visual range for any unused characters to be used
---with vertical view in order to find unmapped keys. analyze the whole sequence
---inside of the ' ' 
-vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true}) --visually selects an entire function/class
-vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true}) -- write to buffer
-vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'}) --make executable
-vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'}) --new buffer
-vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'}) --copy all to system clipboard
-vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'}) --copy all to system clipboard
-vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}) --explore current directory
-vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
-vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
+vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
+vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true, silent = true})
+vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true})
+vim.keymap.set("n", "n", "nzzzv", {noremap = true, silent = true})
+vim.keymap.set("n", "g;", "g;zz", {noremap = true, silent = true})
+vim.keymap.set('n', '*', '*zzzv', { noremap = true, silent = true })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
+vim.keymap.set("v", "Y", '"+y', {desc = 'Yank to clipboard'})
+vim.keymap.set("n", "P", '"+p', { desc = 'paste from clipboard' })
+vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
+vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
+vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
+vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { noremap = true })
+vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
+vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true })
+vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
+vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
+vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
+vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"})
+vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
+vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
+vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
+vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
+vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
+vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'})
+vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'})
+vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
+vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
+vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
+vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'surround visual selection in **, markdown bold'})
 vim.keymap.set('n', '<leader>b', 'I**<Esc>$bea**<Esc>', {desc = 'surround visual selection in **, markdown bold'})
--- vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
-vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'}) --terminal
--- vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
-vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'}) -- c++ compile w clang
-vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'}) --get path to current file
-vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'}) --
-vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'}) --
+vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
+vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
+vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'})
+vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'})
+vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
 vim.keymap.set('n', '<leader>rl', ':e!<CR>', {desc = 'reload buffer'})
--- vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :term python3 %<CR>a ', {desc = 'run python'})
-vim.keymap.set('n', '<leader>dc', ':Ex ~/Documents/code<CR>', {desc = 'code'}) -- go to code directory
-vim.keymap.set('n', '<leader>ds', ':Ex ~/Documents/notes/school<CR>', {desc = 'school'}) -- go to code directory
-vim.keymap.set('n', '<leader>dC', ':Ex ~/.config<CR>', {desc = 'config'}) -- go to code directory
-vim.keymap.set('n', '<leader>dd', ":Ex ~/Downloads<CR>", {desc = 'downloads'}) -- go to downloads
-vim.keymap.set('n', '<leader>dD', ":Ex ~/Desktop<CR>", {desc = 'desktop'}) -- go to downloads
-vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>', {desc = 'notes'}) -- go to notes directory
-vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobileNotes.md<CR>:Copilot disable<CR>', {desc = 'mobile notes'}) -- go to notes directory
-vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'}) -- new journal entry
-vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>", {desc = 'init.lua'}) -- edit init.lua
-vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>! open ./<CR>u', {desc = 'open current directory in finder'}) -- open in finder
-vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'}) --toggle database ui
-vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'}) --mason lsp menu
-vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'}) --lazy package manager / lsp
-vim.keymap.set("n", "<leader>Rp", ":!pandoc -V geometry:margin=1in % -o %:r.pdf<CR> :!mv %:r.pdf ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to pdf'}) --pandoc renders
-vim.keymap.set("n", "<leader>Rm", ":MarkdownPreview<CR>", {noremap = true, silent = true, desc = 'markdown preview in browser'}) --pandoc renders
-vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to docx'}) --pandoc renders
-vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'}) --pandoc renders
-vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'}) --pandoc renders
-vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' }) --git status
-vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'git merge' }) --git status
-vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' }) --git browser
-vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' }) --git branch
-vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'git Stash save' }) --git stash
-vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'git Stash pop' }) --git stash
-vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = 'git log' }) --git log
-vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff <hash/branch needed>'}) --git diff
-vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' }) --git checkout
-vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' }) --git add file
-vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'git add all' }) --git add file
-vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' }) --git push
-vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'git pull' }) --git push
-vim.keymap.set('n', '<leader>gff', ':Git fetch ', { desc = 'git fetch' }) --git fetch
-vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit message' }) --git commit message
-vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' }) --git commit standard
-vim.keymap.set('n', '<leader>gca', ":Git commit --amend --no-edit<CR>", { desc = 'amend last commit with staged changes' }) --git commit standard
-vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'git toggle signs'}) -- git toggle signs
-vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'git rebase continue' }) --git rebase
-vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'git rebase abort' }) --git rebase
-vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (use <path/to/file>) leaves current working dir intact' }) --git filter
+vim.keymap.set('n', '<leader>dc', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
+vim.keymap.set('n', '<leader>ds', ':Ex ~/Documents/notes/school<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
+vim.keymap.set('n', '<leader>dd', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
+vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/general/todos.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'todos'})
+vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'workspace'})
+vim.keymap.set('n', '<leader>dr', ':e ~/Documents/notes/general/reminders-ideas.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders'})
+vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})
+vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'init.lua'})
+vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
+vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
+vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
+vim.keymap.set("n", "<leader>Rp", ":!pandoc -V geometry:margin=1in % -o %:r.pdf<CR> :!mv %:r.pdf ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to pdf'})
+vim.keymap.set("n", "<leader>Rm", ":MarkdownPreview<CR>", {noremap = true, silent = true, desc = 'markdown preview in browser'})
+vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to docx'})
+vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'})
+vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'})
+vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' })
+vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'git merge' })
+vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' })
+vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' })
+vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'git Stash save' })
+vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'git Stash pop' })
+vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = 'git log' })
+vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'git diff <hash/branch needed>'})
+vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'git checkout' })
+vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'git add file' })
+vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'git add all' })
+vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'git push' })
+vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'git pull' })
+vim.keymap.set('n', '<leader>gff', ':Git fetch ', { desc = 'git fetch' })
+vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'git commit message' })
+vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'git commit standard' })
+vim.keymap.set('n', '<leader>gca', ":Git commit --amend --no-edit<CR>", { desc = 'amend last commit with staged changes' })
+vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'git toggle signs'})
+vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'git rebase continue' })
+vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'git rebase abort' })
+vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (use <path/to/file>) leaves current working dir intact' })
 vim.keymap.set('n', '<leader>gRH', ':Git reset --hard ', { desc = 'git Reset Hard <hash>. wipes everything past this commit.' })
 vim.keymap.set('n', '<leader>gRm', ':Git reset --mixed ', { desc = 'git reset <filename or hash>. wipes commit history until this commit, stages those changes.'})
 vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. new commit, stages only the excluded changes from this specificed commit' })
@@ -168,6 +161,7 @@ vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l<C-w>s:term<CR><C-w>j:term<CR><C-w>h:term<CR><C-w>k', {desc = 'set up 3 terminals and one blank in vim splits'})
+vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert double blank lines below cursor'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
@@ -188,7 +182,7 @@ if not vim.loop.fs_stat(lazypath) then
     'clone',
     '--filter=blob:none',
     'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
+    '--branch=stable',
     lazypath,
   }
 end
