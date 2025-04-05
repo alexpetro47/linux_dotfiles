@@ -90,7 +90,7 @@ vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true }) --resizing 
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true}) -- using x deletes into abyss register
 vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"}) -- fullscreen blank for privacy
 vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
-vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="insert one space at start of line"}) -- fullscreen blank for privacy
+vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="reset shiftwidth 2"}) -- fullscreen blank for privacy
 vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "}) -- fullscreen blank for privacy
 -- vim.keymap.set('n', '<leader>f', 'vaB$o{jzz0', {desc="highlight function", noremap = true, silent = true}) --visually selects an entire function/class
 --shortcut that searches a visual range for any unused characters to be used
@@ -106,7 +106,8 @@ vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'}) --cd to current file directory
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'}) --next buffer
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'surround visual selection in **, markdown bold'})
-vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
+vim.keymap.set('n', '<leader>b', 'I**<Esc>$bea**<Esc>', {desc = 'surround visual selection in **, markdown bold'})
+-- vim.keymap.set('n', '<leader>b', ':buffers<CR>', {desc = 'list buffers'}) --list buffers
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'}) --terminal
 -- vim.keymap.set("n", "<leader>D", ":w<CR>:! clang++ -std=c++14 -g -o %:r %<CR>:cd %:p:h<CR>:pwd<CR> <C-w>v<C-w>l :term lldb %:r<CR>a ", {noremap = true, silent = true, desc = 'Debug'}) --debugging
 vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'}) -- c++ compile w clang
@@ -552,7 +553,7 @@ wk.add({
   { "<leader>H_", hidden = true },
   { "<leader>R", group = "render md" },
   { "<leader>R_", hidden = true },
-  { "<leader>d", group = "directories" },
+  { "<leader>d", group = "directories/docs" },
   { "<leader>d_", hidden = true },
   { "<leader>g", group = "git" },
   { "<leader>gr", group = "git rebase" },
