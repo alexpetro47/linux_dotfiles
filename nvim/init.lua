@@ -158,7 +158,7 @@ vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. 
 vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged/staged' })
 vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
-vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
+-- vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
@@ -272,67 +272,68 @@ require('lazy').setup({
   -- nice markdown formatting
   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 
-  {
-  "yetone/avante.nvim",
-  event = "VeryLazy",
-  version = false,
-  opts = {
-    provider = "gemini", -- Recommend using Claude
-    auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
-    behaviour = {
-      auto_suggestions = false, -- Experimental stage
-      auto_set_highlight_group = true,
-      auto_set_keymaps = true,
-      auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = false,
-    },
-    gemini = {
-      -- @see https://ai.google.dev/gemini-api/docs/models/gemini
-      model = "gemini-2.0-flash",
-      temperature = 0,
-      max_tokens = 4096,
-    },
-  },
-  build = "make",
-  dependencies = {
-    "nvim-treesitter/nvim-treesitter",
-    "stevearc/dressing.nvim",
-    "nvim-lua/plenary.nvim",
-    "MunifTanjim/nui.nvim",
-    --- The below dependencies are optional,
-    -- "echasnovski/mini.pick", -- for file_selector provider mini.pick
-    "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-    "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-    "ibhagwan/fzf-lua", -- for file_selector provider fzf
-    "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-    -- "zbirenbaum/copilot.lua", -- for providers='copilot'
-    {
-      -- support for image pasting
-      "HakonHarnes/img-clip.nvim",
-      event = "VeryLazy",
-      opts = {
-        -- recommended settings
-        default = {
-          embed_image_as_base64 = false,
-          prompt_for_file_name = false,
-          drag_and_drop = {
-            insert_mode = true,
-          },
-          -- required for Windows users
-          use_absolute_path = true,
-        },
-      },
-    },
-    {
-      -- Make sure to set this up properly if you have lazy=true
-      'MeanderingProgrammer/render-markdown.nvim',
-      opts = {
-        file_types = { "markdown", "Avante" },
-      },
-      ft = { "markdown", "Avante" },
-    },
-  },
-  },
+  -- nvim integrated llm
+  -- {
+  -- "yetone/avante.nvim",
+  -- event = "VeryLazy",
+  -- version = false,
+  -- opts = {
+  --   provider = "gemini", -- Recommend using Claude
+  --   auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
+  --   behaviour = {
+  --     auto_suggestions = false, -- Experimental stage
+  --     auto_set_highlight_group = true,
+  --     auto_set_keymaps = true,
+  --     auto_apply_diff_after_generation = false,
+  --     support_paste_from_clipboard = false,
+  --   },
+  --   gemini = {
+  --     -- @see https://ai.google.dev/gemini-api/docs/models/gemini
+  --     model = "gemini-2.0-flash",
+  --     temperature = 0,
+  --     max_tokens = 4096,
+  --   },
+  -- },
+  -- build = "make",
+  -- dependencies = {
+  --   "nvim-treesitter/nvim-treesitter",
+  --   "stevearc/dressing.nvim",
+  --   "nvim-lua/plenary.nvim",
+  --   "MunifTanjim/nui.nvim",
+  --   --- The below dependencies are optional,
+  --   -- "echasnovski/mini.pick", -- for file_selector provider mini.pick
+  --   "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+  --   "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+  --   "ibhagwan/fzf-lua", -- for file_selector provider fzf
+  --   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+  --   -- "zbirenbaum/copilot.lua", -- for providers='copilot'
+  --   {
+  --     -- support for image pasting
+  --     "HakonHarnes/img-clip.nvim",
+  --     event = "VeryLazy",
+  --     opts = {
+  --       -- recommended settings
+  --       default = {
+  --         embed_image_as_base64 = false,
+  --         prompt_for_file_name = false,
+  --         drag_and_drop = {
+  --           insert_mode = true,
+  --         },
+  --         -- required for Windows users
+  --         use_absolute_path = true,
+  --       },
+  --     },
+  --   },
+  --   {
+  --     -- Make sure to set this up properly if you have lazy=true
+  --     'MeanderingProgrammer/render-markdown.nvim',
+  --     opts = {
+  --       file_types = { "markdown", "Avante" },
+  --     },
+  --     ft = { "markdown", "Avante" },
+  --   },
+  -- },
+  -- },
 
   --DAP / DEBUGGING
   {
@@ -365,12 +366,25 @@ require('lazy').setup({
     },
   },
 
+  -- -- render markdown in browser
+  -- {
+  --     "iamcco/markdown-preview.nvim",
+  --     build = "cd app && npm install",
+  --     ft = "markdown",
+  --     cmd = "MarkdownPreview"
+  --   },
+
+  --markdown highlighting
   {
-    "iamcco/markdown-preview.nvim",
-    build = "cd app && npm install",
-    ft = "markdown",
-    cmd = "MarkdownPreview"
+    'MeanderingProgrammer/render-markdown.nvim',
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
   },
+
 
 
   --DEFAULTS-----------------------------------
@@ -629,6 +643,8 @@ require('harpoon').setup{
   vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' }),
   vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' }),
 }
+
+require('render-markdown').setup({})
 
 
 --DEFAULT CONFIGS----------------------------------
