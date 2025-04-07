@@ -135,6 +135,8 @@ vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Do
 vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'})
 vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'})
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' })
+vim.keymap.set('n', '<leader>gu', ':Git reset %<CR>', { desc = 'git unstage current file' })
+vim.keymap.set('n', '<leader>gU', ':Git reset <CR>', { desc = 'git unstage entire directory' })
 vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'git merge' })
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' })
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' })
@@ -165,8 +167,7 @@ vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { de
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
-vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l:term<CR><C-w>h<C-w>j:term<CR><C-w>l', {desc = 'set up 3 vim splits, 2 terminals'})
-vim.keymap.set('n', '<leader>o', 'o<Esc>k', {desc = 'insert blank line below cursor'})
+vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert blank line below cursor'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[
