@@ -102,7 +102,8 @@ vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'}
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'surround visual selection in **, markdown bold'})
-vim.keymap.set('n', '<leader>b', 'I**<Esc>$bea**<Esc>', {desc = 'surround visual selection in **, markdown bold'})
+vim.keymap.set('n', '<leader>b', 'I**<Esc>$bEa**<Esc>', {desc = 'bold current line'})
+vim.keymap.set('n', '<leader>i', 'I*<Esc>$bEa*<Esc>', {desc = 'italic current line'})
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
 vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'})
@@ -110,7 +111,7 @@ vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = 
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('n', '<leader>rl', ':e!<CR>', {desc = 'reload buffer'})
+vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>dC', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
@@ -165,7 +166,7 @@ vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l<C-w>s:term<CR><C-w>j:term<CR><C-w>h:term<CR><C-w>k', {desc = 'set up 3 terminals and one blank in vim splits'})
-vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert double blank lines below cursor'})
+vim.keymap.set('n', '<leader>o', 'o<Esc>k', {desc = 'insert blank line below cursor'})
 
 --Setting up terminal navigation within vim splits
 vim.cmd[[

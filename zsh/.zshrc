@@ -21,8 +21,8 @@ export PATH="$HOME/.debugpy-env/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 ZSH_THEME="powerlevel10k/powerlevel10k" 
-HISTORY=10000
-SAVEHIST=10000
+HISTORY=25000
+SAVEHIST=25000
 
 touch .hushlogin
 
@@ -32,7 +32,7 @@ source $ZSH/oh-my-zsh.sh
 
 # source <(fzf --zsh) # need go installed as a dependency, this is for keybingds and auto comp
 
-alias s="source ~/.zshrc ~/.config/tmux/tmux.conf ~/.config/alacritty/alacritty.toml ~/.config/nvim/init.lua"
+alias s="source ~/.zshrc ~/.config/tmux/tmux.conf  ~/.config/nvim/init.lua && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3'"
 alias v="nvim"
 alias c="clear"
 alias x="exit"
