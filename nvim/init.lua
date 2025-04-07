@@ -165,7 +165,7 @@ vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { de
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
-vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l<C-w>s:term<CR><C-w>j:term<CR><C-w>h:term<CR><C-w>k', {desc = 'set up 3 terminals and one blank in vim splits'})
+vim.keymap.set('n', '<leader>T', ':enew<CR><C-w>v<C-w>s<C-w>l:term<CR><C-w>h<C-w>j:term<CR><C-w>l', {desc = 'set up 3 vim splits, 2 terminals'})
 vim.keymap.set('n', '<leader>o', 'o<Esc>k', {desc = 'insert blank line below cursor'})
 
 --Setting up terminal navigation within vim splits
