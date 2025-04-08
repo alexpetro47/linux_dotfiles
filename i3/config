@@ -70,6 +70,7 @@ bindsym $mod+Ctrl+l exec --no-startup-id ~/.screenlayout/external_only.sh
 bindsym $mod+f exec --no-startup-id firefox
 bindsym $mod+h exec --no-startup-id google-chrome
 bindsym $mod+a exec --no-startup-id alacritty
+bindsym $mod+r exec --no-startup-id reaper
 bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
 bindsym $mod+e exec --no-startup-id nemo
@@ -100,5 +101,5 @@ bindsym $mod+Shift+r restart
 # mod+left click to re-position tiled window
 floating_modifier $mod
 bindsym $mod+ctrl+f floating toggle
-bindsym $mod+r resize set 600 750, move position center
-bindsym $mod+ctrl+s sticky toggle
+# bindsym $mod+r resize set 600 750, move position center
+# bindsym $mod+ctrl+s sticky toggle
