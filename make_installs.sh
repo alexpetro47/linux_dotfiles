@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# manual install: reaper, 
+
 echo "Welcome to my installation script..."
 
 while true; do
@@ -42,9 +44,10 @@ apps=(
   cbonsai
   kdeconnect
   fd-find
-  --edge reaper
   mintupgrade
   htop
+  lf
+  ranger # use this for its "rifle" opener package
 )
 
 snap_apps=(

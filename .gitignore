@@ -52,3 +52,7 @@ screenlayout/*
 !rofi
 rofi/*
 !rofi/config.rasi
+
+!lf
+lf/*
+!lf/lfrc

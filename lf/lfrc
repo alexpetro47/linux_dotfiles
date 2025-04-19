@@ -1,0 +1,8 @@
+
+set hidden
+
+cmd open ${{
+    rifle "$f"
+}}
+
+map <enter> open

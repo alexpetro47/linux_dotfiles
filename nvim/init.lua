@@ -33,10 +33,6 @@ vim.o.wildmode = 'longest:full,full'
 vim.o.wildignorecase = true
 vim.o.wildmenu = true
 
-vim.g["sneak#label"] = 1 --label mode for vim-sneak
-vim.g["sneak#use_ic_scs"] = 1 --case insensitive
-vim.g['gruvbox_material_transparent_background'] = 2
-
 --Keybind Removals 
 vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
@@ -53,68 +49,85 @@ vim.keymap.set({'n', 'v'}, 'J', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'K', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true}) --unmaps
+vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true}) --unmaps
 
--- remap for jumplist forward before any tab remaps, tab == C-i
-vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true})
---remap S to J before J remap to harpoon. also jump back to start of line automatically
-vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true})
+-- Pre-Keybind Remaps
+vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true}) -- remap for jumplist forward before any tab remaps, tab == C-i
+vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
 
--- C-w used for tmux leader, tab is remapped to c-w for inside vim
+--General Keybinds
+vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 
---keybinds
+--Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
+vim.keymap.set('n', 'dS', '$x_x', {noremap=true, silent=true})
 vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
-vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
 vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
+vim.keymap.set("v", "Y", '"+y')
+vim.keymap.set("n", "P", '"+p')
+vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
+vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
+vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
+vim.keymap.set('v', '<leader>.', 's/^/ /<CR>', {noremap=true, silent=true, desc="add space to start of line in visual selection"})
+vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
+vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
+vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
+vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
+vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
+vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
+vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
+vim.keymap.set('v', '<leader>i', 'c**<Esc>hp', {desc = 'italicize visual selection'})
+vim.keymap.set('n', '<leader>b', 'I**<Esc>$bA**<Esc>', {desc = 'bold current line'})
+vim.keymap.set('n', '<leader>~', 'I~~<Esc>$bA~~<Esc>', {desc = 'strikethrough current line'})
+vim.keymap.set('n', '<leader>i', 'I*<Esc>$bA*<Esc>', {desc = 'italic current line'})
+vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'})
+vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
+vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
+vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
+vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('n', '<leader>1', 'I1. <Esc>', {desc = 'insert list'})
+vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
+vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert blank line below cursor'})
+vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
+
+--Window Management
+vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
+vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
+-- vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { noremap = true })
+vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
+vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
+vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
+vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
+vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
+
+--Navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
 vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true, silent = true})
 vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true})
 vim.keymap.set("n", "n", "nzzzv", {noremap = true, silent = true})
 vim.keymap.set("n", "g;", "g;zz", {noremap = true, silent = true})
 vim.keymap.set('n', '*', '*zzzv', { noremap = true, silent = true })
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
-vim.keymap.set("v", "Y", '"+y', {desc = 'Yank to clipboard'})
-vim.keymap.set("n", "P", '"+p', { desc = 'paste from clipboard' })
-vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
-vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
-vim.keymap.set('t', '<C-w>', '<C-\\><C-n><C-w>', { noremap = true })
-vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true })
-vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
-vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
-vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
-vim.keymap.set('n', '<leader>f', '20o<ESC>Gzz', {noremap=true, silent=true, desc="clear all text, insert on blank"})
-vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
-vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
-vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
-vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
-vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
-vim.keymap.set("n", "<leader>x", ":!chmod +x %<CR>", { silent = true, desc = 'make executable'})
-vim.keymap.set('n', '<leader>N', ':enew<CR>', {desc = 'New buffer'})
-vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
-vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
+
+-- Code 
+vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
+-- vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
+vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
+
+-- File / Directory Navigation
 vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
-vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'})
-vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
-vim.keymap.set('v', '<leader>i', 'c**<Esc>hp', {desc = 'italicize visual selection'})
-vim.keymap.set('n', '<leader>b', 'I**<Esc>$bA**<Esc>', {desc = 'bold current line'})
-vim.keymap.set('n', '<leader>i', 'I*<Esc>$bA*<Esc>', {desc = 'italic current line'})
-vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
-vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
-vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file'})
-vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'})
-vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
-vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
-vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
+vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>L', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>dC', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dp', ":Ex ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'workspace'})
@@ -126,18 +139,30 @@ vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/personal/mobile/mobile-n
 vim.keymap.set('n', '<leader>dr', ':e ~/Documents/notes/personal/reminders.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})
 vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
-vim.keymap.set('n', '<leader>do', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
+vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc = 'harpoon mark' })
+vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
+vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
+vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
+
+--Debugging
 vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
+vim.keymap.set('n', '<leader>Di', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
+vim.keymap.set('n', '<leader>Dd', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
+vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
+vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
+vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
+vim.keymap.set('n', 'dj', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
+vim.keymap.set('n', 'dl', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
+vim.keymap.set('n', 'dh', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
+vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
+
+--Nvim Management
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
-vim.keymap.set("n", "<leader>Rp", ":!pandoc -V geometry:margin=1in % -o %:r.pdf<CR> :!mv %:r.pdf ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to pdf'})
-vim.keymap.set("n", "<leader>Rm", ":MarkdownPreview<CR>", {noremap = true, silent = true, desc = 'markdown preview in browser'})
-vim.keymap.set("n", "<leader>Rd", ":!pandoc % -o %:r.docx<CR> :!mv %:r.docx ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to docx'})
-vim.keymap.set("n", "<leader>Rh", ":!pandoc % -o %:r.html<CR> :!mv %:r.html ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to html'})
-vim.keymap.set("n", "<leader>Rt", ":!pandoc % -o %:r.txt <CR> :!mv %:r.txt ~/Documents/mdRenders<CR>:echo 'rendered!'<CR>", {noremap = true, silent = true, desc = 'render md to txt'})
+
+-- Git
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>', { desc = 'git status' })
-vim.keymap.set('n', '<leader>gu', ':Git reset %<CR>', { desc = 'git unstage current file' })
-vim.keymap.set('n', '<leader>gU', ':Git reset <CR>', { desc = 'git unstage entire directory' })
 vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'git merge' })
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'git Browser' })
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'git branch ' })
@@ -160,17 +185,43 @@ vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'git reba
 vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete history of a file (use <path/to/file>) leaves current working dir intact' })
 vim.keymap.set('n', '<leader>gRH', ':Git reset --hard ', { desc = 'git Reset Hard <hash>. wipes everything past this commit.' })
 vim.keymap.set('n', '<leader>gRm', ':Git reset --mixed ', { desc = 'git reset <filename or hash>. wipes commit history until this commit, stages those changes.'})
+vim.keymap.set('n', '<leader>gRs', ':Git reset %<CR>', { desc = 'git unstage current file' })
 vim.keymap.set('n', '<leader>gRr', ':Git revert ', { desc = 'git revert <hash>. new commit, stages only the excluded changes from this specificed commit' })
-vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged/staged' })
+vim.keymap.set('n', '<leader>gRf', ':Glcd<CR> :Git checkout HEAD -- %<CR>:e!<CR>', { desc = 'git wipe current file unstaged+staged' })
 vim.keymap.set('n', '<leader>gRD', ':Glcd<CR> :Git checkout HEAD -- .<CR>:argdo edit!<CR>', { desc = 'git wipe current directory to last commit' })
 vim.keymap.set('n', '<leader>gRd', ':Glcd<CR> :Git restore --staged .<CR>', { desc = 'git unstage directory (restore .)' })
--- vim.keymap.set('n', '<leader>aX', ':AvanteClear<CR>', {desc = 'avante reset chat'})
-vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
-vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
-vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
-vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert blank line below cursor'})
 
---Setting up terminal navigation within vim splits
+--Search
+vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search files' })
+vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
+vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
+vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
+vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
+vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
+vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
+vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
+vim.keymap.set('n', '<leader>sC', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search Commits' })
+vim.keymap.set('n', '<leader>sk', ":lua require'telescope.builtin'.keymaps()<CR>", { desc = 'search keymaps' })
+vim.keymap.set('n', 'gd', ":lua require'telescope.builtin'.lsp_definitions()<CR>", { desc = 'go to definition'})
+vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'go to definition'})
+vim.keymap.set('n', 'gi', ":lua require'telescope.builtin'.lsp_implementations()<CR>", { desc = 'go to definition'})
+vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>", { desc = 'search symbols'})
+vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>", { desc = 'search marks'})
+vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
+vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
+vim.keymap.set('n', '<leader>st', ":lua require'telescope.builtin'.treesitter()<CR>", { desc = 'search treesitter'})
+
+--Lsp
+vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})
+vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true})
+vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true})
+vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
+
+vim.g["sneak#label"] = 1 --label mode for vim-sneak
+vim.g["sneak#use_ic_scs"] = 1 --case insensitive
+vim.g['gruvbox_material_transparent_background'] = 2
+
+--terminal navigation within vim splits
 vim.cmd[[
   autocmd BufEnter * if &buftype == 'terminal' | setlocal bufhidden= nobuflisted nolist nonumber norelativenumber | startinsert | endif
   autocmd BufLeave * if &buftype == 'terminal' | setlocal bufhidden= | endif
@@ -181,7 +232,7 @@ vim.cmd([[
 autocmd FileType markdown setlocal textwidth=77
 ]])
 
--- Package Manager
+-- package manager
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -195,12 +246,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
---ALL PLUGINS ARE STORED / LOCATED at ~/.local/share/nvim/
-
 require('lazy').setup({
+--ALL PLUGINS ARE LOCATED at ~/.local/share/nvim/
+  auto_update = false,
 
   --MY ADDITIONS---------------------------------
-  auto_update = false,
 
   --Editing enclosing characters
   'tpope/vim-surround',
@@ -208,6 +258,7 @@ require('lazy').setup({
   --preview substitutions
   'markonm/traces.vim',
 
+  --colorscheme
   {
     'sainnhe/gruvbox-material',
     config = function()
@@ -215,18 +266,16 @@ require('lazy').setup({
     end,
   },
 
+  --fzf
   {
-    --fzf integration into vim for larger searches
     'junegunn/fzf',
     'junegunn/fzf.vim',
-    -- vim.keymap.set('n', '<leadr>sc', ':Commands<CR>' ,{ desc = 'search commands' }),
-    -- vim.keymap.set('n', '<leader>sf', ':Files<CR>' ,{ desc = 'search files' }),
-    -- vim.keymap.set('n', '<leader>sg', ':RG<CR>' ,{ desc = 'search grep' }),
-    -- vim.keymap.set('n', '<leader>so', ':History<CR>' ,{ desc = 'search old files' }),
   },
 
+  -- use . to repeat commands
   'tpope/vim-repeat',
 
+  --faster searches
   {
   'justinmk/vim-sneak',
     --two character searches
@@ -237,8 +286,8 @@ require('lazy').setup({
     vim.keymap.set('n', 'T', '<Plug>Sneak_T', { noremap = true }),
   },
 
+  --copilot
   {
-    --Copilot, needs setup for first time on new machine
     'github/copilot.vim',
     vim.keymap.set('i', '<C-a>', '<Plug>(copilot-accept-word)'), { noremap = true },
     vim.keymap.set('n', '<leader>Cp', ':Copilot panel<CR>', { desc="Copilot panel"}),
@@ -252,11 +301,6 @@ require('lazy').setup({
 
   --harpoon
   'ThePrimeagen/harpoon',
-
-  --for databases
-  'tpope/vim-dadbod',
-  'kristijanhusak/vim-dadbod-ui',
-  'kristijanhusak/vim-dadbod-completion',
 
   -- nice icons, requires nerd fonts probably
   "nvim-tree/nvim-web-devicons",
@@ -341,6 +385,9 @@ require('lazy').setup({
   -- },
 
   --DAP / DEBUGGING
+  'tpope/vim-dadbod',
+  'kristijanhusak/vim-dadbod-ui',
+  'kristijanhusak/vim-dadbod-completion',
   {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -349,7 +396,6 @@ require('lazy').setup({
       'nvim-neotest/nvim-nio',
       'williamboman/mason.nvim',
       'jay-babu/mason-nvim-dap.nvim',
-
       'leoluz/nvim-dap-go',
       'mfussenegger/nvim-dap-python',
     },
@@ -371,14 +417,6 @@ require('lazy').setup({
     },
   },
 
-  -- -- render markdown in browser
-  -- {
-  --     "iamcco/markdown-preview.nvim",
-  --     build = "cd app && npm install",
-  --     ft = "markdown",
-  --     cmd = "MarkdownPreview"
-  --   },
-
   --markdown highlighting
   {
     'MeanderingProgrammer/render-markdown.nvim',
@@ -390,9 +428,8 @@ require('lazy').setup({
     opts = {},
   },
 
-
-
   --DEFAULTS-----------------------------------
+
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -420,10 +457,8 @@ require('lazy').setup({
         }
       },
       'williamboman/mason-lspconfig.nvim',
-
       -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
     },
@@ -436,10 +471,8 @@ require('lazy').setup({
       -- Snippet Engine & its associated nvim-cmp source
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
-
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
-
       -- Adds a number of user-friendly snippets
       'rafamadriz/friendly-snippets',
     },
@@ -467,13 +500,9 @@ require('lazy').setup({
         changedelete = { text = '/' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true}) --unmaps
-        vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true}) --unmaps
-
         vim.keymap.set('n', 'ghp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'git hunk preview' })
-        vim.keymap.set({ 'n', 'v' }, 'ghs', require("gitsigns").stage_hunk, {buffer = bufnr, desc = 'git hunk stage' })
+        vim.keymap.set({ 'n', 'v' }, 'ghs', require("gitsigns").stage_hunk, {buffer = bufnr, desc = 'git hunk toggle staged' })
         vim.keymap.set({ 'n', 'v' }, 'ghr', require("gitsigns").reset_hunk, {buffer = bufnr, desc = 'git hunk reset' })
-
         -- don't override the built-in and fugitive keymaps
         local gs = package.loaded.gitsigns
         vim.keymap.set({ 'n', 'v' }, 'gn', function()
@@ -554,9 +583,7 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
-
 }, {})
-
 
 --MY CONFIGS----------------------------------
 
@@ -642,18 +669,31 @@ starter.setup({
 
 require('harpoon').setup{
   save_on_ui_close = true, --harpoon persists across sessions
-  vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' }),
-  vim.keymap.set('n', 'M', require("harpoon.mark").add_file, { desc = 'harpoon mark' }),
-  vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' }),
-  vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' }),
-  vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' }),
 }
 
 require('render-markdown').setup({})
 
+local dap = require "dap"
+local ui = require "dapui"
+require("dapui").setup()
+require("dap-go").setup()
+require("nvim-dap-virtual-text").setup()
+
+dap.listeners.before.attach.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  ui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  ui.close()
+end
 
 --DEFAULT CONFIGS----------------------------------
--- [[ Highlight on yank ]]
+-- Highlight on yank 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
@@ -663,7 +703,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- [[ Configure Telescope ]]
+-- Configure Telescope 
 require('telescope').setup {
   defaults = {
     file_ignore_patterns = {
@@ -681,27 +721,7 @@ require('telescope').setup {
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
---putting the telescope keymaps after telescope configures
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files , { desc = 'search files' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep , { desc = 'search grep' })
-vim.keymap.set('n', '<leader><leader>', require('telescope.builtin').oldfiles, { desc = '[ ] recent files' })
-vim.keymap.set('n', '<leader>si', require('telescope.builtin').git_files , { desc = 'search git Files' })
-vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = 'search diagnostics' })
-vim.keymap.set({'n', 'v'}, '<leader>sr', require('telescope.builtin').lsp_references, { desc = 'search references'})
-vim.keymap.set('n', '<leader>sb', require('telescope.builtin').current_buffer_fuzzy_find, { desc = 'search current buffer' })
-vim.keymap.set('n', '<leader>sB', require('telescope.builtin').buffers, { desc = 'search buffers' })
-vim.keymap.set('n', '<leader>sC', require('telescope.builtin').git_bcommits, { desc = 'search Commits' })
-vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc = 'search keymaps' })
-vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions, { desc = 'go to definition'})
-vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, { desc = 'go to definition'})
-vim.keymap.set('n', 'gi', require('telescope.builtin').lsp_implementations, { desc = 'go to definition'})
-vim.keymap.set('n', '<leader>ss', require('telescope.builtin').lsp_document_symbols, { desc = 'search symbols'})
-vim.keymap.set('n', '<leader>sm', require('telescope.builtin').marks, { desc = 'search marks'})
-vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags , { desc = 'search help'})
-vim.keymap.set('n', '<leader>sv', require('telescope.builtin').vim_options, { desc = 'search vim options'})
-vim.keymap.set('n', '<leader>st', require('telescope.builtin').treesitter, { desc = 'search treesitter'})
-
--- [[ Configure Treesitter ]]
+-- Configure Treesitter 
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql'},
@@ -714,13 +734,12 @@ vim.defer_fn(function()
   }
 end, 0)
 
--- [[ Configure LSP ]]
+-- Configure LSP 
 require('mason').setup()
 require('mason-lspconfig').setup()
 
 local servers = {
   clangd = {},
-  -- pyright = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -735,16 +754,11 @@ require('neodev').setup()
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
-  -- automatic_installation = true,
-  vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true}),
-  vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true}),
-  vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true}),
+  automatic_installation = false,
 }
 
 mason_lspconfig.setup_handlers {
@@ -757,43 +771,10 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
-
-local dap = require "dap"
-local ui = require "dapui"
-
-require("dapui").setup()
-require("dap-go").setup()
-
-require("nvim-dap-virtual-text").setup()
-
-vim.keymap.set('n', '<leader>Dd', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
-vim.keymap.set('n', '<leader>DD', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
-vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
-vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
-vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
-vim.keymap.set('n', 'dl', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
-vim.keymap.set('n', 'dI', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
-vim.keymap.set('n', 'dO', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
-vim.keymap.set('n', 'dh', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
-
-dap.listeners.before.attach.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-  ui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  ui.close()
-end
-
-
-
 --  Configure nvim-cmp 
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
+
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
