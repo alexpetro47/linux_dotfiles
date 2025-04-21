@@ -47,6 +47,8 @@ alias ls="ls -Glah" #improved ls
 alias gt="echo -e '\n' && git ls-files | cpio -pd --quiet .git-tree && tree .git-tree && rm -rf .git-tree"
 alias lc="wc -l * 2>/dev/null" #count lines in all files in dir
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'''
+alias nc='rm -rf .next && echo "nextjs cache cleared"' #clear nextjs cache
+alias nr='npm run dev ' #start nextjs dev server
 
 
 # alias ip="ipconfig getifaddr en0" #get ip address
