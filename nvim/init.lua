@@ -187,7 +187,7 @@ vim.keymap.set('n', '<leader>gca', ":Git commit --amend <CR>", { desc = 'amend l
 vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'toggle git-signs'})
 vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'rebase continue' })
 vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'rebase abort' })
-vim.keymap.set('n', '<leader>gro', ':Git rebase -X ours ', { desc = 'rebase onto target, auto-resolve prefers our changes' })
+vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
 vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete all history of a file (use <path/to/file>)' })
 vim.keymap.set('n', '<leader>gRs', ':Git reset %<CR>', { desc = 'unstage current file' })
 vim.keymap.set('n', '<leader>gRS', ':Git reset .<CR>', { desc = 'unstage all files' })

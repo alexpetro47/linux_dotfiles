@@ -50,6 +50,7 @@ alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat
 alias nc='rm -rf .next && echo "nextjs cache cleared"' #clear nextjs cache
 alias nr='npm run dev ' #start nextjs dev server
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
+alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 
 
 # alias ip="ipconfig getifaddr en0" #get ip address
