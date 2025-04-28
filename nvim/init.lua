@@ -78,6 +78,7 @@ vim.keymap.set('v', '<leader>.', 's/^/ /<CR>', {noremap=true, silent=true, desc=
 vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
 vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
+vim.keymap.set('n', '<leader>q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
@@ -125,13 +126,17 @@ vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
 
 -- File / Directory Navigation
-vim.keymap.set('n', '<leader>e', ':Ex<CR>', {desc = 'explore current directory'})
+-- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '<leader>e', ':Oil<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '-', ':Oil<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
-vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
-vim.keymap.set('n', '<leader>dC', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
-vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
-vim.keymap.set('n', '<leader>dp', ":Ex ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
+vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>dC', ':Oil ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
+vim.keymap.set('n', '<leader>dD', ":Oil ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dD', ":Oil ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dP', ":Oil ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
+vim.keymap.set('n', '<leader>dT', ":Oil ~/.local/share/Trash/files<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
@@ -224,8 +229,11 @@ vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', nore
 vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true})
 vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
 
+--sneak
 vim.g["sneak#label"] = 1 --label mode for vim-sneak
 vim.g["sneak#use_ic_scs"] = 1 --case insensitive
+
+--gruvbox colorscheme
 vim.g['gruvbox_material_transparent_background'] = 2
 
 --terminal navigation within vim splits
@@ -434,6 +442,20 @@ require('lazy').setup({
     ---@type render.md.UserConfig
     opts = {},
   },
+
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+      }
+  },
+
+  'stevearc/oil.nvim',
 
   --DEFAULTS-----------------------------------
 
@@ -678,6 +700,18 @@ require('harpoon').setup{
   save_on_ui_close = true, --harpoon persists across sessions
 }
 
+require("oil").setup({
+  delete_to_trash = true,
+  trash_command = "trash",
+  skip_confirm_for_simple_edits = true,
+  view_options = {
+    show_hidden = true,
+    case_insensitive = true,
+  },
+  -- use <tab><tab> for my open vertical split
+})
+
+
 require('render-markdown').setup({})
 
 local dap = require "dap"
@@ -698,6 +732,25 @@ end
 dap.listeners.before.event_exited.dapui_config = function()
   ui.close()
 end
+
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
+})
 
 --DEFAULT CONFIGS----------------------------------
 -- Highlight on yank 

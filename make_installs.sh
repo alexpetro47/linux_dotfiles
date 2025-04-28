@@ -47,6 +47,7 @@ apps=(
   mintupgrade
   htop
   lf
+  trash-cli
   ranger # use this for its "rifle" opener package
 )
 
@@ -80,6 +81,7 @@ while true; do
 done
 
 
+cd ~
 git clone https://github.com/neovim/neovim.git
 cd neovim
 make CMAKE_BUILD_TYPE=RelWithDebInfo 

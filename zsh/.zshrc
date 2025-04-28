@@ -52,6 +52,10 @@ alias nr='npm run dev ' #start nextjs dev server
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 
+# update nvim (built from source)
+# ends up in /usr/local/bin/nvim
+alias vu="cd ~/neovim && git pull && make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install"
+
 
 # alias ip="ipconfig getifaddr en0" #get ip address
 alias j1="clear; cbonsai -l -i -S" #ascii tree, clearing messy term beforehand
