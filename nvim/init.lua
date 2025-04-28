@@ -124,19 +124,18 @@ vim.keymap.set('n', '{', '{zz', { noremap = true })
 vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
+vim.keymap.set('v', '<leader>rd', ':! python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'})
 
 -- File / Directory Navigation
--- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
-vim.keymap.set('n', '<leader>e', ':Oil<CR>', {desc = 'explore current directory'})
-vim.keymap.set('n', '-', ':Oil<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
-vim.keymap.set('n', '<leader>dC', ':Oil ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
-vim.keymap.set('n', '<leader>dD', ":Oil ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
-vim.keymap.set('n', '<leader>dD', ":Oil ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
-vim.keymap.set('n', '<leader>dP', ":Oil ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
-vim.keymap.set('n', '<leader>dT', ":Oil ~/.local/share/Trash/files<CR>:pwd<CR>", {desc = 'trash'})
+vim.keymap.set('n', '<leader>dC', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
+vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dP', ":Ex ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
+vim.keymap.set('n', '<leader>dT', ":Ex ~/.local/share/Trash/files<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
@@ -451,11 +450,10 @@ require('lazy').setup({
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
+      -- "rcarriga/nvim-notify",
       }
   },
 
-  'stevearc/oil.nvim',
 
   --DEFAULTS-----------------------------------
 
@@ -700,17 +698,6 @@ require('harpoon').setup{
   save_on_ui_close = true, --harpoon persists across sessions
 }
 
-require("oil").setup({
-  delete_to_trash = true,
-  trash_command = "trash",
-  skip_confirm_for_simple_edits = true,
-  view_options = {
-    show_hidden = true,
-    case_insensitive = true,
-  },
-  -- use <tab><tab> for my open vertical split
-})
-
 
 require('render-markdown').setup({})
 
@@ -741,14 +728,6 @@ require("noice").setup({
       ["vim.lsp.util.stylize_markdown"] = true,
       ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
     },
-  },
-  -- you can enable a preset for easier configuration
-  presets = {
-    bottom_search = true, -- use a classic bottom cmdline for search
-    command_palette = true, -- position the cmdline and popupmenu together
-    long_message_to_split = true, -- long messages will be sent to a split
-    inc_rename = false, -- enables an input dialog for inc-rename.nvim
-    lsp_doc_border = false, -- add a border to hover docs and signature help
   },
 })
 
