@@ -51,6 +51,7 @@ alias nc='rm -rf .next && echo "nextjs cache cleared"' #clear nextjs cache
 alias nr='npm run dev ' #start nextjs dev server
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
+alias t="trash"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
