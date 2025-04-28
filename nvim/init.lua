@@ -58,7 +58,8 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
+vim.keymap.set('n', '<leader>T', ':! touch ', { noremap = true, silent = true, desc = 'touch file' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -203,7 +204,8 @@ vim.keymap.set('n', '<leader>gRH', ':! git clean -fd && git reset --hard HEAD<CR
 vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
 
 --Search
-vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search files' })
+vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
+vim.keymap.set('n', '<leader>sD', ":lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
@@ -753,6 +755,7 @@ require('telescope').setup {
   pickers = {
     find_files = {
       hidden = true,
+      find_command = { "fdfind", "--type", "d", "--hidden"}
     },
   },
 }
