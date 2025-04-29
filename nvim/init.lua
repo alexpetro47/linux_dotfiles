@@ -32,6 +32,9 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.wildmode = 'longest:full,full'
 vim.o.wildignorecase = true
 vim.o.wildmenu = true
+vim.opt.termguicolors = true
+vim.g.loaded_netrw = 1 --use nvim-tree
+vim.g.loaded_netrwPlugin = 1 --use nvim-tree
 
 --Keybind Removals 
 vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
@@ -59,7 +62,6 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
-vim.keymap.set('n', '<leader>T', ':! touch ', { noremap = true, silent = true, desc = 'touch file' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -128,15 +130,15 @@ vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term
 vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 
 -- File / Directory Navigation
-vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
+-- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
-vim.keymap.set('n', '<leader>dC', ':Ex ~/Documents/code<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'code'})
-vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
-vim.keymap.set('n', '<leader>dD', ":Ex ~/Downloads<CR>:lcd %:p:h<CR>:pwd<CR>:!open ./<CR>", {desc = 'downloads'})
-vim.keymap.set('n', '<leader>dP', ":Ex ~/Documents/notes/code-notes/projects<CR>:lcd %:p:h<CR>:pwd<CR>", {desc = 'projects'})
-vim.keymap.set('n', '<leader>dT', ":Ex ~/.local/share/Trash/files<CR>:pwd<CR>", {desc = 'trash'})
+vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
+vim.keymap.set('n', '<leader>dC', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dP', ":cd ~/Documents/notes/code-notes/projects<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'projects'})
+vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
@@ -205,11 +207,11 @@ vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history b
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
-vim.keymap.set('n', '<leader>sD', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
+vim.keymap.set('n', '<leader>sd', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
-vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
+vim.keymap.set('n', '<leader>sD', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
 vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
 vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
 vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
@@ -456,6 +458,7 @@ require('lazy').setup({
       }
   },
 
+  'nvim-tree/nvim-tree.lua',
 
   --DEFAULTS-----------------------------------
 
@@ -732,6 +735,39 @@ require("noice").setup({
     },
   },
 })
+
+local function nvim_tree_on_attach(bufnr)
+  local api = require("nvim-tree.api")
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+  api.config.mappings.default_on_attach(bufnr)
+  vim.keymap.del("n", "<Tab>", { buffer = bufnr }) --disable nvim-tree tab keybind in favor of my own
+  vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+end
+
+require("nvim-tree").setup({
+  on_attach=nvim_tree_on_attach,
+  hijack_cursor = true,
+  sync_root_with_cwd= true,
+  reload_on_bufenter = true,
+  respect_buf_cwd = true,
+
+  sort = {
+    sorter = "case_sensitive",
+  },
+  view = {
+    width = 30,
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = true,
+  },
+})
+
 
 --DEFAULT CONFIGS----------------------------------
 -- Highlight on yank 
