@@ -745,6 +745,13 @@ local function nvim_tree_on_attach(bufnr)
   vim.keymap.del("n", "<Tab>", { buffer = bufnr }) --disable nvim-tree tab keybind in favor of my own
   vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
   vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+  vim.keymap.set("n", "D", api.fs.remove, opts("Delete"))
+  vim.keymap.set("n", "d", api.fs.trash, opts("Trash"))
+  vim.keymap.set("n", "bD", api.marks.bulk.delete, opts("Delete Bookmarked"))
+  vim.keymap.set("n", "bd", api.marks.bulk.trash, opts("Trash Bookmarked"))
+  vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
+  vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
+
 end
 
 require("nvim-tree").setup({
