@@ -136,7 +136,8 @@ vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
-vim.keymap.set('n', '<leader>dC', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
+vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
 vim.keymap.set('n', '<leader>dP', ":cd ~/Documents/notes/code-notes/projects<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'projects'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
@@ -339,7 +340,7 @@ require('lazy').setup({
   -- nice markdown formatting
   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 
-  -- nvim integrated llm
+  -- --nvim integrated llm
   -- {
   -- "yetone/avante.nvim",
   -- event = "VeryLazy",
@@ -356,7 +357,7 @@ require('lazy').setup({
   --   },
   --   gemini = {
   --     -- @see https://ai.google.dev/gemini-api/docs/models/gemini
-  --     model = "gemini-2.0-flash",
+  --     model = "gemini-2.5-pro-preview-03-25",
   --     temperature = 0,
   --     max_tokens = 4096,
   --   },
