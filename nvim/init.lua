@@ -86,6 +86,7 @@ vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
+vim.keymap.set('v', "<leader>'", "c''<Esc>hp", {desc = 'quote visual selection'})
 vim.keymap.set('v', '<leader>i', 'c**<Esc>hp', {desc = 'italicize visual selection'})
 vim.keymap.set('n', '<leader>b', 'I**<Esc>$bA**<Esc>', {desc = 'bold current line'})
 vim.keymap.set('n', '<leader>~', 'I~~<Esc>$bA~~<Esc>', {desc = 'strikethrough current line'})
@@ -98,7 +99,7 @@ vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>1', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
-vim.keymap.set('n', '<leader>o', '2o<Esc>k', {desc = 'insert blank line below cursor'})
+vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
 
 --Window Management
@@ -141,6 +142,7 @@ vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>'
 vim.keymap.set('n', '<leader>dP', ":cd ~/Documents/notes/code-notes/projects<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'projects'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
+vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
 vim.keymap.set('n', '<leader>dc', ':e ~/Documents/notes/personal/concepts/unsorted-concepts.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'unsorted concepts'})
@@ -752,7 +754,7 @@ local function nvim_tree_on_attach(bufnr)
   vim.keymap.set("n", "bd", api.marks.bulk.trash, opts("Trash Bookmarked"))
   vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
   vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
-
+  vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
 end
 
 require("nvim-tree").setup({
@@ -774,7 +776,7 @@ require("nvim-tree").setup({
     group_empty = true,
   },
   filters = {
-    dotfiles = true,
+    enable=false,
   },
 })
 

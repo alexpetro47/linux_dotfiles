@@ -56,3 +56,9 @@ rofi/*
 !lf
 lf/*
 !lf/lfrc
+
+!aider
+aider/*
+!aider/.aider.conf.yaml
+
+.env

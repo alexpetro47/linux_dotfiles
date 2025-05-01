@@ -14,6 +14,12 @@ export ZSH="/home/alexpetro/.oh-my-zsh"
 export EDITOR=nvim
 export PGDATABASE=postgres #for default postgres entry
 
+# auto export env variables into my path
+# includes: gemini api key, 
+set -a
+source /home/alexpetro/.config/.env
+set +a 
+
 #for debugpy path
 export PATH="$HOME/.debugpy-env/bin:$PATH"
 
@@ -52,6 +58,7 @@ alias nr='npm run dev ' #start nextjs dev server
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
+alias puml="/usr/bin/java -jar /home/alexpetro/Documents/plantuml/plantuml.jar" #plantuml
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
