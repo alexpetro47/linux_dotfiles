@@ -62,6 +62,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
+vim.keymap.set('n', '<leader>Dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil)))<CR>", { noremap = true, silent = true, desc = 'yank all diagnostics' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -112,6 +113,7 @@ vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
+vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 
 --Navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})

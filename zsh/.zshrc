@@ -53,8 +53,8 @@ alias ls="ls -Glah" #improved ls
 alias gt="echo -e '\n' && git ls-files | cpio -pd --quiet .git-tree && tree .git-tree && rm -rf .git-tree"
 alias lc="wc -l * 2>/dev/null" #count lines in all files in dir
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
-alias nc='rm -rf .next && echo "nextjs cache cleared"' #clear nextjs cache
-alias nr='npm run dev ' #start nextjs dev server
+alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log cleared"'
+alias nr='npm run dev 2>> npm_errors.log'
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
@@ -105,3 +105,9 @@ fi
 
 # Created by `pipx` on 2024-12-20 19:53:49
 export PATH="$PATH:/home/alexpetro/.local/bin"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/alexpetro/google-cloud-sdk/path.zsh.inc' ]; then . '/home/alexpetro/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/alexpetro/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/alexpetro/google-cloud-sdk/completion.zsh.inc'; fi
