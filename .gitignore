@@ -59,6 +59,6 @@ lf/*
 
 !aider
 aider/*
-!aider/.aider.conf.yaml
+!aider/.aider.conf.yml
 
 .env

@@ -5,7 +5,7 @@ vim.g.maplocalleader = ' '
 --Preferences
 vim.o.syntax = 'on'
 vim.o.mouse = ''
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 vim.o.incsearch = true
 vim.o.title = true
 vim.o.showcmd = true
@@ -454,7 +454,6 @@ require('lazy').setup({
     "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
-      -- add any options here
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
@@ -463,6 +462,8 @@ require('lazy').setup({
   },
 
   'nvim-tree/nvim-tree.lua',
+
+  'romainl/vim-cool',
 
   --DEFAULTS-----------------------------------
 
