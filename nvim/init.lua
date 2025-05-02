@@ -101,6 +101,7 @@ vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
+vim.keymap.set('n', '<leader>T', ":r !basename %<CR>/\\.<CR>d$V~I#  <Esc>2o<Esc>/<Esc>", {desc = 'insert filename as title'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
