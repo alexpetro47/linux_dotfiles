@@ -755,6 +755,7 @@ local function nvim_tree_on_attach(bufnr)
   vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
   vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
   vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
+  vim.keymap.set("n", "H", api.tree.change_root_to_node, opts("change root to node"))
 end
 
 require("nvim-tree").setup({
