@@ -60,6 +60,7 @@ alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/plantuml/plantuml.jar" #plantuml
 alias a="aider"
+alias ainit="mkdir .aider && cd .aider && touch .aiderignore .aider.chat.history.md .aider.input.history && cd .."
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
