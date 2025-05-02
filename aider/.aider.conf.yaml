@@ -210,19 +210,19 @@
 #git: true
 
 ## Enable/disable adding .aider* to .gitignore (default: True)
-#gitignore: true
+gitignore: true
 
 ## Specify the aider ignore file (default: .aiderignore in git root)
-#aiderignore: .aiderignore
+aiderignore: .aiderignore
 
 ## Only consider files in the current subtree of the git repository
 #subtree-only: false
 
 ## Enable/disable auto commit of LLM changes (default: True)
-#auto-commits: true
+auto-commits: false
 
 ## Enable/disable commits when repo is found dirty (default: True)
-#dirty-commits: true
+# dirty-commits: true
 
 ## Attribute aider code changes in the git author name (default: True)
 #attribute-author: true

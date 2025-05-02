@@ -706,7 +706,6 @@ require('harpoon').setup{
   save_on_ui_close = true, --harpoon persists across sessions
 }
 
-
 require('render-markdown').setup({})
 
 local dap = require "dap"
@@ -781,6 +780,13 @@ require("nvim-tree").setup({
   },
 })
 
+
+require('mini.align').setup({
+    mappings = {
+      -- start = 'ga',
+      start_with_preview = 'ga',
+    },
+})
 
 --DEFAULT CONFIGS----------------------------------
 -- Highlight on yank 

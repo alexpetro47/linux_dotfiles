@@ -59,6 +59,7 @@ alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools ser
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/plantuml/plantuml.jar" #plantuml
+alias a="aider"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
