@@ -73,6 +73,7 @@ vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "Y", '"+y')
+vim.keymap.set("n", "Y", '"+y')
 vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
 vim.keymap.set("n", "P", '"+p')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
@@ -82,7 +83,7 @@ vim.keymap.set('v', '<leader>.', 's/^/ /<CR>', {noremap=true, silent=true, desc=
 vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
 vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
-vim.keymap.set('n', '<leader>q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
+vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
@@ -96,7 +97,7 @@ vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = 
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
 vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
 vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
-vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('n', '<leader>8', 'I* <Esc>j', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>1', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
@@ -180,7 +181,7 @@ vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
 
 -- Git
-vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>H :vertical resize 30<CR>4j0', { desc = 'git status' })
+vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', { desc = 'git status' })
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'open git repo in browser' })
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'stash save' })
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'stash pop' })
@@ -459,7 +460,7 @@ require('lazy').setup({
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
+      -- "rcarriga/nvim-notify",
       }
   },
 
