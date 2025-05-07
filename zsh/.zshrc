@@ -38,7 +38,7 @@ source $ZSH/oh-my-zsh.sh
 
 # source <(fzf --zsh) # need go installed as a dependency, this is for keybingds and auto comp
 
-alias s="source ~/.zshrc ~/.config/tmux/tmux.conf  ~/.config/nvim/init.lua && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3'"
+alias s="source ~/.zshrc ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap'"
 alias v="nvim"
 alias c="clear"
 alias x="exit"

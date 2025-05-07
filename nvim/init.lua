@@ -153,7 +153,7 @@ vim.keymap.set('n', '<leader>dc', ':e ~/Documents/notes/personal/concepts/unsort
 vim.keymap.set('n', '<leader>dg', ':e ~/Documents/notes/personal/guitar.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'guitar'})
 vim.keymap.set('n', '<leader>df', ':e ~/Documents/notes/personal/favorites.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'favorites'})
 vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/personal/todos.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'todos'})
-vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/personal/mobile/mobile-notes.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
+vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobile/mobile-notes.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>do', ':e ~/Documents/notes/personal/mental-orientation.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dr', ':e ~/Documents/notes/personal/reminders.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})

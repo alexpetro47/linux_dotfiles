@@ -53,8 +53,8 @@ apps=(
 
 snap_apps=(
   --classic go
-  --classic obsidian
-  spotify
+  # --classic obsidian
+  # spotify
   alacritty
 )
 

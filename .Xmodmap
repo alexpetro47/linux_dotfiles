@@ -1,8 +1,0 @@
-clear Lock
-keysym Caps_Lock = Control_L
-add Control = Control_L Control_R
-
-
-! if you fuck up use:
-! setxkbmap -layout us
-

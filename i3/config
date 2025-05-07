@@ -89,7 +89,9 @@ exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/.config/wallpapers/wallpaper.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # exec --no-startup-id ~/.config/i3/load_screen_layout.sh 
-exec --no-startup-id xmodmap ~/.Xmodmap
+# exec --no-startup-id xmodmap ~/.Xmodmap
+# the below keybind maps capslock to ctrl and sets us keyboard
+exec --nostartup-id setxkbmap -option ctrl:nocaps -layout us 
 exec --no-startup-id i3-msg "workspace 1; exec alacritty"
 exec --no-startup-id i3-msg "workspace 2; exec firefox"
 
