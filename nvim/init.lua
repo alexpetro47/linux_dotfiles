@@ -114,6 +114,7 @@ vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
+vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nr<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 
 --Navigation

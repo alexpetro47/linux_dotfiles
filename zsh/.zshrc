@@ -57,6 +57,7 @@ alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log
 alias nC='rm -rf node_modules && rm package-lock.json && npm cache clean --force && npm install'
 alias nr='npm run dev 2>> npm_errors.log'
 alias nb='npm run build'
+alias nl='npm run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
