@@ -56,15 +56,17 @@ alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat
 alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log cleared"'
 alias nC='rm -rf node_modules && rm package-lock.json && npm cache clean --force && npm install'
 alias nr='npm run dev 2>> npm_errors.log'
-alias nb='npm run build'
+alias nb='npm run build --debug'
 alias nl='npm run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
 alias sv="source venv/bin/activate && echo 'venv activated'" #activate venv
 alias t="trash"
-alias puml="/usr/bin/java -jar /home/alexpetro/Documents/plantuml/plantuml.jar" #plantuml
+alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" #plantuml
 alias a="aider"
 alias ainit="mkdir .aider && cd .aider && touch .aiderignore .aider.chat.history.md .aider.input.history && cd .."
 alias as="apt list | fzf" #search apt packages
+alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
+alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim

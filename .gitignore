@@ -41,7 +41,7 @@ wallpapers/*
 !wallpapers/wallpaper1.jpeg
 !wallpapers/wallpaper2.png
 
-!.Xmodmap
+# !.Xmodmap
 
 !screenlayout
 screenlayout/*
@@ -60,5 +60,12 @@ lf/*
 !aider
 aider/*
 !aider/.aider.conf.yml
+
+!rclone
+rclone/*
+# rclone conf has sensitive data
+rclone/rclone.conf 
+!rclone/backup-exclude.txt
+!rclone/config-backup-filter.txt
 
 .env

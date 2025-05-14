@@ -1,0 +1,13 @@
+prod/repeaks/
+node_modules/
+venv/
+.git/
+.next/
+.vscode/
+.hushlogin
+.DS_Store
+*.env
+*.env.local
+*.dSYM
+*.plist
+Cursor.AppImage

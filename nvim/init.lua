@@ -103,7 +103,7 @@ vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
-vim.keymap.set('n', '<leader>T', ":r !basename %<CR>/\\.<CR>d$V~I#  <Esc>2o<Esc>/<Esc>", {desc = 'insert filename as title'})
+vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I#  <Esc>2o<Esc>', {desc = 'insert filename as title'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -114,7 +114,7 @@ vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
-vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nr<CR>', {desc = 'next project terminal splits'})
+vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nc&&nr<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 
 --Navigation
@@ -147,6 +147,7 @@ vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>'
 vim.keymap.set('n', '<leader>dP', ":cd ~/Documents/notes/code-notes/projects<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'projects'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
+vim.keymap.set('n', '<leader>do', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})
 vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
@@ -198,7 +199,7 @@ vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true,
 vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'rebase continue' })
 vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'rebase abort' })
 vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
-vim.keymap.set('n', '<leader>gRF', ':! bfg --D ', { desc = 'delete all history of a file (use <path/to/file>)' })
+vim.keymap.set('n', '<leader>gRF', ':! git reflog expire --expire=now --all && git gc --prune=now && bfg --D ', { desc = 'delete all history of <path/to/file>, clears reflog + prunes. force push manually afterwards' })
 vim.keymap.set('n', '<leader>gRs', ':Git reset %<CR>', { desc = 'unstage current file' })
 vim.keymap.set('n', '<leader>gRS', ':Git reset .<CR>', { desc = 'unstage all files' })
 vim.keymap.set('n', '<leader>gRt', ':! rm %<CR>:! git rm --cached %<CR>', { desc = 'untrack+delete current file' })

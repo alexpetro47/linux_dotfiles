@@ -1,0 +1,22 @@
+
++ README.md
++ .gitignore
++ make_installs.sh
++ make_symlinks.sh
++ nvim/*
++ tmux/*
++ zsh/*
++ alacritty/*
++ i3/*
++ polybar/*
++ wallpapers/*
++ screenlayout/*
++ rofi/*
++ lf/*
++ aider/*
++ rclone/*
+
+- rclone/rclone.conf 
+- .env
+- .hushlogin
+- * 
