@@ -35,6 +35,7 @@ vim.o.wildmenu = true
 vim.opt.termguicolors = true
 vim.g.loaded_netrw = 1 --use nvim-tree
 vim.g.loaded_netrwPlugin = 1 --use nvim-tree
+vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
 
 --Keybind Removals 
 vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
@@ -150,7 +151,6 @@ vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot dis
 vim.keymap.set('n', '<leader>do', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})
 vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
-vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
 vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
 vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobile-notes.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})
@@ -173,6 +173,15 @@ vim.keymap.set('n', 'dl', ':lua require"dap".step_into()<CR>', { desc = 'step in
 vim.keymap.set('n', 'dh', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
 vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
 
+--Quickfix management
+vim.keymap.set('n', '<leader>qo', ':cope<CR>', { desc = 'quickfix open' })
+vim.keymap.set('n', '<leader>qq', ':cclose<CR>', { desc = 'quickfix close' })
+vim.keymap.set('n', '<leader>qc', ':call setqflist([])<CR>', { desc = 'quickfix clear' })
+vim.keymap.set('n', '<leader>qn', ':cnext<CR>', { desc = 'quickfix next' })
+vim.keymap.set('n', '<leader>ql', ':cprevious<CR>', { desc = 'quickfix last' })
+vim.keymap.set('n', '<leader>qg', ':new<CR><C-w>o:cope<CR>:grep ""<Left>', { desc = 'quickfix grep' })
+vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
+
 --Nvim Management
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
@@ -192,7 +201,7 @@ vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage al
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
 vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
 -- vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch' })
-vim.keymap.set('n', '<leader>gcm', ":Git commit -m '", { desc = 'commit with message' })
+vim.keymap.set('n', '<leader>gcm', ":Git commit -m ''<Left>", { desc = 'commit with message' })
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'commit with standard message' })
 vim.keymap.set('n', '<leader>gca', ":Git commit --amend <CR>", { desc = 'amend last commit with staged changes' })
 vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'toggle git-signs'})
