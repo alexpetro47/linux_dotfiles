@@ -67,6 +67,7 @@ alias ainit="mkdir .aider && cd .aider && touch .aiderignore .aider.chat.history
 alias as="apt list | fzf" #search apt packages
 alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
+alias musicUpload="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
