@@ -115,7 +115,7 @@ vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
-vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nc&&nr<CR>', {desc = 'next project terminal splits'})
+vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nc && nr<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 
 --Navigation
@@ -145,7 +145,7 @@ vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open 
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
 vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
-vim.keymap.set('n', '<leader>dP', ":cd ~/Documents/notes/code-notes/projects<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'projects'})
+vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/workflows/prompting.md<CR>:pwd<CR>", {desc = 'prompting'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>do', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})

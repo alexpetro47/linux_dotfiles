@@ -64,17 +64,18 @@ bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
 bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
-bindsym $mod+l exec --no-startup-id arandr
-bindsym $mod+shift+l exec --no-startup-id ~/.screenlayout/laptop_only.sh
-bindsym $mod+Ctrl+l exec --no-startup-id ~/.screenlayout/external_only.sh
-bindsym $mod+f exec --no-startup-id firefox
-bindsym $mod+h exec --no-startup-id google-chrome
-bindsym $mod+a exec --no-startup-id alacritty
+# bindsym $mod+l exec --no-startup-id arandr
+# bindsym $mod+shift+l exec --no-startup-id ~/.screenlayout/laptop_only.sh
+# bindsym $mod+Ctrl+l exec --no-startup-id ~/.screenlayout/external_only.sh
 bindsym $mod+r exec --no-startup-id reaper
 bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
 bindsym $mod+e exec --no-startup-id nemo
-bindsym $mod+c exec --no-startup-id ~/Documents/Cursor.AppImage
+bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=150% firefox
+bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=200% google-chrome
+bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=100% alacritty
+bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% ~/Documents/Cursor.AppImage
+
 
 # need to add...
 #   alexpetro ALL=(ALL) NOPASSWD: /usr/bin/brightnessctl
