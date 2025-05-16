@@ -1,5 +1,9 @@
 
 set $mod Mod1 
+floating_modifier $mod
+# mod+left click to re-position tiled window
+# mod+left click to move floating window
+# mod+right click to resize floating window
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
@@ -57,16 +61,19 @@ bindsym $mod+6 move container to workspace 6
 bindsym $mod+7 move container to workspace 7
 bindsym $mod+8 move container to workspace 8
 
+bindsym $mod+Shift+r restart
 bindsym $mod+n focus next
 bindsym $mod+shift+F fullscreen toggle
 bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
-bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
+bindsym $mod+plus exec sudo brightnessctl set +10%
+bindsym $mod+minus exec sudo brightnessctl set 10%-
+bindsym $mod+shift+plus exec sudo brightnessctl set 50%
+
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
-# bindsym $mod+l exec --no-startup-id arandr
-# bindsym $mod+shift+l exec --no-startup-id ~/.screenlayout/laptop_only.sh
-# bindsym $mod+Ctrl+l exec --no-startup-id ~/.screenlayout/external_only.sh
+bindsym $mod+d exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id reaper
 bindsym $mod+s exec --no-startup-id spotify
 bindsym $mod+o exec --no-startup-id cinnamon-settings
@@ -75,15 +82,6 @@ bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuo
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=200% google-chrome
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=100% alacritty
 bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% ~/Documents/Cursor.AppImage
-
-
-# need to add...
-#   alexpetro ALL=(ALL) NOPASSWD: /usr/bin/brightnessctl
-# to bottom of sudo file, via...
-#   sudo EDITOR=nvim visudo
-bindsym $mod+plus exec sudo brightnessctl set +10%
-bindsym $mod+minus exec sudo brightnessctl set 10%-
-bindsym $mod+shift+plus exec sudo brightnessctl set 50%
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C
@@ -94,13 +92,3 @@ exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
 exec --no-startup-id i3-msg "workspace 1; exec alacritty"
 exec --no-startup-id i3-msg "workspace 2; exec firefox"
 
-bindsym $mod+Shift+r restart
-
-# purely for rice activity
-# mod+left click to move floating window
-# mod+right click to resize floating window
-# mod+left click to re-position tiled window
-floating_modifier $mod
-bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
-# bindsym $mod+r resize set 600 750, move position center
-# bindsym $mod+ctrl+s sticky toggle
