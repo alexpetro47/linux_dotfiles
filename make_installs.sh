@@ -45,7 +45,7 @@ apps=(
   kdeconnect
   fd-find
   mintupgrade
-  htop
+  btop
   lf
   trash-cli
   ranger # use this for its "rifle" opener package
