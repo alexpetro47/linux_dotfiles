@@ -101,10 +101,12 @@ vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>1', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('n', '<leader>3', '0i#<Esc>', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>#', '0i## <Esc>V~', {desc = 'insert 2nd degree header & all caps'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
 vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I#  <Esc>2o<Esc>', {desc = 'insert filename as title'})
+vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -145,7 +147,7 @@ vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open 
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
 vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
-vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/workflows/prompting.md<CR>:pwd<CR>", {desc = 'prompting'})
+vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/prompts/prompting.md<CR>:pwd<CR>", {desc = 'prompting'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})

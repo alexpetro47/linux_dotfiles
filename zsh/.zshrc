@@ -12,7 +12,10 @@ fi
 # linux: "/home/username/.oh-my-zsh"
 export ZSH="/home/alexpetro/.oh-my-zsh"
 export EDITOR=nvim
+export VISUAL=nvim
 export PGDATABASE=postgres #for default postgres entry
+
+export N8N_RUNNERS_ENABLED=true
 
 # auto export env variables into my path
 # includes: gemini api key, 
@@ -118,3 +121,4 @@ if [ -f '/home/alexpetro/google-cloud-sdk/path.zsh.inc' ]; then . '/home/alexpet
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/alexpetro/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/alexpetro/google-cloud-sdk/completion.zsh.inc'; fi
+
