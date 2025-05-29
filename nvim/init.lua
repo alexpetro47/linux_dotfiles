@@ -105,8 +105,10 @@ vim.keymap.set('n', '<leader>#', '0i## <Esc>V~', {desc = 'insert 2nd degree head
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
-vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I#  <Esc>2o<Esc>', {desc = 'insert filename as title'})
+vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I# <Esc>2o<Esc>', {desc = 'insert filename as title'})
 vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
+vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
+vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -133,7 +135,7 @@ vim.keymap.set('n', '}', '}zz', { noremap = true })
 vim.keymap.set('n', '{', '{zz', { noremap = true })
 
 -- Code 
-vim.keymap.set('n', '<leader>c', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
+vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
 vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
@@ -163,6 +165,11 @@ vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc =
 vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
+
+--file conversions
+vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
+vim.keymap.set('n', '<leader>c2', ':!pandoc "%" -o "%:r.pdf"<CR>', { desc = 'convert markdown to pdf' })
+-- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
 --Debugging
 vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
@@ -194,7 +201,7 @@ vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', {
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'open git repo in browser' })
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'stash save' })
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'stash pop' })
-vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>H<C-w>20<', { desc = 'log view' })
+vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>L<C-w>', { desc = 'log view' })
 vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge ' })
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
 vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'diff <hash/branch needed> (current on right)'})
