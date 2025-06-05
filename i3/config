@@ -73,15 +73,16 @@ bindsym $mod+minus exec sudo brightnessctl set 10%-
 bindsym $mod+shift+plus exec sudo brightnessctl set 50%
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
-bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+s exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id reaper
-bindsym $mod+s exec --no-startup-id spotify
-# bindsym $mod+o exec --no-startup-id cinnamon-settings
-bindsym $mod+e exec --no-startup-id nemo
-bindsym $mod+f exec --no-startup-id systemd-run --user firefox
-bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=200% google-chrome
-bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=100% alacritty
-bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% ~/Documents/Cursor.AppImage
+bindsym $mod+m exec --no-startup-id spotify
+bindsym $mod+e exec --no-startup-id nemo ~/Downloads
+
+# 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
+bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=600% --property=MemoryMax=12G firefox
+bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G chrome
+bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
+bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G ~/Documents/Cursor.AppImage
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C

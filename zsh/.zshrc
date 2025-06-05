@@ -72,6 +72,11 @@ alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/back
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
 alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
+alias driveImport="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes/drive-imports/" # deletes everything in local not in remote, fix this
+alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
+alias clearSWP="sudo swapoff -a && sudo swapon -a"
+alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
+alias refresh="clearSWP && clearCaches"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim

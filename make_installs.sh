@@ -49,6 +49,8 @@ apps=(
   lf
   trash-cli
   ranger # use this for its "rifle" opener package
+  xdotool
+  vlc
 )
 
 snap_apps=(

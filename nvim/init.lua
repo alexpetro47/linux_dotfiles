@@ -109,6 +109,7 @@ vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I# <Es
 vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
+vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -168,7 +169,7 @@ vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc =
 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
-vim.keymap.set('n', '<leader>c2', ':!pandoc "%" -o "%:r.pdf"<CR>', { desc = 'convert markdown to pdf' })
+-- vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
 --Debugging
