@@ -51,6 +51,7 @@ apps=(
   ranger # use this for its "rifle" opener package
   xdotool
   vlc
+  sqlite3
 )
 
 snap_apps=(

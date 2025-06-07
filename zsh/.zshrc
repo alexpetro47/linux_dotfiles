@@ -76,7 +76,8 @@ alias driveImport="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
 alias clearSWP="sudo swapoff -a && sudo swapon -a"
 alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
-alias refresh="clearSWP && clearCaches"
+alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
+alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
