@@ -139,7 +139,7 @@ vim.keymap.set('n', '{', '{zz', { noremap = true })
 vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
+vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
@@ -169,6 +169,8 @@ vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc =
 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
+vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
+-- vim.keymap.set('n', '<leader>c2', ':/home/alexpetro/Documents/code/file-converters/venv/bin/python3 /home/alexpetro/Documents/code/file-converters/heic-png.py /home/alexpetro/Documents/notes/drive-imports/.heic<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
 -- vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
