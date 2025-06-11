@@ -78,6 +78,7 @@ alias clearSWP="sudo swapoff -a && sudo swapon -a"
 alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
 alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
+alias pipIR="pip install -r requirements.txt"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim

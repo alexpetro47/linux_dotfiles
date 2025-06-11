@@ -63,7 +63,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
-vim.keymap.set('n', '<leader>Dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil)))<CR>", { noremap = true, silent = true, desc = 'yank all diagnostics' })
+vim.keymap.set('n', '<leader>Dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -105,11 +105,13 @@ vim.keymap.set('n', '<leader>#', '0i## <Esc>V~', {desc = 'insert 2nd degree head
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
+vim.keymap.set('v', '<leader>}', ":g/^\\s*$/s/^/  /<CR>", { desc = 'Add two spaces to start of each blank line in selection' })
 vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I# <Esc>2o<Esc>', {desc = 'insert filename as title'})
 vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
+vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -120,7 +122,7 @@ vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
-vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>s<C-w>l :term<CR> <C-w>h :term<CR><C-w>j :e new<CR><C-w>l nc && nr<CR>', {desc = 'next project terminal splits'})
+vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>l<C-w>s<C-w>s :term<CR> <C-w>j :term<CR><C-w>j :term<CR><C-w>h :enew<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 
 --Navigation
@@ -262,9 +264,6 @@ vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
 vim.g["sneak#label"] = 1 --label mode for vim-sneak
 vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 
---gruvbox colorscheme
-vim.g['gruvbox_material_transparent_background'] = 2
-
 --terminal navigation within vim splits
 vim.cmd[[
   autocmd BufEnter * if &buftype == 'terminal' | setlocal bufhidden= nobuflisted nolist nonumber norelativenumber | startinsert | endif
@@ -306,6 +305,10 @@ require('lazy').setup({
   {
     'sainnhe/gruvbox-material',
     config = function()
+      -- vim.o.background = 'dark' -- Add this line
+      -- vim.g.gruvbox_material_transparent_background = 2
+      vim.o.background = 'light' -- Add this line
+      vim.g.gruvbox_material_transparent_background = 0
       vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
