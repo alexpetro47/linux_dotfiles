@@ -200,6 +200,8 @@ vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><L
 --Nvim Management
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
+vim.keymap.set('n', '<leader>CD', function() vim.o.background = 'dark' vim.g.gruvbox_material_transparent_background = 2 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Dark Background' })
+vim.keymap.set('n', '<leader>CL', function() vim.o.background = 'light' vim.g.gruvbox_material_transparent_background = 0 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Light Background' })
 
 -- Git
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', { desc = 'git status' })
@@ -305,10 +307,10 @@ require('lazy').setup({
   {
     'sainnhe/gruvbox-material',
     config = function()
-      -- vim.o.background = 'dark' -- Add this line
-      -- vim.g.gruvbox_material_transparent_background = 2
-      vim.o.background = 'light' -- Add this line
-      vim.g.gruvbox_material_transparent_background = 0
+      vim.o.background = 'dark'
+      vim.g.gruvbox_material_transparent_background = 2
+      -- vim.o.background = 'light'
+      -- vim.g.gruvbox_material_transparent_background = 0
       vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
