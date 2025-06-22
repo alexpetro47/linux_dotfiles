@@ -52,6 +52,8 @@ apps=(
   xdotool
   vlc
   pylint
+  pipes-sh
+  shotcut
 )
 
 snap_apps=(

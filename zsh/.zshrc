@@ -54,7 +54,7 @@ alias de="deactivate" #deactivate python env
 alias f="fzf"
 alias ls="ls -Glah" #improved ls
 alias gt="echo -e '\n' && git ls-files | cpio -pd --quiet .git-tree && tree .git-tree && rm -rf .git-tree"
-alias lc="wc -l * 2>/dev/null" #count lines in all files in dir
+alias lc="wc -l **/*(.D) 2>/dev/null" #count lines in all files in dir
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log cleared"'
 alias nC='rm -rf node_modules && rm package-lock.json && npm cache clean --force && npm install'
@@ -72,10 +72,12 @@ alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/back
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
 alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
-# alias driveImport="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes/drive-imports/" # deletes everything in local not in remote, fix this
+alias Import="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes/drive-imports/ && cd ~/Documents/notes/drive-imports && find /home/alexpetro/Documents/notes/drive-imports/ -type f -name '*.heic' -print0 | xargs -0 -n 1 /home/alexpetro/Documents/code/file-converters/venv/bin/python3 /home/alexpetro/Documents/code/file-converters/heic-png.py && rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPORTS-EXPORTS && ls " 
+alias Export="rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPORTS-EXPORTS"
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
 alias clearSWP="sudo swapoff -a && sudo swapon -a"
 alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
+alias Clear="clearSWP && clearCaches" #clear screen and caches
 alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 alias pipIR="pip install -r requirements.txt"
@@ -85,10 +87,9 @@ alias pipIR="pip install -r requirements.txt"
 alias vu="cd ~/neovim && git pull && make distclean && make CMAKE_BUILD_TYPE=RelWithDebInfo && sudo make install"
 
 
-# alias ip="ipconfig getifaddr en0" #get ip address
-alias j1="clear; cbonsai -l -i -S" #ascii tree, clearing messy term beforehand
-alias j2="clear; neofetch" #ascii tree, clearing messy term beforehand
-# alias j3="macchina" #system info
+alias j1="clear; cbonsai -l -i -S" 
+alias j2="clear; pipes -C -R -s 15 -t 3" 
+# alias j3="clear; neofetch"
 
 
 # Use fzf for history search

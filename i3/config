@@ -74,9 +74,11 @@ bindsym $mod+shift+plus exec sudo brightnessctl set 50%
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
 bindsym $mod+s exec --no-startup-id rofi -show drun
-bindsym $mod+r exec --no-startup-id reaper
+bindsym $mod+r exec gnome-terminal -- qjackctl; exec --no-startup-id reaper
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
+
+bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
 bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=600% --property=MemoryMax=12G firefox

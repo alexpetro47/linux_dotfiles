@@ -63,7 +63,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
-vim.keymap.set('n', '<leader>Dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
+vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -75,6 +75,7 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
+vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
 vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
 vim.keymap.set("n", "P", '"+p')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
@@ -124,6 +125,7 @@ vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
 vim.keymap.set('n', '<leader>N', ':lcd %:p:h<CR> <C-w>v<C-w>l<C-w>s<C-w>s :term<CR> <C-w>j :term<CR><C-w>j :term<CR><C-w>h :enew<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
+vim.keymap.set('n', '<leader>n', ':bn<CR>', {desc = 'next buffer'})
 
 --Navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
@@ -152,7 +154,7 @@ vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open 
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
 vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
-vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/prompts/prompting.md<CR>:pwd<CR>", {desc = 'prompting'})
+vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/ai/prompting/saved-prompts.md<CR>:pwd<CR>", {desc = 'saved prompts'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
@@ -172,8 +174,7 @@ vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc =
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
 vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
--- vim.keymap.set('n', '<leader>c2', ':/home/alexpetro/Documents/code/file-converters/venv/bin/python3 /home/alexpetro/Documents/code/file-converters/heic-png.py /home/alexpetro/Documents/notes/drive-imports/.heic<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
--- vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
+vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
 --Debugging
@@ -216,6 +217,7 @@ vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
+vim.keymap.set('n', '<leader>gF', ':Git push --force<CR>', { desc = 'force push' })
 vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
 -- vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch' })
 vim.keymap.set('n', '<leader>gcm', ":Git commit -m ''<Left>", { desc = 'commit with message' })
@@ -237,11 +239,11 @@ vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history b
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
-vim.keymap.set('n', '<leader>sd', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
+vim.keymap.set('n', '<leader>sD', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
-vim.keymap.set('n', '<leader>sD', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
+vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
 vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
 vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
 vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
@@ -255,6 +257,7 @@ vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>",
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
 vim.keymap.set('n', '<leader>st', ":lua require'telescope.builtin'.treesitter()<CR>", { desc = 'search treesitter'})
+vim.keymap.set('n', '<leader>sH', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search current file git history'})
 
 --Lsp
 vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})

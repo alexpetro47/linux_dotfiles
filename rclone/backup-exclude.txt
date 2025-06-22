@@ -10,4 +10,5 @@ venv/
 *.env.local
 *.dSYM
 *.plist
-Cursor.AppImage
+*.AppImage
+*.zs-old
