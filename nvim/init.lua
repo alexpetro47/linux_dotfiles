@@ -175,7 +175,8 @@ vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc =
 --Distant / SSH
 vim.keymap.set('n', '<leader>DL', ':DistantLaunch<Up>' , { desc = 'Distant Launch' })
 vim.keymap.set('n', '<leader>DI', ':Distant<CR>' , { desc = 'Distant Info' })
-vim.keymap.set('n', '<leader>DO', ':vs<CR><C-w>40< | 25 :DistantOpen<CR>' , { desc = 'Distant Info' })
+vim.keymap.set('n', '<leader>DE', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 'Distant Explorer' })
+vim.keymap.set('n', '<leader>DT', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
