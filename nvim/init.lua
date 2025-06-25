@@ -114,7 +114,6 @@ vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
 -- vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
 
-
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
 vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
@@ -172,6 +171,11 @@ vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc =
 vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
+
+--Distant / SSH
+vim.keymap.set('n', '<leader>DL', ':DistantLaunch<Up>' , { desc = 'Distant Launch' })
+vim.keymap.set('n', '<leader>DI', ':Distant<CR>' , { desc = 'Distant Info' })
+vim.keymap.set('n', '<leader>DO', ':vs<CR><C-w>40< | 25 :DistantOpen<CR>' , { desc = 'Distant Info' })
 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
