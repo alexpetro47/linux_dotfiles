@@ -77,7 +77,7 @@ alias Export="rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPOR
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
 alias clearSWP="sudo swapoff -a && sudo swapon -a"
 alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
-alias Clear="clearSWP && clearCaches" #clear screen and caches
+alias Clear="clearSWP && clearCaches && i3-msg restart && clear" #clear screen and caches
 alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 alias pipIR="pip install -r requirements.txt"
@@ -131,3 +131,10 @@ if [ -f '/home/alexpetro/google-cloud-sdk/path.zsh.inc' ]; then . '/home/alexpet
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/alexpetro/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/alexpetro/google-cloud-sdk/completion.zsh.inc'; fi
 
+
+# bun completions
+[ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

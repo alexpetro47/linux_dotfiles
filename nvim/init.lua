@@ -112,7 +112,8 @@ vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'co
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
-vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
+-- vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
+
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -149,7 +150,8 @@ vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
-vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
+-- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
+vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
@@ -200,6 +202,7 @@ vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><L
 
 --Nvim Management
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
+vim.keymap.set('n', '<leader>m', ':messages<CR> :horizontal resize 15<CR>', { desc = 'nvim messages'})
 vim.keymap.set('n', '<leader>l', ':Lazy check<CR>', { desc = 'lazy package manager'})
 vim.keymap.set('n', '<leader>CD', function() vim.o.background = 'dark' vim.g.gruvbox_material_transparent_background = 2 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Dark Background' })
 vim.keymap.set('n', '<leader>CL', function() vim.o.background = 'light' vim.g.gruvbox_material_transparent_background = 0 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Light Background' })
@@ -495,6 +498,31 @@ require('lazy').setup({
 
   'romainl/vim-cool',
 
+  {
+    'chipsenkbeil/distant.nvim',
+    branch = 'v0.3',
+    config = function()
+        require('distant'):setup({
+        network = {
+            private = true
+        },
+        manager = {
+          log_file = '/var/log/distant.log',
+          log_level = 'trace',
+        }
+      })
+    end
+  },
+  -- building distant from source locally
+  -- `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+  -- `source "$HOME/.cargo/env"`
+  -- `cd && mkdir my-temp && cd my-temp`
+  -- `git clone https://github.com/chipsenkbeil/distant.git`
+  -- `cd distant`
+  -- `cargo build --release`
+  -- `sudo cp target/release/distant /usr/local/bin/`
+  -- `rm -rf ~/my-temp`
+
   --DEFAULTS-----------------------------------
 
   -- Git related plugins
@@ -735,7 +763,7 @@ starter.setup({
 })
 
 require('harpoon').setup{
-  save_on_ui_close = true, --harpoon persists across sessions
+  -- save_on_ui_close = true, --harpoon persists across sessions
 }
 
 require('render-markdown').setup({})
