@@ -81,6 +81,7 @@ alias Clear="clearSWP && clearCaches && i3-msg restart && clear" #clear screen a
 alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 alias pipIR="pip install -r requirements.txt"
+alias dockerR="docker compose down && docker compose up -d"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim

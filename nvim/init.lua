@@ -221,6 +221,7 @@ vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>L<C-w>', { desc = 'log
 vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge ' })
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
 vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'diff <hash/branch needed> (current on right)'})
+vim.keymap.set('n', '<leader>gv', ':Gvdiffsplit HEAD<CR><C-w>L<C-w>h ', { desc = 'vertical diff split with HEAD' })
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })

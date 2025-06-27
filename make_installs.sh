@@ -54,6 +54,7 @@ apps=(
   pylint
   pipes-sh
   shotcut
+  simplescreenrecorder
 )
 
 snap_apps=(
