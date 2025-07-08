@@ -75,9 +75,10 @@ alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Do
 alias Import="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes/drive-imports/ && cd ~/Documents/notes/drive-imports && find /home/alexpetro/Documents/notes/drive-imports/ -type f -name '*.heic' -print0 | xargs -0 -n 1 /home/alexpetro/Documents/code/file-converters/venv/bin/python3 /home/alexpetro/Documents/code/file-converters/heic-png.py && rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPORTS-EXPORTS && ls " 
 alias Export="rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPORTS-EXPORTS"
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
-alias clearSWP="sudo swapoff -a && sudo swapon -a"
-alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
-alias Clear="clearSWP && clearCaches && i3-msg restart && clear" #clear screen and caches
+# removed - performance degradation 
+# alias clearSWP="sudo swapoff -a && sudo swapon -a"
+# alias clearCaches="sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches"
+# alias Clear="clearCaches && i3-msg restart && clear" #clear screen and caches
 alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purge && clearSWP && clearCaches"
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 alias pipIR="pip install -r requirements.txt"

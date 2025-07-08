@@ -171,6 +171,18 @@ vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc =
 vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
+--open files with absolute path
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "NvimTree",
+  callback = function(args)
+    vim.keymap.set("n", "gx", function()
+      local node = require("nvim-tree.api").tree.get_node_under_cursor()
+      if node and node.absolute_path then
+        vim.fn.system({"xdg-open", node.absolute_path})
+      end
+    end, { buffer = args.buf, noremap = true, silent = true })
+  end,
+})
 
 --Distant / SSH
 vim.keymap.set('n', '<leader>DL', ':DistantLaunch<Up>' , { desc = 'Distant Launch' })
@@ -180,8 +192,9 @@ vim.keymap.set('n', '<leader>DT', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
-vim.keymap.set('v', '<leader>rd', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
+vim.keymap.set('n', '<leader>c3', ":!markmap % --offline --no-open<CR>", {desc = 'create markmap of current file'})
+vim.keymap.set('v', '<leader>c4', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
 --Debugging
@@ -539,13 +552,11 @@ require('lazy').setup({
   'tpope/vim-sleuth',
 
   {
-    -- LSP Configuration 
     'neovim/nvim-lspconfig',
     dependencies = {
       {
         'williamboman/mason.nvim',
         opts = {
-          --put your most used langagues below
           ensure_installed = {
             'lua-language-server',
             'clangd',
@@ -558,11 +569,41 @@ require('lazy').setup({
         }
       },
       'williamboman/mason-lspconfig.nvim',
-      -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-      -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
     },
+    -- Replace the entire 'config' function in your 'neovim/nvim-lspconfig' spec with this
+    config = function()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+      local servers = {
+        clangd = {},
+        lua_ls = {
+          Lua = {
+            workspace = { checkThirdParty = false },
+            telemetry = { enable = false },
+          },
+        },
+      }
+
+      -- This single setup call replaces the two previous ones.
+      require('mason-lspconfig').setup {
+        ensure_installed = vim.tbl_keys(servers),
+        handlers = {
+          -- This is the new, correct way to define the handler
+          function(server_name)
+            if require('lspconfig.util').get_config(server_name) then
+              require('lspconfig')[server_name].setup {
+                capabilities = capabilities,
+                settings = servers[server_name],
+              }
+            end
+          end,
+        },
+      }
+
+      require('neodev').setup()
+    end,
   },
 
   {
@@ -896,43 +937,6 @@ vim.defer_fn(function()
     ignore_install = {},
   }
 end, 0)
-
--- Configure LSP 
-require('mason').setup()
-require('mason-lspconfig').setup()
-
-local servers = {
-  clangd = {},
-  lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-    },
-  },
-}
-
--- Setup neovim lua configuration
-require('neodev').setup()
-
--- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-  automatic_installation = false,
-}
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    }
-  end,
-}
 
 --  Configure nvim-cmp 
 local cmp = require 'cmp'

@@ -82,7 +82,7 @@ bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AG
 
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
 bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=600% --property=MemoryMax=12G firefox
-bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G chrome
+bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G ~/Documents/Cursor.AppImage
 bindsym $mod+g exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G ~/Documents/neo4j.AppImage
