@@ -12,3 +12,6 @@ venv/
 *.plist
 *.AppImage
 *.zs-old
+*.m4a
+*.mp3
+*.mp4

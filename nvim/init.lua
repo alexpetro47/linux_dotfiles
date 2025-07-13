@@ -151,7 +151,7 @@ vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore cur
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 -- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
-vim.keymap.set('n', '<leader>dO', ':lcd %:p:h<CR>:! open ./ &<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
 vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
@@ -159,7 +159,7 @@ vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/ai/prompting/
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
-vim.keymap.set('n', '<leader>do', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})
+vim.keymap.set('n', '<leader>dO', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})
 vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
 vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
@@ -193,7 +193,7 @@ vim.keymap.set('n', '<leader>DT', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 --file conversions
 vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
 vim.keymap.set('n', '<leader>c2', ':!pandoc % -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
-vim.keymap.set('n', '<leader>c3', ":!markmap % --offline --no-open<CR>", {desc = 'create markmap of current file'})
+vim.keymap.set('n', '<leader>c3', ":! firefox<CR>:!markmap % --offline <CR>", {desc = 'create markmap of current file'})
 vim.keymap.set('v', '<leader>c4', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
