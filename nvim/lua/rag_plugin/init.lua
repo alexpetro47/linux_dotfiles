@@ -23,9 +23,6 @@ local session = {
   model_override = nil,
   prompt_override = nil,
   tools_used = nil,
-  tokens_used = nil,
-  context_window = nil,
-  session_cost = nil,
 }
 
 ---@return number: The window id of the RAG scratchpad
@@ -149,9 +146,6 @@ function M.submit()
     table.insert(command, session.prompt_override)
   end
   session.tools_used = nil -- Reset before job start
-  session.tokens_used = nil -- Reset before job start
-  session.context_window = nil -- Reset before job start
-  session.session_cost = nil -- Reset before job start
   local thinking_line_num = vim.api.nvim_buf_line_count(buf)
   local first_output = true
   session.job_id = vim.fn.jobstart(command, {
@@ -174,17 +168,8 @@ function M.submit()
         local lines_to_add = {}
         for _, line in ipairs(data) do
           local tools_match = line:match("^TOOLS_USED:(.*)$")
-          local tokens_match = line:match("^TOKENS_USED:(.*)$")
-          local context_match = line:match("^CONTEXT_WINDOW:(.*)$")
-          local cost_match = line:match("^SESSION_COST:(.*)$")
           if tools_match then
             session.tools_used = tools_match
-          elseif tokens_match then
-            session.tokens_used = tokens_match
-          elseif context_match then
-            session.context_window = context_match
-          elseif cost_match then
-            session.session_cost = cost_match
           else
             table.insert(lines_to_add, line)
           end
@@ -240,21 +225,13 @@ function M.submit()
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         status_emoji .. " SESSION COMPLETE: " .. final_status,
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "",
         "📁 **Working Directory**",
         "   " .. source_dir_full,
-        "",
         "🤖 **Model & Configuration**",
         "   Model: " .. model_display_name,
         "   Mode:  " .. prompt_name,
-        "",
         "🔧 **Tools Used**",
         "   " .. tools_str,
-        "",
-        "📊 **Resource Usage**",
-        "   " .. (session.context_window or "Tokens: unknown"),
-        "   " .. (session.session_cost or "Cost: unknown"),
-        "",
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         "",
         "",
@@ -263,9 +240,6 @@ function M.submit()
       vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines_to_add)
       session.job_id = nil
       session.tools_used = nil -- Clean up
-      session.tokens_used = nil -- Clean up
-      session.context_window = nil -- Clean up
-      session.session_cost = nil -- Clean up
       vim.api.nvim_buf_set_option(buf, "modified", false)
     end,
   })
