@@ -22,6 +22,10 @@ local session = {
   buffer = nil,
   model_override = nil,
   prompt_override = nil,
+  tools_used = nil,
+  tokens_used = nil,
+  context_window = nil,
+  session_cost = nil,
 }
 
 ---@return number: The window id of the RAG scratchpad
@@ -45,6 +49,37 @@ local function get_rag_window()
   vim.api.nvim_buf_set_option(session.buffer, "swapfile", false)
   vim.api.nvim_win_set_width(win, M.config.window.width)
   return win
+end
+
+--- Gets a single value from a section in config.ini
+local function get_config_value(section_name, key_name)
+  local config_path = M.config.project_root .. "/config.ini"
+  local file = io.open(config_path, "r")
+  if not file then
+    vim.notify("config.ini not found at " .. config_path, vim.log.levels.WARN)
+    return nil
+  end
+
+  local lines = {}
+  for line in file:lines() do
+    table.insert(lines, line)
+  end
+  file:close()
+
+  local in_section = false
+  for _, line in ipairs(lines) do
+    if line:match("^%[" .. section_name .. "%]$") then
+      in_section = true
+    elseif in_section and line:match("^%[") then
+      break
+    elseif in_section then
+      local key, val = line:match("^(.-)%s*=%s*(.*)")
+      if key and vim.trim(key) == key_name then
+        return vim.trim(val)
+      end
+    end
+  end
+  return nil
 end
 
 --- Simple parser for the config.ini file.
@@ -113,6 +148,10 @@ function M.submit()
     table.insert(command, "--system-prompt-name")
     table.insert(command, session.prompt_override)
   end
+  session.tools_used = nil -- Reset before job start
+  session.tokens_used = nil -- Reset before job start
+  session.context_window = nil -- Reset before job start
+  session.session_cost = nil -- Reset before job start
   local thinking_line_num = vim.api.nvim_buf_line_count(buf)
   local first_output = true
   session.job_id = vim.fn.jobstart(command, {
@@ -132,19 +171,101 @@ function M.submit()
     end,
     on_stderr = function(_, data)
       if data and data[1] ~= "" then
-        local lines_to_add = { "[Agent] Error:" }
-        vim.list_extend(lines_to_add, data)
-        if first_output then
-          vim.api.nvim_buf_set_lines(buf, thinking_line_num - 1, thinking_line_num, false, lines_to_add)
-          first_output = false
-        else
-           vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines_to_add)
+        local lines_to_add = {}
+        for _, line in ipairs(data) do
+          local tools_match = line:match("^TOOLS_USED:(.*)$")
+          local tokens_match = line:match("^TOKENS_USED:(.*)$")
+          local context_match = line:match("^CONTEXT_WINDOW:(.*)$")
+          local cost_match = line:match("^SESSION_COST:(.*)$")
+          if tools_match then
+            session.tools_used = tools_match
+          elseif tokens_match then
+            session.tokens_used = tokens_match
+          elseif context_match then
+            session.context_window = context_match
+          elseif cost_match then
+            session.session_cost = cost_match
+          else
+            table.insert(lines_to_add, line)
+          end
+        end
+
+        if #lines_to_add > 0 then
+          if first_output then
+            vim.api.nvim_buf_set_lines(buf, thinking_line_num - 1, thinking_line_num, false, lines_to_add)
+            first_output = false
+          else
+            vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines_to_add)
+          end
         end
       end
     end,
     on_exit = function(_, code)
-      vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "---", "✅ Agent finished (code: " .. code .. ")" })
+      local status = code == 0 and "Finished" or "Error"
+
+      local source_dir_full = get_config_value("SETTINGS", "source_dir") or "unknown_dir"
+      local dir_name = vim.fn.fnamemodify(source_dir_full, ':t')
+
+      local models = parse_config_section("[MODELS]")
+      local model_id = session.model_override or get_config_value("SETTINGS", "model")
+      local model_display_name = "default"
+
+      if model_id then
+        for name, id in pairs(models) do
+          if id == model_id then
+            model_display_name = name
+            break
+          end
+        end
+        if model_display_name == "default" then
+            model_display_name = vim.fn.fnamemodify(model_id, ':t')
+        end
+      end
+      
+      local prompt_name = session.prompt_override or "default"
+      local tools_str = session.tools_used
+      if not tools_str or tools_str == "" then
+        tools_str = "none"
+      end
+      
+      local final_status = status
+      local status_emoji = "✅"
+      if status == "Error" then
+        final_status = status .. " (code: " .. code .. ")"
+        status_emoji = "❌"
+      end
+
+      local lines_to_add = {
+        "",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        status_emoji .. " SESSION COMPLETE: " .. final_status,
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "",
+        "📁 **Working Directory**",
+        "   " .. source_dir_full,
+        "",
+        "🤖 **Model & Configuration**",
+        "   Model: " .. model_display_name,
+        "   Mode:  " .. prompt_name,
+        "",
+        "🔧 **Tools Used**",
+        "   " .. tools_str,
+        "",
+        "📊 **Resource Usage**",
+        "   " .. (session.context_window or "Tokens: unknown"),
+        "   " .. (session.session_cost or "Cost: unknown"),
+        "",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "",
+        "",
+      }
+      
+      vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines_to_add)
       session.job_id = nil
+      session.tools_used = nil -- Clean up
+      session.tokens_used = nil -- Clean up
+      session.context_window = nil -- Clean up
+      session.session_cost = nil -- Clean up
       vim.api.nvim_buf_set_option(buf, "modified", false)
     end,
   })
