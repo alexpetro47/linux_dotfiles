@@ -58,7 +58,7 @@ alias lc="wc -l **/*(.D) 2>/dev/null" #count lines in all files in dir
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log cleared"'
 alias nC='rm -rf node_modules && rm package-lock.json && npm cache clean --force && npm install'
-alias nr='npm run dev 2>> npm_errors.log'
+alias nr='npm run dev '
 alias nb='npm run build --debug'
 alias nl='npm run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest' #start browser tools server
