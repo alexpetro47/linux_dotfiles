@@ -148,7 +148,7 @@ vim.keymap.set('n', '{', '{zz', { noremap = true })
 vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('n', '<leader>rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
+vim.keymap.set('n', '<leader>r3', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
@@ -736,21 +736,9 @@ require('lazy').setup({
 
 
 require('rag_plugin').setup()
-local rag = require('rag_plugin')
-vim.api.nvim_create_user_command("Rag", function() rag.open() end, {
-  desc = "Open the RAG agent scratchpad.",
-})
-vim.api.nvim_create_user_command("RagSubmit", function() rag.submit() end, {
-  desc = "Submit the content of the RAG buffer to the agent.",
-})
-vim.api.nvim_create_user_command("RagConfig", function() rag.open_config_menu() end, {
-  desc = "Open the RAG agent configuration menu.",
-})
-
--- Set your preferred keymaps
-vim.keymap.set("n", "<leader>ro", "<cmd>Rag<cr>", { desc = "[R]AG [O]pen" })
-vim.keymap.set("n", "<leader>rs", "<cmd>RagSubmit<cr>", { desc = "[R]AG [S]ubmit" })
-vim.keymap.set("n", "<leader>rc", "<cmd>RagConfig<cr>", { desc = "[R]AG [C]onfig" })
+vim.keymap.set("n", "<leader>ro", function() require('rag_plugin').open() end, { desc = "[R]AG [O]pen" })
+vim.keymap.set("n", "<leader>rs", function() require('rag_plugin').submit() end, { desc = "[R]AG [S]ubmit" })
+vim.keymap.set("n", "<leader>rc", function() require('rag_plugin').open_config_menu() end, { desc = "[R]AG [C]onfig" })
 
 
 local wk = require('which-key')

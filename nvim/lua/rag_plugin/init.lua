@@ -1,4 +1,4 @@
--- Real Config File: /home/alexpetro/.config/nvim/lua/rag_plugin/init.lua
+-- /home/alexpetro/.config/nvim/lua/rag_plugin/init.lua
 -- Description: Standalone RAG Agent Neovim Plugin.
 
 -- --- Core Plugin Logic (formerly init.lua) ---
@@ -73,9 +73,10 @@ local function parse_config_section(section_name_prefix)
     elseif in_section and line:match("^%[") then
       in_section = false
     elseif in_section and is_models_section then
-      local key, val = line:match([["(.-)".-=.-"(.-)"]])
+      -- Match "key" = value (value is not quoted)
+      local key, val = line:match([["(.-)".-=%s*(.*)]])
       if key and val then
-        results[key] = val
+        results[key] = vim.trim(val)
       end
     end
   end
@@ -201,35 +202,73 @@ end
 
 --- Opens a configuration menu using vim.ui.select.
 function M.open_config_menu()
-  vim.ui.select({ '1. Set Model', '2. Set System Prompt', '3. Clear Overrides' }, {
-    prompt = "RAG Agent Configuration",
-  }, function(choice)
-    if not choice then return end
-    if choice:match("Set Model") then
-      local models = parse_config_section("[MODELS]")
-      local model_names = {}
-      for name, _ in pairs(models) do table.insert(model_names, name) end
-      vim.ui.select(model_names, { prompt = "Select a model:" }, function(model_name)
-        if model_name then
-          session.model_override = models[model_name]
-          vim.notify("Model override set to: " .. model_name)
-        end
-      end)
-    elseif choice:match("Set System Prompt") then
-      local prompts = parse_config_section("[PROMPT:")
-      local prompt_names = {}
-      for name, _ in pairs(prompts) do table.insert(prompt_names, name) end
-      vim.ui.select(prompt_names, { prompt = "Select a prompt:" }, function(prompt_name)
-        if prompt_name then
-          session.prompt_override = prompt_name
-          vim.notify("Prompt override set to: " .. prompt_name)
-        end
-      end)
-    elseif choice:match("Clear Overrides") then
-      session.model_override = nil
-      session.prompt_override = nil
-      vim.notify("Session overrides cleared.")
+  local models = parse_config_section("[MODELS]")
+  local prompts = parse_config_section("[PROMPT:")
+
+  local menu_items = {}
+  local actions = {}
+
+  local function add_item(text, action)
+    table.insert(menu_items, text)
+    table.insert(actions, action)
+  end
+
+  add_item("--- Models ---", function() end) -- Separator
+
+  -- Sort models by name for consistent order
+  local model_names = {}
+  for name in pairs(models) do
+    table.insert(model_names, name)
+  end
+  table.sort(model_names)
+
+  for _, name in ipairs(model_names) do
+    local id = models[name]
+    local display_name = "Model: " .. name
+    if session.model_override == id then
+      display_name = display_name .. " (current)"
     end
+    add_item(display_name, function()
+      session.model_override = id
+      vim.notify("Model override set to: " .. name)
+    end)
+  end
+
+  add_item("--- System Prompts ---", function() end) -- Separator
+
+  -- Sort prompts by name for consistent order
+  local prompt_names = {}
+  for name in pairs(prompts) do
+    table.insert(prompt_names, name)
+  end
+  table.sort(prompt_names)
+
+  for _, name in ipairs(prompt_names) do
+    local display_name = "Prompt: " .. name
+    if session.prompt_override == name then
+      display_name = display_name .. " (current)"
+    end
+    add_item(display_name, function()
+      session.prompt_override = name
+      vim.notify("Prompt override set to: " .. name)
+    end)
+  end
+
+  add_item("--- Other Actions ---", function() end) -- Separator
+
+  add_item("Clear Overrides", function()
+    session.model_override = nil
+    session.prompt_override = nil
+    vim.notify("Session overrides cleared.")
+  end)
+
+  vim.ui.select(menu_items, {
+    prompt = "RAG Agent Configuration",
+  }, function(_, index)
+    if not index then
+      return
+    end
+    actions[index]()
   end)
 end
 
