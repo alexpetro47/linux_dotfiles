@@ -736,6 +736,22 @@ require('lazy').setup({
 
 
 require('rag_plugin').setup()
+local rag = require('rag_plugin')
+vim.api.nvim_create_user_command("Rag", function() rag.open() end, {
+  desc = "Open the RAG agent scratchpad.",
+})
+vim.api.nvim_create_user_command("RagSubmit", function() rag.submit() end, {
+  desc = "Submit the content of the RAG buffer to the agent.",
+})
+vim.api.nvim_create_user_command("RagConfig", function() rag.open_config_menu() end, {
+  desc = "Open the RAG agent configuration menu.",
+})
+
+-- Set your preferred keymaps
+vim.keymap.set("n", "<leader>ro", "<cmd>Rag<cr>", { desc = "[R]AG [O]pen" })
+vim.keymap.set("n", "<leader>rs", "<cmd>RagSubmit<cr>", { desc = "[R]AG [S]ubmit" })
+vim.keymap.set("n", "<leader>rc", "<cmd>RagConfig<cr>", { desc = "[R]AG [C]onfig" })
+
 
 local wk = require('which-key')
 wk.add({
