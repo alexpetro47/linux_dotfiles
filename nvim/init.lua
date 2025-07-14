@@ -366,14 +366,14 @@ require('lazy').setup({
   },
 
   --copilot
-  {
-    'github/copilot.vim',
-    vim.keymap.set('i', '<C-a>', '<Plug>(copilot-accept-word)'), { noremap = true },
-    vim.keymap.set('n', '<leader>Cp', ':Copilot panel<CR>', { desc="Copilot panel"}),
-    vim.keymap.set('n', '<leader>Cd', ':Copilot disable<CR>', {desc = 'copilot disable'}),
-    vim.keymap.set('n', '<leader>Ce', ':Copilot enable<CR>', {desc = 'copilot enable'}),
-    vim.keymap.set('n', '<leader>Cs', ':Copilot setup<CR>', {desc = 'copilot setup'}),
-  },
+  -- {
+  --   'github/copilot.vim',
+  --   vim.keymap.set('i', '<C-a>', '<Plug>(copilot-accept-word)'), { noremap = true },
+  --   vim.keymap.set('n', '<leader>Cp', ':Copilot panel<CR>', { desc="Copilot panel"}),
+  --   vim.keymap.set('n', '<leader>Cd', ':Copilot disable<CR>', {desc = 'copilot disable'}),
+  --   vim.keymap.set('n', '<leader>Ce', ':Copilot enable<CR>', {desc = 'copilot enable'}),
+  --   vim.keymap.set('n', '<leader>Cs', ':Copilot setup<CR>', {desc = 'copilot setup'}),
+  -- },
 
   --start page 
   { 'echasnovski/mini.nvim', version = '*' },
@@ -733,6 +733,11 @@ require('lazy').setup({
 }, {})
 
 --MY CONFIGS----------------------------------
+
+
+require('rag_plugin').setup({
+  script_path = '/home/alexpetro/Documents/code/local-rag/rag.py'
+})
 
 local wk = require('which-key')
 wk.add({
