@@ -1,44 +1,28 @@
--- ~/.config/nvim/plugin/rag.lua
+-- Real Config File: /home/alexpetro/.config/nvim/plugin/rag.lua
+-- Description: Sets up user commands and keymaps for the RAG agent plugin.
 
-local rag_plugin = require("rag_plugin")
+local rag_plugin = require('rag_plugin')
 
--- Helper function to get text from visual selection
-local function get_visual_selection()
-  local _, start_line, start_col, _ = unpack(vim.fn.getpos("'<"))
-  local _, end_line, end_col, _ = unpack(vim.fn.getpos("'>"))
-  if start_line == 0 or end_line == 0 then return "" end
+-- You can optionally pass a setup table here if you need to override defaults.
+-- For example:
+-- rag_plugin.setup({
+--   window = { width = 100 }
+-- })
 
-  local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
-  if #lines == 0 then return "" end
+-- Create user commands
+vim.api.nvim_create_user_command("Rag", function() rag_plugin.open() end, {
+  desc = "Open the RAG agent scratchpad.",
+})
 
-  lines[#lines] = string.sub(lines[#lines], 1, end_col)
-  lines[1] = string.sub(lines[1], start_col)
+vim.api.nvim_create_user_command("RagSubmit", function() rag_plugin.submit() end, {
+  desc = "Submit the content of the RAG buffer to the agent.",
+})
 
-  return table.concat(lines, "\n")
-end
+vim.api.nvim_create_user_command("RagConfig", function() rag_plugin.open_config_menu() end, {
+  desc = "Open the RAG agent configuration menu.",
+})
 
-
--- 1. Create User Command
-vim.api.nvim_create_user_command(
-  "RagQuery",
-  function(opts)
-    rag_plugin.query(opts.args)
-  end,
-  { nargs = 1, desc = "Query the RAG system with the provided text." }
-)
-
--- 2. Create Keymaps
--- Normal Mode: Prompt for a query
-vim.keymap.set("n", "<leader>rq", function()
-  vim.ui.input({ prompt = "RAG Query: " }, function(input)
-    if input then
-      rag_plugin.query(input)
-    end
-  end)
-end, { desc = "Query RAG with input" })
-
--- Visual Mode: Use selected text as the query
-vim.keymap.set("v", "<leader>rq", function()
-  local selection = get_visual_selection()
-  rag_plugin.query(selection)
-end, { desc = "Query RAG with visual selection" })
+-- Global Keymaps
+vim.keymap.set("n", "<leader>ro", "<cmd>Rag<cr>", { desc = "[R]AG [O]pen" })
+vim.keymap.set("n", "<leader>rs", "<cmd>RagSubmit<cr>", { desc = "[R]AG [S]ubmit" })
+vim.keymap.set("n", "<leader>rc", "<cmd>RagConfig<cr>", { desc = "[R]AG [C]onfig" }) 

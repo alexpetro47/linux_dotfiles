@@ -735,9 +735,7 @@ require('lazy').setup({
 --MY CONFIGS----------------------------------
 
 
-require('rag_plugin').setup({
-  script_path = '/home/alexpetro/Documents/code/local-rag/rag.py'
-})
+require('rag_plugin').setup()
 
 local wk = require('which-key')
 wk.add({
