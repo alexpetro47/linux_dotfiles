@@ -547,6 +547,16 @@ require('lazy').setup({
   -- `sudo cp target/release/distant /usr/local/bin/`
   -- `rm -rf ~/my-temp`
 
+  {
+    "hedyhli/outline.nvim",
+    lazy = true,
+    cmd = { "Outline", "OutlineOpen" },
+    keys = { -- Example mapping to toggle outline
+      { "<leader>f", ":Outline<CR>", desc = "Toggle outline" },
+    },
+    opts = {},
+  },
+
   --DEFAULTS-----------------------------------
 
   -- Git related plugins
@@ -740,6 +750,16 @@ vim.keymap.set("n", "<leader>ro", function() require('rag_plugin').open() end, {
 vim.keymap.set("n", "<leader>rs", function() require('rag_plugin').submit() end, { desc = "[R]AG [S]ubmit" })
 vim.keymap.set("n", "<leader>rc", function() require('rag_plugin').open_config_menu() end, { desc = "[R]AG [C]onfig" })
 
+require("outline").setup({
+  outline_window = {
+    position = 'left',
+    width = 20,
+    auto_jump = true,
+  },
+  outline_items = {
+    show_symbol_lineno = true,
+  },
+})
 
 local wk = require('which-key')
 wk.add({
