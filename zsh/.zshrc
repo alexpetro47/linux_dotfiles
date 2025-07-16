@@ -70,6 +70,7 @@ alias ainit="mkdir .aider && cd .aider && touch .aiderignore .aider.chat.history
 alias as="apt list | fzf" #search apt packages
 alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
+alias rcloneSetup="rclone config reconnect google-drive:"
 alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
 alias Import="rclone sync -v google-drive:IMPORTS-EXPORTS ~/Documents/notes/drive-imports/ && cd ~/Documents/notes/drive-imports && find /home/alexpetro/Documents/notes/drive-imports/ -type f -name '*.heic' -print0 | xargs -0 -n 1 /home/alexpetro/Documents/code/file-converters/venv/bin/python3 /home/alexpetro/Documents/code/file-converters/heic-png.py && rclone sync -v ~/Documents/notes/drive-imports/ google-drive:IMPORTS-EXPORTS && ls " 

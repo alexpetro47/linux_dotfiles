@@ -1,3 +1,4 @@
+
 -- /home/alexpetro/.config/nvim/lua/rag_plugin/init.lua
 -- Description: Standalone RAG Agent Neovim Plugin.
 
@@ -105,122 +106,57 @@ local function get_config_value(section_name, key_name)
   return nil
 end
 
---- Sets a value in a section in config.ini
-local function set_config_value(section_name, key_name, value)
+--- Gets all key-value pairs from a section in config.ini
+---@param section_name string The section to read (e.g., "AVAILABLE_MODELS")
+---@return table A table where keys are display names and values are IDs.
+local function get_available_items_from_config(section_name)
+  local items = {}
   local config_path = M.config.project_root .. "/config.ini"
   local file = io.open(config_path, "r")
   if not file then
-    vim.notify("config.ini not found at " .. config_path, vim.log.levels.ERROR)
-    return false
+    vim.notify("config.ini not found at " .. config_path, vim.log.levels.WARN)
+    return items
   end
 
-  local lines = {}
+  local in_section = false
   for line in file:lines() do
-    table.insert(lines, line)
+    if line:match("^%[" .. section_name .. "%]$") then
+      in_section = true
+    elseif in_section and line:match("^%[") then
+      -- We've hit the next section, so we're done.
+      break
+    elseif in_section then
+      -- Look for 'key = value', ignoring comments and empty lines
+      local key, val = line:match("^(.-)%s*=%s*(.*)")
+      if key and val and not key:match("^%s*[;#]") and vim.trim(key) ~= "" then
+        items[vim.trim(key)] = vim.trim(val)
+      end
+    end
   end
   file:close()
-
-  local new_lines = {}
-  local in_section = false
-  local key_found = false
-
-  for i, line in ipairs(lines) do
-    if line:match("^%s*%[" .. section_name .. "%]%s*$") then
-      in_section = true
-      table.insert(new_lines, line)
-    elseif in_section and line:match("^%s*%[") then
-      -- Reached the next section
-      if not key_found then
-        table.insert(new_lines, key_name .. " = " .. value)
-        key_found = true
-      end
-      in_section = false
-      table.insert(new_lines, line)
-    elseif in_section then
-      local key = line:match("^(.-)%s*=")
-      if key and vim.trim(key) == key_name then
-        table.insert(new_lines, key_name .. " = " .. value)
-        key_found = true
-      else
-        table.insert(new_lines, line)
-      end
-    else
-      table.insert(new_lines, line)
-    end
-  end
-
-  -- Handle case where section is at the end of the file and key was not found
-  if in_section and not key_found then
-    table.insert(new_lines, key_name .. " = " .. value)
-    key_found = true
-  end
-
-  -- Handle case where the section itself was not found
-  if not key_found then
-    local section_exists = false
-    for _, line in ipairs(new_lines) do
-        if line:match("^%s*%[" .. section_name .. "%]%s*$") then
-            section_exists = true
-            break
-        end
-    end
-    if not section_exists then
-      table.insert(new_lines, "") -- Spacer
-      table.insert(new_lines, "[" .. section_name .. "]")
-    end
-    -- Find the section to insert the key
-    for i, line in ipairs(new_lines) do
-      if line:match("^%s*%[" .. section_name .. "%]%s*$") then
-        table.insert(new_lines, i + 1, key_name .. " = " .. value)
-        break
-      end
-    end
-  end
-
-  local new_file = io.open(config_path, "w")
-  if not new_file then
-    vim.notify("Failed to open config.ini for writing.", vim.log.levels.ERROR)
-    return false
-  end
-  new_file:write(table.concat(new_lines, "\n"))
-  new_file:close()
-  return true
+  return items
 end
 
---- Simple parser for the config.ini file.
-local function parse_config_section(section_name_prefix)
-  local config_path = M.config.project_root .. "/config.ini"
-  local file = io.open(config_path, "r")
-  if not file then
-    vim.notify("config.ini not found at " .. config_path, vim.log.levels.ERROR)
-    return {}
-  end
-  local lines = {}
-  for line in file:lines() do
-    table.insert(lines, line)
-  end
-  file:close()
-  local results = {}
-  local in_section = false
-  local is_models_section = section_name_prefix == "[MODELS]"
-  local is_prompts_section = section_name_prefix == "[PROMPT:"
-  for _, line in ipairs(lines) do
-    if is_models_section and line:match("^%[MODELS%]$") then
-      in_section = true
-    elseif is_prompts_section and line:match("^%[PROMPT:.-%]$") then
-      local name = line:match("^%[PROMPT:(.-)%]$")
-      results[name] = true
-    elseif in_section and line:match("^%[") then
-      in_section = false
-    elseif in_section and is_models_section then
-      -- Match "key" = value (value is not quoted)
-      local key, val = line:match([["(.-)".-=%s*(.*)]])
-      if key and val then
-        results[key] = vim.trim(val)
+
+--- Sets a value in config.ini by calling the python utility
+local function set_config_value(item_type, value)
+  local cmd = {
+    M.config.python_executable,
+    M.config.project_root .. "/config_util.py",
+    "set",
+    item_type,
+    value
+  }
+  local job_id = vim.fn.jobstart(cmd, {
+    cwd = M.config.project_root,
+    on_exit = function(_, code)
+      if code ~= 0 then
+        vim.notify("Error setting config value via script.", vim.log.levels.ERROR)
       end
     end
-  end
-  return results
+  })
+  -- Wait for the job to complete to ensure the file is written
+  vim.fn.jobwait({job_id})
 end
 
 --- Opens the interactive config menu in a floating popup.
@@ -237,31 +173,40 @@ function M.open_config_menu()
   local function build_menu_items()
     state.menu_items = {}
     -- Get current settings from config
-    local current_model = get_config_value("SETTINGS", "model") or ""
-    local current_prompt = get_config_value("SETTINGS", "system_prompt_name") or "default"
+    local current_model_id = get_config_value("SETTINGS", "model") or ""
+    local current_prompt_key = get_config_value("SETTINGS", "prompt_name") or "default"
 
-    -- Get available models and prompts
-    local models = parse_config_section("[MODELS]")
-    local prompts = parse_config_section("[PROMPT:")
-    
+    -- Get available models and prompts directly from config.ini
+    local available_models = get_available_items_from_config("AVAILABLE_MODELS")
+    local available_prompts = get_available_items_from_config("AVAILABLE_PROMPTS")
+
     table.insert(state.menu_items, { text = "--- Models ---", type = "header" })
-    local model_names = {}
-    for name, _ in pairs(models) do table.insert(model_names, name) end
-    table.sort(model_names)
-    for _, name in ipairs(model_names) do
-      local id = models[name]
-      local is_active = (id == current_model)
+    -- Sort model names for consistent display
+    local sorted_model_names = {}
+    for name, _ in pairs(available_models) do
+        table.insert(sorted_model_names, name)
+    end
+    table.sort(sorted_model_names)
+
+    for _, name in ipairs(sorted_model_names) do
+      local id = available_models[name]
+      local is_active = (id == current_model_id)
       table.insert(state.menu_items, { text = name, id = id, type = "model", is_active = is_active })
     end
 
     table.insert(state.menu_items, { text = "", type = "spacer" })
     table.insert(state.menu_items, { text = "--- Modes (Prompts) ---", type = "header" })
-    local prompt_names = {}
-    for name, _ in pairs(prompts) do table.insert(prompt_names, name) end
-    table.sort(prompt_names)
-    for _, name in ipairs(prompt_names) do
-      local is_active = (name == current_prompt)
-      table.insert(state.menu_items, { text = name, id = name, type = "prompt", is_active = is_active })
+    -- Sort prompt names for consistent display
+    local sorted_prompt_names = {}
+    for name, _ in pairs(available_prompts) do
+        table.insert(sorted_prompt_names, name)
+    end
+    table.sort(sorted_prompt_names)
+
+    for _, name in ipairs(sorted_prompt_names) do
+      local key = available_prompts[name]
+      local is_active = (key == current_prompt_key)
+      table.insert(state.menu_items, { text = name, id = key, type = "prompt", is_active = is_active })
     end
   end
 
@@ -353,16 +298,15 @@ function M.open_config_menu()
   function actions.select()
     local item = state.menu_items[state.selection]
     if item and (item.type == "model" or item.type == "prompt") then
-      local key = item.type == "model" and "model" or "system_prompt_name"
-      local ok = set_config_value("SETTINGS", key, item.id)
-      if ok then
+      local item_type = item.type == "model" and "models" or "prompts"
+      set_config_value(item_type, item.id)
+      -- Short pause to allow file to be written before re-reading
+      vim.defer_fn(function()
         vim.notify("Set " .. item.type .. " to: " .. item.text)
         -- Re-build and re-draw to show the new state
         build_menu_items()
         draw_menu()
-      else
-        vim.notify("Error saving setting to config.ini", vim.log.levels.ERROR)
-      end
+      end, 100)
     end
   end
 
@@ -466,19 +410,21 @@ function M.submit()
       local source_dir_full = get_config_value("SETTINGS", "source_dir") or "unknown_dir"
       local dir_name = vim.fn.fnamemodify(source_dir_full, ':t')
 
-      local models = parse_config_section("[MODELS]")
       local model_id = session.model_override or get_config_value("SETTINGS", "model")
       local model_display_name = "default"
-
       if model_id then
-        for name, id in pairs(models) do
-          if id == model_id then
-            model_display_name = name
-            break
-          end
-        end
-        if model_display_name == "default" then
+        local cmd_path = M.config.project_root .. "/config_util.py"
+        local cmd_str = string.format("cd %s && %s %s get model-name %s",
+                                      M.config.project_root,
+                                      M.config.python_executable,
+                                      cmd_path,
+                                      model_id)
+        local result = vim.fn.system(cmd_str)
+
+        if vim.v.shell_error ~= 0 then
             model_display_name = vim.fn.fnamemodify(model_id, ':t')
+        else
+          model_display_name = vim.trim(result)
         end
       end
       
@@ -522,52 +468,199 @@ function M.submit()
   vim.fn.chanclose(session.job_id, "stdin")
 end
 
---- Injects the content of a file selected in visual mode into the RAG buffer.
-function M.inject_file_content()
-  local start_pos = vim.api.nvim_buf_get_mark(0, "'<")
-  local end_pos = vim.api.nvim_buf_get_mark(0, "'>")
-  local lines = vim.api.nvim_buf_get_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2], {})
-  local selected_path = vim.trim(table.concat(lines, ""))
-  if selected_path == "" or not vim.fn.filereadable(selected_path) then
-    vim.notify("Visually select a valid file path first.", vim.log.levels.WARN)
-    return
+-- Helper to get context_dir path from config.ini
+local function get_context_dir_path()
+  local source_dir = get_config_value("SETTINGS", "source_dir")
+  local context_dir = get_config_value("SETTINGS", "context_dir") or ".agent-context/"
+  if not source_dir or source_dir == "" then
+    vim.notify("Error: source_dir is not set in config.ini. Aborting context operation.", vim.log.levels.ERROR)
+    return nil
   end
-  local file_content = vim.fn.readfile(selected_path)
-  local formatted_content = {
-    "```" .. vim.fn.fnamemodify(selected_path, ":t") .. " " .. selected_path,
-  }
-  vim.list_extend(formatted_content, file_content)
-  table.insert(formatted_content, "```")
-  vim.api.nvim_buf_set_text(0, start_pos[1] - 1, start_pos[2], end_pos[1] - 1, end_pos[2], formatted_content)
+  return source_dir .. "/" .. context_dir
 end
 
---- Injects the content of a URL from the current line into the RAG buffer.
-function M.inject_url_content()
-  local line = vim.api.nvim_get_current_line()
-  local url = line:match("https?://[%w_.~!*:@&+$/?%%#-=]+")
-  if not url then
-    vim.notify("No URL found on the current line.", vim.log.levels.WARN)
+-- AgentInjectFile: Injects the full contents of the current file into .agent-context/session/ under the configured source_dir
+vim.api.nvim_create_user_command('AgentInjectFile', function()
+  -- Get context dir path, strictly relative to source_dir from config.ini
+  local context_dir = get_context_dir_path()
+  if not context_dir then
+    -- Error already notified in get_context_dir_path
     return
   end
-  vim.notify("Fetching URL content for: " .. url)
-  local cmd = string.format("cd %s && %s -c \"from tools import fetch_url_content; print(fetch_url_content('%s'))\"", 
-                            M.config.project_root, M.config.python_executable, url)
-  local result = vim.fn.system(cmd)
-  if vim.v.shell_error ~= 0 then
-    vim.notify("Failed to fetch URL: " .. result, vim.log.levels.ERROR)
+  -- Get current file path and name
+  local file_path = vim.api.nvim_buf_get_name(0)
+  if not file_path or file_path == '' then
+    vim.notify('No file associated with current buffer.', vim.log.levels.ERROR)
     return
   end
-  local formatted_content = {
-    "```url_content " .. url,
-  }
-  local result_lines = {}
-  for s in result:gmatch("[^\\n]+") do
-      table.insert(result_lines, s)
+  local filename = vim.fn.fnamemodify(file_path, ':t')
+  local dest_dir = context_dir .. '/session/'
+  local dest_path = dest_dir .. filename
+  -- Ensure session dir exists
+  vim.fn.mkdir(dest_dir, 'p')
+  -- Prompt for confirmation if file exists
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in context. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
+    end
   end
-  vim.list_extend(formatted_content, result_lines)
-  table.insert(formatted_content, "```")
-  local lnum = vim.api.nvim_win_get_cursor(0)[1]
-  vim.api.nvim_buf_set_lines(0, lnum - 1, lnum, false, formatted_content)
+  -- Read full contents of the current file
+  local src = io.open(file_path, 'r')
+  if not src then
+    vim.notify('Could not read source file: ' .. file_path, vim.log.levels.ERROR)
+    return
+  end
+  local content = src:read('*a')
+  src:close()
+  -- Write contents to context session dir
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to context file: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(content)
+  dest:close()
+  vim.notify('Injected file into context: ' .. dest_path)
+end, {})
+
+vim.api.nvim_create_user_command('AgentInjectVisualSelection', function()
+  local context_dir = get_context_dir_path()
+  if not context_dir then return end
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines = vim.api.nvim_buf_get_lines(bufnr, start_pos[2]-1, end_pos[2], false)
+  if #lines == 0 then
+    vim.notify("No text selected.", vim.log.levels.WARN)
+    return
+  end
+  -- If selection is blockwise, handle only linewise for MVP
+  local content = table.concat(lines, "\n")
+  local ts = tostring(os.time())
+  local dest_path = context_dir .. "/session/selection_" .. ts .. ".md"
+  local file = io.open(dest_path, "r")
+  if file then
+    file:close()
+    local confirm = vim.fn.input("File exists in context. Overwrite? (y/N): ")
+    if confirm:lower() ~= "y" then
+      vim.notify("Aborted: File not overwritten.")
+      return
+    end
+  end
+  local dest = io.open(dest_path, "w")
+  dest:write(content)
+  dest:close()
+  vim.notify("Injected visual selection into context: " .. dest_path)
+end, {})
+
+M.inject_visual_selection = function()
+  local context_dir = get_context_dir_path()
+  if not context_dir then return end
+  -- Determine visual mode and get selection range
+  local mode = vim.fn.mode()
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  if not (start_pos and end_pos and start_pos[2] > 0 and end_pos[2] > 0) then
+    vim.notify("No valid visual selection. Please visually select text first.", vim.log.levels.ERROR)
+    return
+  end
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines
+  if mode == 'V' then -- linewise visual
+    lines = vim.api.nvim_buf_get_lines(bufnr, start_pos[2]-1, end_pos[2], false)
+  elseif mode == '\22' then -- blockwise visual
+    -- Blockwise: extract columns from each line
+    lines = {}
+    for l = start_pos[2], end_pos[2] do
+      local line = vim.api.nvim_buf_get_lines(bufnr, l-1, l, false)[1] or ''
+      local s_col = start_pos[3]
+      local e_col = end_pos[3]
+      if l == start_pos[2] and l == end_pos[2] then
+        table.insert(lines, line:sub(s_col, e_col))
+      elseif l == start_pos[2] then
+        table.insert(lines, line:sub(s_col))
+      elseif l == end_pos[2] then
+        table.insert(lines, line:sub(1, e_col))
+      else
+        table.insert(lines, line)
+      end
+    end
+  else -- characterwise visual
+    if start_pos[2] == end_pos[2] then
+      local line = vim.api.nvim_buf_get_lines(bufnr, start_pos[2]-1, start_pos[2], false)[1] or ''
+      lines = {line:sub(start_pos[3], end_pos[3])}
+    else
+      lines = {}
+      local first = vim.api.nvim_buf_get_lines(bufnr, start_pos[2]-1, start_pos[2], false)[1] or ''
+      table.insert(lines, first:sub(start_pos[3]))
+      for l = start_pos[2]+1, end_pos[2]-1 do
+        table.insert(lines, vim.api.nvim_buf_get_lines(bufnr, l-1, l, false)[1] or '')
+      end
+      local last = vim.api.nvim_buf_get_lines(bufnr, end_pos[2]-1, end_pos[2], false)[1] or ''
+      table.insert(lines, last:sub(1, end_pos[3]))
+    end
+  end
+  if not lines or #lines == 0 or ( #lines == 1 and lines[1] == '' ) then
+    vim.notify("No text selected.", vim.log.levels.WARN)
+    return
+  end
+  local content = table.concat(lines, "\n")
+  local ts = tostring(os.time())
+  local dest_dir = context_dir .. '/session/'
+  local dest_path = dest_dir .. 'selection_' .. ts .. '.md'
+  vim.fn.mkdir(dest_dir, 'p')
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in context. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
+    end
+  end
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to context file: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(content)
+  dest:close()
+  vim.notify('Injected visual selection into context: ' .. dest_path)
+end
+
+M.inject_input = function()
+  local context_dir = get_context_dir_path()
+  if not context_dir then return end
+  local input = vim.fn.input('Enter text to inject into agent context: ')
+  if not input or input == '' then
+    vim.notify('No input provided.', vim.log.levels.WARN)
+    return
+  end
+  local ts = tostring(os.time())
+  local dest_dir = context_dir .. '/session/'
+  local dest_path = dest_dir .. 'input_' .. ts .. '.md'
+  vim.fn.mkdir(dest_dir, 'p')
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in context. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
+    end
+  end
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to context file: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(input)
+  dest:close()
+  vim.notify('Injected input into context: ' .. dest_path)
 end
 
 -- Setup function allows for external configuration
@@ -575,25 +668,87 @@ function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
--- Buffer-specific autocommands and keymaps
-local rag_augroup = vim.api.nvim_create_augroup("RagPluginModule", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  group = rag_augroup,
-  pattern = "markdown",
-  callback = function(args)
-    if vim.fn.bufname(args.buf):match("%[RAG%]") then
-      vim.keymap.set("n", "<cr>", function() M.submit() end, { buffer = args.buf, silent = true, desc = "Submit RAG query" })
-      vim.keymap.set("v", "<leader>rf", function() M.inject_file_content() end, { buffer = args.buf, silent = true, desc = "[R]AG Inject [F]ile" })
-      vim.keymap.set("n", "<leader>ru", function() M.inject_url_content() end, { buffer = args.buf, silent = true, desc = "[R]AG Inject [U]RL" })
-      vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
-        group = rag_augroup,
-        buffer = args.buf,
-        callback = function()
-          vim.api.nvim_buf_set_option(args.buf, 'modified', false)
-        end,
-      })
+-- Export functions for use in user's main init.lua
+M.inject_file_content = function()
+  -- Get context dir path, strictly relative to source_dir from config.ini
+  local context_dir = get_context_dir_path()
+  if not context_dir then
+    -- Error already notified in get_context_dir_path
+    return
+  end
+  -- Get current file path and name
+  local file_path = vim.api.nvim_buf_get_name(0)
+  if not file_path or file_path == '' then
+    vim.notify('No file associated with current buffer.', vim.log.levels.ERROR)
+    return
+  end
+  local filename = vim.fn.fnamemodify(file_path, ':t')
+  local dest_dir = context_dir .. '/session/'
+  local dest_path = dest_dir .. filename
+  -- Ensure session dir exists
+  vim.fn.mkdir(dest_dir, 'p')
+  -- Prompt for confirmation if file exists
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in context. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
     end
-  end,
-})
+  end
+  -- Read full contents of the current file
+  local src = io.open(file_path, 'r')
+  if not src then
+    vim.notify('Could not read source file: ' .. file_path, vim.log.levels.ERROR)
+    return
+  end
+  local content = src:read('*a')
+  src:close()
+  -- Write contents to context session dir
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to context file: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(content)
+  dest:close()
+  vim.notify('Injected file into context: ' .. dest_path)
+end
+
+-- Remove M.inject_url_content and add M.inject_clipboard
+M.inject_clipboard = function()
+  local context_dir = get_context_dir_path()
+  if not context_dir then return end
+  local clipboard = vim.fn.getreg('+')
+  if not clipboard or clipboard == '' then
+    vim.notify('System clipboard is empty.', vim.log.levels.WARN)
+    return
+  end
+  local ts = tostring(os.time())
+  local dest_dir = context_dir .. '/session/'
+  local dest_path = dest_dir .. 'clipboard_' .. ts .. '.md'
+  vim.fn.mkdir(dest_dir, 'p')
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in context. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
+    end
+  end
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to context file: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(clipboard)
+  dest:close()
+  vim.notify('Injected clipboard contents into context: ' .. dest_path)
+end
+
+-- Remove the old M.inject_url_content if present
+M.inject_url_content = nil
 
 return M 

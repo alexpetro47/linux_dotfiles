@@ -146,9 +146,9 @@ vim.keymap.set('n', '{', '{zz', { noremap = true })
 
 -- Code 
 vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
-vim.keymap.set('n', '<leader>rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
-vim.keymap.set('n', '<leader>rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('n', '<leader>r3', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
+vim.keymap.set('n', '<leader>Rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
+vim.keymap.set('n', '<leader>Rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
+vim.keymap.set('n', '<leader>Rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
@@ -748,7 +748,15 @@ require('lazy').setup({
 require('rag_plugin').setup()
 vim.keymap.set("n", "<leader>ro", function() require('rag_plugin').open() end, { desc = "[R]AG [O]pen" })
 vim.keymap.set("n", "<leader>rs", function() require('rag_plugin').submit() end, { desc = "[R]AG [S]ubmit" })
+vim.keymap.set("n", "<leader>rS", function() require('rag_plugin').stop_agent() end, { desc = "[R]AG [S]top Agent" })
 vim.keymap.set("n", "<leader>rc", function() require('rag_plugin').open_config_menu() end, { desc = "[R]AG [C]onfig" })
+vim.keymap.set("n", "<leader>rf", function() require('rag_plugin').inject_file_content() end, { desc = "[R]AG Inject [F]ile" })
+vim.keymap.set("n", "<leader>ri", function() require('rag_plugin').inject_input() end, { desc = "[R]AG Inject [I]nput" })
+vim.keymap.set("v", "<leader>ri", function() require('rag_plugin').inject_visual_selection() end, { desc = "[R]AG [I]nject Selection" })
+vim.keymap.set("n", "<leader>rp", function() require('rag_plugin').inject_clipboard() end, { desc = "Rag Inject Clipboard Contents" })
+vim.keymap.set("n", "<leader>rv", function() require('rag_plugin').view_agent_context() end, { desc = "[R]AG [V]iew context" })
+
+
 
 require("outline").setup({
   outline_window = {
