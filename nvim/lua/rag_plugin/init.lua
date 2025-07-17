@@ -751,4 +751,247 @@ end
 -- Remove the old M.inject_url_content if present
 M.inject_url_content = nil
 
+-- Agent Context Popup (central floating window, nvim-tree style, preview, file ingest command)
+function M.open_agent_context_popup()
+  -- Helper to get .agent-context/external/ path
+  local function get_external_dir()
+    local context_dir = get_context_dir_path()
+    if not context_dir then return nil end
+    local ext_dir = context_dir .. '/external/'
+    vim.fn.mkdir(ext_dir, 'p')
+    return ext_dir
+  end
+
+  -- Recursively build a tree of .agent-context
+  local function build_tree(dir, depth)
+    depth = depth or 0
+    local tree = {}
+    local handle = vim.loop.fs_scandir(dir)
+    if not handle then return tree end
+    while true do
+      local name, typ = vim.loop.fs_scandir_next(handle)
+      if not name then break end
+      local path = dir .. '/' .. name
+      local node = { name = name, path = path, type = typ, depth = depth, expanded = false, children = {} }
+      if typ == 'directory' then
+        node.children = build_tree(path, depth + 1)
+      end
+      table.insert(tree, node)
+    end
+    table.sort(tree, function(a, b)
+      if a.type == b.type then return a.name < b.name end
+      return a.type == 'directory'
+    end)
+    return tree
+  end
+
+  -- Flatten tree for navigation
+  local function flatten_tree(tree, expanded)
+    local flat = {}
+    for _, node in ipairs(tree) do
+      table.insert(flat, node)
+      if node.type == 'directory' and (expanded[node.path] or node.expanded) then
+        for _, child in ipairs(flatten_tree(node.children, expanded)) do
+          table.insert(flat, child)
+        end
+      end
+    end
+    return flat
+  end
+
+  -- State
+  local context_dir = get_context_dir_path()
+  if not context_dir then return end
+  local tree = build_tree(context_dir)
+  local expanded = {}
+  local flat = flatten_tree(tree, expanded)
+  local selection = 1
+  local preview_lines = {}
+  local win_height = vim.api.nvim_get_option('lines')
+  local win_width = vim.api.nvim_get_option('columns')
+  local width = math.floor(win_width * 0.7)
+  local height = math.floor(win_height * 0.7)
+  local row = math.floor((win_height - height) / 2)
+  local col = math.floor((win_width - width) / 2)
+  local tree_width = math.floor(width / 3)
+  local preview_width = width - tree_width
+
+  -- Buffers and windows
+  local tree_buf = vim.api.nvim_create_buf(false, true)
+  local preview_buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_option(preview_buf, 'modifiable', false)
+  vim.api.nvim_buf_set_option(tree_buf, 'bufhidden', 'wipe')
+  vim.api.nvim_buf_set_option(preview_buf, 'bufhidden', 'wipe')
+
+  -- Main floating window (tree pane)
+  local main_win = vim.api.nvim_open_win(tree_buf, true, {
+    relative = 'editor',
+    width = tree_width,
+    height = height,
+    row = row,
+    col = col,
+    border = 'rounded',
+    style = 'minimal',
+    title = ' Agent Context ',
+    title_pos = 'center',
+    focusable = true,
+    zindex = 150,
+  })
+  vim.api.nvim_win_set_option(main_win, 'winhl', 'Normal:NormalFloat,FloatBorder:FloatBorder')
+  vim.api.nvim_win_set_option(main_win, 'cursorline', false)
+  vim.api.nvim_win_set_option(main_win, 'number', false)
+  vim.api.nvim_win_set_option(main_win, 'relativenumber', false)
+
+  -- Separate floating window for preview (Telescope style)
+  local preview_win = vim.api.nvim_open_win(preview_buf, false, {
+    relative = 'editor',
+    width = preview_width,
+    height = height,
+    row = row,
+    col = col + tree_width + 2, -- +2 for a small gap between windows
+    border = 'rounded',
+    style = 'minimal',
+    title = ' Preview ',
+    title_pos = 'center',
+    focusable = false,
+    zindex = 200,
+  })
+  vim.api.nvim_win_set_option(preview_win, 'winhl', 'Normal:NormalFloat,FloatBorder:FloatBorder')
+  vim.api.nvim_win_set_option(preview_win, 'number', false)
+  vim.api.nvim_win_set_option(preview_win, 'relativenumber', false)
+
+  -- Forward declare to allow mutual recursion
+  local draw_tree, draw_preview
+
+  -- Draw preview
+  function draw_preview()
+    local node = flat[selection]
+    if node and node.type == 'file' then
+      local lines = {}
+      local f = io.open(node.path, 'r')
+      if f then
+        for line in f:lines() do table.insert(lines, line) end
+        f:close()
+      else
+        lines = {'[Could not read file]'}
+      end
+      preview_lines = lines
+    else
+      preview_lines = {'[No file selected]'}
+    end
+    vim.api.nvim_buf_set_option(preview_buf, 'modifiable', true)
+    vim.api.nvim_buf_set_lines(preview_buf, 0, -1, false, preview_lines)
+    vim.api.nvim_buf_set_option(preview_buf, 'modifiable', false)
+    -- Force redraw of preview window
+    vim.api.nvim_win_call(preview_win, function() vim.cmd('redraw') end)
+  end
+
+  -- Draw tree
+  function draw_tree()
+    flat = flatten_tree(tree, expanded)
+    local lines = {}
+    for i, node in ipairs(flat) do
+      local prefix = string.rep('  ', node.depth)
+      if node.type == 'directory' then
+        local icon = expanded[node.path] and ' ' or ' '
+        table.insert(lines, prefix .. icon .. node.name)
+      else
+        table.insert(lines, prefix .. '  ' .. node.name)
+      end
+    end
+    table.insert(lines, '')
+    table.insert(lines, '[j/k] Move  [h/l] Collapse/Expand  [Enter] Open  [:AgentIngestExternal] Ingest  [q/Esc] Quit')
+    vim.api.nvim_buf_set_option(tree_buf, 'modifiable', true)
+    vim.api.nvim_buf_set_lines(tree_buf, 0, -1, false, lines)
+    vim.api.nvim_buf_set_option(tree_buf, 'modifiable', false)
+    vim.api.nvim_win_set_cursor(main_win, {selection, 1})
+    -- Always redraw preview after tree changes
+    draw_preview()
+  end
+
+  draw_tree()
+  -- draw_preview() is now always called from draw_tree
+
+  -- Keymaps
+  local function set_keymaps()
+    local opts = { buffer = tree_buf, nowait = true, silent = true }
+    vim.keymap.set('n', 'q', function() vim.api.nvim_win_close(main_win, true); vim.api.nvim_win_close(preview_win, true) end, opts)
+    vim.keymap.set('n', '<Esc>', function() vim.api.nvim_win_close(main_win, true); vim.api.nvim_win_close(preview_win, true) end, opts)
+    vim.keymap.set('n', 'j', function()
+      if selection < #flat then selection = selection + 1 end
+      draw_tree()
+    end, opts)
+    vim.keymap.set('n', 'k', function()
+      if selection > 1 then selection = selection - 1 end
+      draw_tree()
+    end, opts)
+    vim.keymap.set('n', 'h', function()
+      local node = flat[selection]
+      if node and node.type == 'directory' then
+        expanded[node.path] = false
+        draw_tree()
+      end
+    end, opts)
+    vim.keymap.set('n', 'l', function()
+      local node = flat[selection]
+      if node and node.type == 'directory' then
+        expanded[node.path] = true
+        draw_tree()
+      end
+    end, opts)
+    vim.keymap.set('n', '<CR>', function()
+      local node = flat[selection]
+      if node and node.type == 'file' then
+        vim.api.nvim_win_close(preview_win, true)
+        vim.api.nvim_win_close(main_win, true)
+        vim.cmd('edit ' .. vim.fn.fnameescape(node.path))
+      end
+    end, opts)
+  end
+  set_keymaps()
+end
+
+-- Command to ingest a file into .agent-context/external/
+vim.api.nvim_create_user_command('AgentIngestExternal', function()
+  local ext_dir = (function()
+    local context_dir = get_context_dir_path()
+    if not context_dir then return nil end
+    local ext_dir = context_dir .. '/external/'
+    vim.fn.mkdir(ext_dir, 'p')
+    return ext_dir
+  end)()
+  if not ext_dir then return end
+  local src_path = vim.fn.input('Path to file to ingest into external/: ')
+  if not src_path or src_path == '' then
+    vim.notify('No file path provided.', vim.log.levels.WARN)
+    return
+  end
+  local filename = vim.fn.fnamemodify(src_path, ':t')
+  local dest_path = ext_dir .. filename
+  local file = io.open(dest_path, 'r')
+  if file then
+    file:close()
+    local confirm = vim.fn.input('File exists in external/. Overwrite? (y/N): ')
+    if confirm:lower() ~= 'y' then
+      vim.notify('Aborted: File not overwritten.')
+      return
+    end
+  end
+  local src = io.open(src_path, 'r')
+  if not src then
+    vim.notify('Could not read source file: ' .. src_path, vim.log.levels.ERROR)
+    return
+  end
+  local content = src:read('*a')
+  src:close()
+  local dest = io.open(dest_path, 'w')
+  if not dest then
+    vim.notify('Could not write to external/: ' .. dest_path, vim.log.levels.ERROR)
+    return
+  end
+  dest:write(content)
+  dest:close()
+  vim.notify('Ingested file into .agent-context/external/: ' .. dest_path)
+end, {})
+
 return M 

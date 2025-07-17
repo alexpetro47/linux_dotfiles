@@ -101,6 +101,7 @@ vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent =
 vim.keymap.set('n', '<leader><', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
 vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('v', '<leader>8', ":'<,'>normal! I* <CR>", { silent = true, desc = 'Insert bullet point * on visual selection' })
 vim.keymap.set('n', '<leader>l', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('n', '<leader>#', '0i#<Esc>0', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>1', '0i# <Esc>0V~', {desc = 'insert header'})
