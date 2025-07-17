@@ -264,6 +264,7 @@ vim.keymap.set('n', '<leader>gRX', ':! git checkout -- .<CR>:! git clean -fd<CR>
 vim.keymap.set('n', '<leader>gRx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
 vim.keymap.set('n', '<leader>gRH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
 vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
+vim.keymap.set('n', '<leader>F', function() require('telescope.builtin').fd({ cwd = vim.fn.expand('~/Downloads'), attach_mappings = function(_, map) map('i', '<cr>', function(bufnr) local entry = require('telescope.actions.state').get_selected_entry(); require('telescope.actions').close(bufnr); vim.fn.system('cp ' .. vim.fn.shellescape(entry.path) .. ' .'); vim.notify('Copied: ' .. vim.fn.fnamemodify(entry.path, ':t')) end); return true end }) end, { desc = '[F]ind in Downloads & Copy to CWD' })
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
