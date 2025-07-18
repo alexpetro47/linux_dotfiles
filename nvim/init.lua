@@ -761,6 +761,9 @@ vim.keymap.set("n", "<leader>rv", function() require('rag_plugin').view_agent_co
 
 
 require("outline").setup({
+  keymaps = {
+    goto_and_close = '<CR>',
+  },
   outline_window = {
     position = 'left',
     width = 20,
