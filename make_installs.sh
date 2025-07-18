@@ -64,6 +64,19 @@ snap_apps=(
   alacritty
 )
 
+# flatpak??
+# ---
+# sudo add-apt-repository ppa:flatpak/stable -y
+# sudo apt update
+# sudo apt install flatpak
+# 
+# sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+# ---
+# flatpak install flathub com.boxy_svg.BoxySVG
+# # run with `flatpak run com.boxy_svg.BoxySVG`
+# ---
+#
+
 for app in "${apps[@]}"; do
     echo "Installing $app..."
     sudo apt install -y "$app"
