@@ -8,6 +8,10 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+
+# npm global install locations via nvm
+export PATH="$HOME/.config/nvm/versions/node/v24.0.2/bin:$PATH" # Add repomix and other global npm binaries to PATH
+
 # Path to your oh-my-zsh installation.
 # linux: "/home/username/.oh-my-zsh"
 export ZSH="/home/alexpetro/.oh-my-zsh"
@@ -142,3 +146,7 @@ if [ -f '/home/alexpetro/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/a
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
