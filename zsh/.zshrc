@@ -84,6 +84,7 @@ alias refresh="sudo apt update && sudo apt upgrade && sudo apt autoremove --purg
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 alias pipIR="pip install -r requirements.txt"
 alias dockerR="docker compose down && docker compose up -d"
+alias svg="flatpak run com.boxy_svg.BoxySVG &"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
