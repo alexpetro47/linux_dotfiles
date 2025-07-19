@@ -747,16 +747,21 @@ require('lazy').setup({
 --MY CONFIGS----------------------------------
 
 
-require('rag_plugin').setup()
-vim.keymap.set("n", "<leader>ro", function() require('rag_plugin').open() end, { desc = "[R]AG [O]pen" })
-vim.keymap.set("n", "<leader>rs", function() require('rag_plugin').submit() end, { desc = "[R]AG [S]ubmit" })
-vim.keymap.set("n", "<leader>rS", function() require('rag_plugin').stop_agent() end, { desc = "[R]AG [S]top Agent" })
-vim.keymap.set("n", "<leader>rc", function() require('rag_plugin').open_config_menu() end, { desc = "[R]AG [C]onfig" })
-vim.keymap.set("n", "<leader>rf", function() require('rag_plugin').inject_file_content() end, { desc = "[R]AG Inject [F]ile" })
-vim.keymap.set("n", "<leader>ri", function() require('rag_plugin').inject_input() end, { desc = "[R]AG Inject [I]nput" })
-vim.keymap.set("v", "<leader>ri", function() require('rag_plugin').inject_visual_selection() end, { desc = "[R]AG [I]nject Selection" })
-vim.keymap.set("n", "<leader>rp", function() require('rag_plugin').inject_clipboard() end, { desc = "Rag Inject Clipboard Contents" })
-vim.keymap.set("n", "<leader>rv", function() require('rag_plugin').view_agent_context() end, { desc = "[R]AG [V]iew context" })
+require('main_plugin').setup()
+-- Main plugin functions
+vim.keymap.set("n", "<leader>ao", function() require('main_plugin').open() end, { desc = "[a]i open buffer" })
+vim.keymap.set("n", "<leader>ap", function() require('main_plugin').submit() end, { desc = "[a]i [p]rocess" })
+vim.keymap.set("n", "<leader>aP", function() require('main_plugin').stop_agent() end, { desc = "[a]i stop [P]rocess" })
+vim.keymap.set("n", "<leader>as", function() require('main_plugin').open_config_popup() end, { desc = "[a]i [s]ettings" })
+vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context_popup() end, { desc = "[a]i [c]ontext" })
+-- Context injection functions
+vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "[a]i inject [t]ext" })
+vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "[a]i inject [c]lipboard" })
+vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "[a]i inject [f]ile" })
+vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "[a]i inject [d]irectory" })
+vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "[a]i inject [w]ebsite" })
+vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "[a]i inject [v]ideo" })
+
 
 
 

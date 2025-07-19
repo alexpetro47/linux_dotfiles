@@ -17,10 +17,9 @@ nvim/*
 !nvim/plugin
 nvim/lua/*
 nvim/plugin/*
-!nvim/lua/rag_plugin/
-!nvim/plugin/rag.lua
-nvim/lua/rag_plugin/*
-!nvim/lua/rag_plugin/init.lua
+!nvim/lua/main_plugin/
+nvim/lua/main_plugin/*
+!nvim/lua/main_plugin/init.lua
 
 
 !tmux/

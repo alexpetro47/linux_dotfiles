@@ -160,7 +160,7 @@ local function set_config_value(item_type, value)
 end
 
 --- Opens the interactive config menu in a floating popup.
-function M.open_config_menu()
+function M.open_config_popup()
   -- State for the menu
   local state = {
     selection = 1,
@@ -172,42 +172,106 @@ function M.open_config_menu()
   -- Populates the menu_items table
   local function build_menu_items()
     state.menu_items = {}
+    
     -- Get current settings from config
     local current_model_id = get_config_value("SETTINGS", "model") or ""
     local current_prompt_key = get_config_value("SETTINGS", "prompt_name") or "default"
-
-    -- Get available models and prompts directly from config.ini
-    local available_models = get_available_items_from_config("AVAILABLE_MODELS")
-    local available_prompts = get_available_items_from_config("AVAILABLE_PROMPTS")
-
+    local current_source_dir = get_config_value("SETTINGS", "source_dir") or ""
+    
+    -- Source Directory Section
+    table.insert(state.menu_items, { text = "--- Source Directory ---", type = "header" })
+    local available_source_dirs = get_available_items_from_config("AVAILABLE_SOURCE_DIRS")
+    local sorted_source_dirs = {}
+    for name, _ in pairs(available_source_dirs) do
+      table.insert(sorted_source_dirs, name)
+    end
+    table.sort(sorted_source_dirs)
+    
+    for _, name in ipairs(sorted_source_dirs) do
+      local id = available_source_dirs[name]
+      local is_active = (id == current_source_dir)
+      table.insert(state.menu_items, { text = name, id = id, type = "source_dir", is_active = is_active })
+    end
+    table.insert(state.menu_items, { text = "+ Add new source directory", type = "add_source_dir" })
+    
+    table.insert(state.menu_items, { text = "", type = "spacer" })
+    
+    -- Ignore Patterns Section
+    table.insert(state.menu_items, { text = "--- Ignore Patterns ---", type = "header" })
+    local available_patterns = get_available_items_from_config("AVAILABLE_IGNORE_PATTERNS")
+    local current_patterns_list = {}
+    
+    -- Get active patterns using the new individual keys approach
+    local cmd = {
+      M.config.python_executable,
+      "-c",
+      string.format([[
+import sys
+sys.path.insert(0, '%s')
+import config_util
+patterns = config_util.get_ignore_patterns()
+for pattern in patterns:
+    print(pattern)
+]], M.config.project_root)
+    }
+    
+    local result = vim.fn.system(cmd)
+    if vim.v.shell_error == 0 then
+      for pattern in result:gmatch("[^\n]+") do
+        local trimmed_pattern = vim.trim(pattern)
+        if trimmed_pattern ~= "" then
+          table.insert(current_patterns_list, trimmed_pattern)
+        end
+      end
+    end
+    
+    for name, id in pairs(available_patterns) do
+      local is_active = false
+      for _, pattern in ipairs(current_patterns_list) do
+        if vim.trim(pattern) == vim.trim(id) then
+          is_active = true
+          break
+        end
+      end
+      table.insert(state.menu_items, { text = name, id = id, type = "ignore_pattern", is_active = is_active })
+    end
+    table.insert(state.menu_items, { text = "+ Add new ignore pattern", type = "add_ignore_pattern" })
+    
+    table.insert(state.menu_items, { text = "", type = "spacer" })
+    
+    -- Models Section (existing, updated to use full names)
     table.insert(state.menu_items, { text = "--- Models ---", type = "header" })
-    -- Sort model names for consistent display
+    local available_models = get_available_items_from_config("AVAILABLE_MODELS")
     local sorted_model_names = {}
     for name, _ in pairs(available_models) do
-        table.insert(sorted_model_names, name)
+      table.insert(sorted_model_names, name)
     end
     table.sort(sorted_model_names)
-
+    
     for _, name in ipairs(sorted_model_names) do
       local id = available_models[name]
       local is_active = (id == current_model_id)
-      table.insert(state.menu_items, { text = name, id = id, type = "model", is_active = is_active })
+      table.insert(state.menu_items, { text = id, id = id, type = "model", is_active = is_active })
     end
-
+    table.insert(state.menu_items, { text = "+ Add new model", type = "add_model" })
+    
     table.insert(state.menu_items, { text = "", type = "spacer" })
+    
+    -- Prompts Section (existing, updated to use full names)
     table.insert(state.menu_items, { text = "--- Modes (Prompts) ---", type = "header" })
-    -- Sort prompt names for consistent display
+    local available_prompts = get_available_items_from_config("AVAILABLE_PROMPTS")
     local sorted_prompt_names = {}
     for name, _ in pairs(available_prompts) do
-        table.insert(sorted_prompt_names, name)
+      table.insert(sorted_prompt_names, name)
     end
     table.sort(sorted_prompt_names)
-
+    
     for _, name in ipairs(sorted_prompt_names) do
-      local key = available_prompts[name]
-      local is_active = (key == current_prompt_key)
-      table.insert(state.menu_items, { text = name, id = key, type = "prompt", is_active = is_active })
+      local id = available_prompts[name]
+      local is_active = (id == current_prompt_key)
+      table.insert(state.menu_items, { text = id, id = id, type = "prompt", is_active = is_active })
     end
+    table.insert(state.menu_items, { text = "+ Add new prompt", type = "add_prompt" })
   end
 
   -- Draws the menu in the buffer
@@ -217,18 +281,20 @@ function M.open_config_menu()
     local lines = {}
     for i, item in ipairs(state.menu_items) do
       local line
-      if item.type == "model" or item.type == "prompt" then
+      if item.type == "model" or item.type == "prompt" or item.type == "source_dir" or item.type == "ignore_pattern" then
         local active_marker = item.is_active and "* " or "  "
         local select_marker = (i == state.selection) and "> " or "  "
-        local type_marker = item.type == "model" and "Model: " or "Prompt: "
-        line = select_marker .. active_marker .. type_marker .. item.text
+        line = select_marker .. active_marker .. item.text
+      elseif item.type == "add_model" or item.type == "add_prompt" or item.type == "add_source_dir" or item.type == "add_ignore_pattern" then
+        local select_marker = (i == state.selection) and "> " or "  "
+        line = select_marker .. item.text
       else
         line = item.text -- Headers and spacers
       end
       table.insert(lines, line)
     end
     table.insert(lines, "")
-    table.insert(lines, "Navigate with j/k or arrows. Enter to select. q/Esc to quit.")
+    table.insert(lines, "Navigate with j/k or arrows. Enter to select/toggle. q/Esc to quit.")
     
     vim.api.nvim_buf_set_option(state.buf, 'modifiable', true)
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
@@ -287,7 +353,8 @@ function M.open_config_menu()
       if state.selection < 1 then state.selection = #state.menu_items end
       
       local item_type = state.menu_items[state.selection].type
-      if item_type == "model" or item_type == "prompt" then
+      if item_type == "model" or item_type == "prompt" or item_type == "source_dir" or item_type == "ignore_pattern" or 
+         item_type == "add_model" or item_type == "add_prompt" or item_type == "add_source_dir" or item_type == "add_ignore_pattern" then
         break -- Found a selectable item
       end
       if state.selection == original_selection then break end -- Prevent infinite loop
@@ -297,13 +364,267 @@ function M.open_config_menu()
   
   function actions.select()
     local item = state.menu_items[state.selection]
-    if item and (item.type == "model" or item.type == "prompt") then
-      local item_type = item.type == "model" and "models" or "prompts"
-      set_config_value(item_type, item.id)
-      -- Short pause to allow file to be written before re-reading
+    if not item then return end
+    
+    if item.type == "add_source_dir" then
+      -- Use telescope to select directory
+      vim.api.nvim_win_close(state.win, true) -- Close config popup temporarily
       vim.defer_fn(function()
-        vim.notify("Set " .. item.type .. " to: " .. item.text)
-        -- Re-build and re-draw to show the new state
+        require('telescope.builtin').find_files({
+          prompt_title = "Select Source Directory",
+          cwd = "/home/alexpetro/",
+          attach_mappings = function(prompt_bufnr, map)
+            local actions = require('telescope.actions')
+            local action_state = require('telescope.actions.state')
+            
+            map('i', '<CR>', function()
+              local selection = action_state.get_selected_entry()
+              if selection then
+                local selected_path = "/home/alexpetro/" .. selection[1]
+                -- Add to available source directories list
+                local cmd = {
+                  M.config.python_executable,
+                  "-c",
+                  string.format([[
+import sys
+sys.path.insert(0, '%s')
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if not config.has_section('AVAILABLE_SOURCE_DIRS'):
+    config.add_section('AVAILABLE_SOURCE_DIRS')
+
+config.set('AVAILABLE_SOURCE_DIRS', '%s', '%s')
+
+with open(config_path, 'w') as config_file:
+    config.write(config_file)
+print("SUCCESS")
+]], M.config.project_root, M.config.project_root, selected_path:gsub("'", "\\'"), selected_path:gsub("'", "\\'"))
+                }
+                
+                local result = vim.fn.system(cmd)
+                if vim.v.shell_error == 0 then
+                  vim.notify("Added source directory to list: " .. selected_path)
+                  -- Reopen config popup
+                  vim.defer_fn(function()
+                    M.open_config_popup()
+                  end, 100)
+                else
+                  vim.notify("Failed to add source directory: " .. result, vim.log.levels.ERROR)
+                end
+              end
+              actions.close(prompt_bufnr)
+            end)
+            
+            map('i', '<Esc>', function()
+              actions.close(prompt_bufnr)
+              -- Reopen config popup
+              vim.defer_fn(function()
+                M.open_config_popup()
+              end, 100)
+            end)
+            
+            return true
+          end
+        })
+      end, 100)
+    elseif item.type == "add_ignore_pattern" then
+      local new_pattern = vim.fn.input("Enter new ignore pattern: ")
+      if new_pattern and new_pattern ~= "" then
+        -- Add new pattern using individual keys approach
+        local cmd = {
+          M.config.python_executable,
+          "-c",
+          string.format([[
+import sys
+sys.path.insert(0, '%s')
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if not config.has_section('IGNORE_PATTERNS'):
+    config.add_section('IGNORE_PATTERNS')
+
+# Add the new pattern as active
+config.set('IGNORE_PATTERNS', '%s', 'true')
+
+# Also add to available patterns if not already there
+if not config.has_section('AVAILABLE_IGNORE_PATTERNS'):
+    config.add_section('AVAILABLE_IGNORE_PATTERNS')
+
+config.set('AVAILABLE_IGNORE_PATTERNS', '%s', '%s')
+
+with open(config_path, 'w') as config_file:
+    config.write(config_file)
+
+print("SUCCESS")
+]], M.config.project_root, M.config.project_root, new_pattern:gsub("'", "\\'"), new_pattern:gsub("'", "\\'"), new_pattern:gsub("'", "\\'"))
+        }
+        
+        local result = vim.fn.system(cmd)
+        if vim.v.shell_error == 0 then
+          vim.defer_fn(function()
+            vim.notify("Added ignore pattern: " .. new_pattern)
+            build_menu_items()
+            draw_menu()
+          end, 100)
+        else
+          vim.notify("Failed to add ignore pattern: " .. result, vim.log.levels.ERROR)
+        end
+      end
+    elseif item.type == "add_model" then
+      local new_model = vim.fn.input("Enter new model ID: ")
+      if new_model and new_model ~= "" then
+        -- Add to available models list first
+        local cmd = {
+          M.config.python_executable,
+          "-c",
+          string.format([[
+import sys
+sys.path.insert(0, '%s')
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if not config.has_section('AVAILABLE_MODELS'):
+    config.add_section('AVAILABLE_MODELS')
+
+config.set('AVAILABLE_MODELS', '%s', '%s')
+
+with open(config_path, 'w') as config_file:
+    config.write(config_file)
+print("SUCCESS")
+]], M.config.project_root, M.config.project_root, new_model:gsub("'", "\\'"), new_model:gsub("'", "\\'"))
+        }
+        
+        local result = vim.fn.system(cmd)
+        if vim.v.shell_error == 0 then
+          -- Then set as active model
+          set_config_value("models", new_model)
+          vim.defer_fn(function()
+            vim.notify("Added model to list and set as active: " .. new_model)
+            build_menu_items()
+            draw_menu()
+          end, 100)
+        else
+          vim.notify("Failed to add model: " .. result, vim.log.levels.ERROR)
+        end
+      end
+    elseif item.type == "add_prompt" then
+      local new_prompt = vim.fn.input("Enter new prompt name: ")
+      if new_prompt and new_prompt ~= "" then
+        -- Add to available prompts list first
+        local cmd = {
+          M.config.python_executable,
+          "-c",
+          string.format([[
+import sys
+sys.path.insert(0, '%s')
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if not config.has_section('AVAILABLE_PROMPTS'):
+    config.add_section('AVAILABLE_PROMPTS')
+
+config.set('AVAILABLE_PROMPTS', '%s', '%s')
+
+with open(config_path, 'w') as config_file:
+    config.write(config_file)
+print("SUCCESS")
+]], M.config.project_root, M.config.project_root, new_prompt:gsub("'", "\\'"), new_prompt:gsub("'", "\\'"))
+        }
+        
+        local result = vim.fn.system(cmd)
+        if vim.v.shell_error == 0 then
+          -- Then set as active prompt
+          set_config_value("prompts", new_prompt)
+          vim.defer_fn(function()
+            vim.notify("Added prompt to list and set as active: " .. new_prompt)
+            build_menu_items()
+            draw_menu()
+          end, 100)
+        else
+          vim.notify("Failed to add prompt: " .. result, vim.log.levels.ERROR)
+        end
+      end
+    elseif item.type == "source_dir" then
+      set_config_value("source_dir", item.id)
+      vim.defer_fn(function()
+        vim.notify("Set source directory to: " .. item.text)
+        build_menu_items()
+        draw_menu()
+      end, 100)
+    elseif item.type == "ignore_pattern" then
+      -- Toggle pattern on/off using individual keys approach
+      local cmd = {
+        M.config.python_executable,
+        "-c",
+        string.format([[
+import sys
+sys.path.insert(0, '%s')
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if not config.has_section('IGNORE_PATTERNS'):
+    config.add_section('IGNORE_PATTERNS')
+
+pattern = '%s'
+current_value = config.get('IGNORE_PATTERNS', pattern, fallback='false')
+
+if current_value.lower() == 'true':
+    config.set('IGNORE_PATTERNS', pattern, 'false')
+    action = 'removed'
+else:
+    config.set('IGNORE_PATTERNS', pattern, 'true')
+    action = 'added'
+
+with open(config_path, 'w') as config_file:
+    config.write(config_file)
+
+print(action)
+]], M.config.project_root, M.config.project_root, item.id:gsub("'", "\\'"))
+      }
+      
+      local result = vim.fn.system(cmd)
+      if vim.v.shell_error == 0 then
+        local action = vim.trim(result)
+        vim.defer_fn(function()
+          vim.notify("Pattern " .. action .. ": " .. item.text)
+          build_menu_items()
+          draw_menu()
+        end, 100)
+      else
+        vim.notify("Failed to toggle pattern: " .. result, vim.log.levels.ERROR)
+      end
+    elseif item.type == "model" then
+      set_config_value("models", item.id)
+      vim.defer_fn(function()
+        vim.notify("Set model to: " .. item.text)
+        build_menu_items()
+        draw_menu()
+      end, 100)
+    elseif item.type == "prompt" then
+      set_config_value("prompts", item.id)
+      vim.defer_fn(function()
+        vim.notify("Set prompt to: " .. item.text)
         build_menu_items()
         draw_menu()
       end, 100)
@@ -752,7 +1073,7 @@ end
 M.inject_url_content = nil
 
 -- Agent Context Popup (central floating window, nvim-tree style, preview, file ingest command)
-function M.open_agent_context_popup()
+function M.open_context_popup()
   -- Helper to get .agent-context/external/ path
   local function get_external_dir()
     local context_dir = get_context_dir_path()
@@ -993,5 +1314,168 @@ vim.api.nvim_create_user_command('AgentIngestExternal', function()
   dest:close()
   vim.notify('Ingested file into .agent-context/external/: ' .. dest_path)
 end, {})
+
+-- Helper function to show save location selection popup
+local function show_save_location_popup(callback)
+  local save_options = {
+    { text = "1. Save to external/user (reference)", value = {"external_user"} },
+    { text = "2. Save to manual_inclusions (full inclusion)", value = {"manual_inclusions"} },
+    { text = "3. Save to both locations", value = {"external_user", "manual_inclusions"} }
+  }
+  
+  local input = vim.fn.input("Select save location (1-3): ")
+  local choice = tonumber(input)
+  
+  if choice and choice >= 1 and choice <= 3 then
+    callback(save_options[choice].value)
+  else
+    vim.notify("Invalid choice. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
+
+-- Helper function to call Python context injector
+local function call_context_injector(function_name, args)
+  local cmd = {
+    M.config.python_executable,
+    "-c",
+    string.format([[
+import sys
+sys.path.insert(0, '%s')
+from tools.context_injector import %s
+result = %s(%s)
+print("SUCCESS:" .. str(result))
+]], M.config.project_root, function_name, function_name, args)
+  }
+  
+  local result = vim.fn.system(cmd)
+  if vim.v.shell_error == 0 then
+    local success_match = result:match("SUCCESS:(.+)")
+    if success_match then
+      return true, success_match
+    end
+  end
+  return false, result
+end
+
+-- Context injection functions for external keybind definition
+M.inject_raw_text = function()
+  local text = vim.fn.input("Enter text to inject: ")
+  if text and text ~= "" then
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_raw_text", string.format("'%s', %s", text:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        vim.notify("Raw text injected successfully", vim.log.levels.INFO)
+      else
+        vim.notify("Failed to inject raw text: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("No text provided. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
+
+M.inject_clipboard = function()
+  local clipboard = vim.fn.getreg('+')
+  if clipboard and clipboard ~= "" then
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_clipboard", string.format("'%s', %s", clipboard:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        vim.notify("Clipboard content injected successfully", vim.log.levels.INFO)
+      else
+        vim.notify("Failed to inject clipboard: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("Clipboard is empty", vim.log.levels.WARN)
+  end
+end
+
+M.inject_filepath = function()
+  local filepath = vim.fn.input("Enter file path (or drag file here): ")
+  if filepath and filepath ~= "" then
+    -- Remove quotes if present (from drag and drop)
+    filepath = filepath:gsub('^["\'](.*)["\']$', '%1')
+    
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_filepath", string.format("'%s', %s", filepath:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        vim.notify("File injected successfully", vim.log.levels.INFO)
+      else
+        vim.notify("Failed to inject file: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("No file path provided. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
+
+M.inject_directory = function()
+  local dirpath = vim.fn.input("Enter directory path: ")
+  if dirpath and dirpath ~= "" then
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_directory", string.format("'%s', %s", dirpath:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        -- Parse the result to get file list
+        local files_data = vim.json.decode(result)
+        if files_data and files_data.files then
+          -- Show file list for confirmation
+          local file_list = "Files to be included:\n"
+          for i, file in ipairs(files_data.files) do
+            file_list = file_list .. string.format("%d. %s\n", i, file)
+          end
+          file_list = file_list .. "\nInclude all files? (y/N): "
+          
+          local confirm = vim.fn.input(file_list)
+          if confirm:lower() == 'y' then
+            local process_success, process_result = call_context_injector("process_directory_files", string.format("%s, %s", vim.json.encode(files_data.files), vim.json.encode(save_locations)))
+            if process_success then
+              vim.notify("Directory files injected successfully", vim.log.levels.INFO)
+            else
+              vim.notify("Failed to process directory files: " .. process_result, vim.log.levels.ERROR)
+            end
+          else
+            vim.notify("Directory injection cancelled", vim.log.levels.INFO)
+          end
+        end
+      else
+        vim.notify("Failed to scan directory: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("No directory path provided. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
+
+M.inject_website = function()
+  local url = vim.fn.input("Enter website URL: ")
+  if url and url ~= "" then
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_website", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        vim.notify("Website content injected successfully", vim.log.levels.INFO)
+      else
+        vim.notify("Failed to inject website: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("No URL provided. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
+
+M.inject_video = function()
+  local url = vim.fn.input("Enter video URL: ")
+  if url and url ~= "" then
+    show_save_location_popup(function(save_locations)
+      local success, result = call_context_injector("inject_video", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)))
+      if success then
+        vim.notify("Video transcript injected successfully", vim.log.levels.INFO)
+      else
+        vim.notify("Failed to inject video: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  else
+    vim.notify("No URL provided. Operation cancelled.", vim.log.levels.WARN)
+  end
+end
 
 return M 
