@@ -1,5 +1,5 @@
 
--- /home/alexpetro/.config/nvim/lua/rag_plugin/init.lua
+-- /home/alexpetro/.config/nvim/lua/main_plugin/init.lua
 -- Description: Standalone RAG Agent Neovim Plugin.
 
 -- --- Core Plugin Logic (formerly init.lua) ---
@@ -198,42 +198,65 @@ function M.open_config_popup()
     
     -- Ignore Patterns Section
     table.insert(state.menu_items, { text = "--- Ignore Patterns ---", type = "header" })
-    local available_patterns = get_available_items_from_config("AVAILABLE_IGNORE_PATTERNS")
-    local current_patterns_list = {}
     
-    -- Get active patterns using the new individual keys approach
+    -- Get all patterns from IGNORE_PATTERNS section (both active and inactive)
     local cmd = {
       M.config.python_executable,
       "-c",
       string.format([[
 import sys
 sys.path.insert(0, '%s')
-import config_util
-patterns = config_util.get_ignore_patterns()
-for pattern in patterns:
-    print(pattern)
-]], M.config.project_root)
+import configparser
+import os
+
+config_path = os.path.join('%s', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+if config.has_section('IGNORE_PATTERNS'):
+    for key, value in config.items('IGNORE_PATTERNS'):
+        print(f"{key}={value}")
+]], M.config.project_root, M.config.project_root)
     }
     
     local result = vim.fn.system(cmd)
+    local available_patterns = {}
+    local current_patterns_list = {}
+    
     if vim.v.shell_error == 0 then
-      for pattern in result:gmatch("[^\n]+") do
-        local trimmed_pattern = vim.trim(pattern)
-        if trimmed_pattern ~= "" then
-          table.insert(current_patterns_list, trimmed_pattern)
+      for line in result:gmatch("[^\n]+") do
+        local key, value = line:match("([^=]+)=(.+)")
+        if key and value then
+          local pattern = vim.trim(key)
+          local is_active = vim.trim(value):lower() == "true"
+          
+          -- Add to available patterns (use pattern as both name and id)
+          available_patterns[pattern] = pattern
+          
+          -- Add to current active patterns if active
+          if is_active then
+            table.insert(current_patterns_list, pattern)
+          end
         end
       end
     end
     
-    for name, id in pairs(available_patterns) do
+    -- Sort patterns for consistent display
+    local sorted_patterns = {}
+    for pattern, _ in pairs(available_patterns) do
+      table.insert(sorted_patterns, pattern)
+    end
+    table.sort(sorted_patterns)
+    
+    for _, pattern in ipairs(sorted_patterns) do
       local is_active = false
-      for _, pattern in ipairs(current_patterns_list) do
-        if vim.trim(pattern) == vim.trim(id) then
+      for _, active_pattern in ipairs(current_patterns_list) do
+        if vim.trim(pattern) == vim.trim(active_pattern) then
           is_active = true
           break
         end
       end
-      table.insert(state.menu_items, { text = name, id = id, type = "ignore_pattern", is_active = is_active })
+      table.insert(state.menu_items, { text = pattern, id = pattern, type = "ignore_pattern", is_active = is_active })
     end
     table.insert(state.menu_items, { text = "+ Add new ignore pattern", type = "add_ignore_pattern" })
     
@@ -455,17 +478,11 @@ if not config.has_section('IGNORE_PATTERNS'):
 # Add the new pattern as active
 config.set('IGNORE_PATTERNS', '%s', 'true')
 
-# Also add to available patterns if not already there
-if not config.has_section('AVAILABLE_IGNORE_PATTERNS'):
-    config.add_section('AVAILABLE_IGNORE_PATTERNS')
-
-config.set('AVAILABLE_IGNORE_PATTERNS', '%s', '%s')
-
 with open(config_path, 'w') as config_file:
     config.write(config_file)
 
 print("SUCCESS")
-]], M.config.project_root, M.config.project_root, new_pattern:gsub("'", "\\'"), new_pattern:gsub("'", "\\'"), new_pattern:gsub("'", "\\'"))
+]], M.config.project_root, M.config.project_root, new_pattern:gsub("'", "\\'"))
         }
         
         local result = vim.fn.system(cmd)
@@ -1128,6 +1145,7 @@ function M.open_context_popup()
   local flat = flatten_tree(tree, expanded)
   local selection = 1
   local preview_lines = {}
+  local clipboard = nil -- For copy/paste operations
   local win_height = vim.api.nvim_get_option('lines')
   local win_width = vim.api.nvim_get_option('columns')
   local width = math.floor(win_width * 0.7)
@@ -1221,7 +1239,18 @@ function M.open_context_popup()
       end
     end
     table.insert(lines, '')
-    table.insert(lines, '[j/k] Move  [h/l] Collapse/Expand  [Enter] Open  [:AgentIngestExternal] Ingest  [q/Esc] Quit')
+    -- Vertical help text that fits better in the left pane
+    table.insert(lines, 'Navigation:')
+    table.insert(lines, '  j/k - Move up/down')
+    table.insert(lines, '  h/l - Collapse/expand')
+    table.insert(lines, '  Enter - Open file')
+    table.insert(lines, '')
+    table.insert(lines, 'Actions:')
+    table.insert(lines, '  d - Delete file (with confirmation)')
+    table.insert(lines, '  c - Copy file path')
+    table.insert(lines, '  p - Paste file (copy from clipboard)')
+    table.insert(lines, '')
+    table.insert(lines, '  q/Esc/Tab+q - Quit')
     vim.api.nvim_buf_set_option(tree_buf, 'modifiable', true)
     vim.api.nvim_buf_set_lines(tree_buf, 0, -1, false, lines)
     vim.api.nvim_buf_set_option(tree_buf, 'modifiable', false)
@@ -1238,6 +1267,7 @@ function M.open_context_popup()
     local opts = { buffer = tree_buf, nowait = true, silent = true }
     vim.keymap.set('n', 'q', function() vim.api.nvim_win_close(main_win, true); vim.api.nvim_win_close(preview_win, true) end, opts)
     vim.keymap.set('n', '<Esc>', function() vim.api.nvim_win_close(main_win, true); vim.api.nvim_win_close(preview_win, true) end, opts)
+    vim.keymap.set('n', '<Tab>q', function() vim.api.nvim_win_close(main_win, true); vim.api.nvim_win_close(preview_win, true) end, opts)
     vim.keymap.set('n', 'j', function()
       if selection < #flat then selection = selection + 1 end
       draw_tree()
@@ -1266,6 +1296,131 @@ function M.open_context_popup()
         vim.api.nvim_win_close(preview_win, true)
         vim.api.nvim_win_close(main_win, true)
         vim.cmd('edit ' .. vim.fn.fnameescape(node.path))
+      end
+    end, opts)
+    
+    -- Delete file with confirmation
+    vim.keymap.set('n', 'd', function()
+      local node = flat[selection]
+      if node and node.type == 'file' then
+        -- Create a temporary confirmation popup
+        local confirm_buf = vim.api.nvim_create_buf(false, true)
+        local confirm_win = vim.api.nvim_open_win(confirm_buf, true, {
+          relative = 'editor',
+          width = 50,
+          height = 5,
+          row = math.floor((vim.api.nvim_get_option('lines') - 5) / 2),
+          col = math.floor((vim.api.nvim_get_option('columns') - 50) / 2),
+          border = 'rounded',
+          style = 'minimal',
+          title = ' Confirm Delete ',
+          title_pos = 'center',
+          focusable = true,
+          zindex = 300,
+        })
+        
+        vim.api.nvim_buf_set_option(confirm_buf, 'bufhidden', 'wipe')
+        vim.api.nvim_buf_set_option(confirm_buf, 'modifiable', false)
+        
+        local confirm_lines = {
+          'Delete file "' .. node.name .. '"?',
+          '',
+          'Enter - Confirm delete',
+          'Esc - Cancel'
+        }
+        vim.api.nvim_buf_set_option(confirm_buf, 'modifiable', true)
+        vim.api.nvim_buf_set_lines(confirm_buf, 0, -1, false, confirm_lines)
+        vim.api.nvim_buf_set_option(confirm_buf, 'modifiable', false)
+        
+        local function close_confirm()
+          if vim.api.nvim_win_is_valid(confirm_win) then
+            vim.api.nvim_win_close(confirm_win, true)
+          end
+        end
+        
+        local function confirm_delete()
+          close_confirm()
+          local success = os.remove(node.path)
+          if success then
+            vim.notify('Deleted file: ' .. node.name, vim.log.levels.INFO)
+            -- Rebuild tree and redraw
+            tree = build_tree(context_dir)
+            draw_tree()
+          else
+            vim.notify('Failed to delete file: ' .. node.name, vim.log.levels.ERROR)
+          end
+        end
+        
+        local function cancel_delete()
+          close_confirm()
+          vim.notify('Delete cancelled', vim.log.levels.INFO)
+        end
+        
+        -- Set keymaps for confirmation popup
+        local confirm_opts = { buffer = confirm_buf, nowait = true, silent = true }
+        vim.keymap.set('n', '<CR>', confirm_delete, confirm_opts)
+        vim.keymap.set('n', '<Esc>', cancel_delete, confirm_opts)
+        vim.keymap.set('n', 'q', cancel_delete, confirm_opts)
+      end
+    end, opts)
+    
+    -- Copy file path to clipboard
+    vim.keymap.set('n', 'c', function()
+      local node = flat[selection]
+      if node and node.type == 'file' then
+        clipboard = node.path
+        vim.notify('Copied file path: ' .. node.name, vim.log.levels.INFO)
+      end
+    end, opts)
+    
+    -- Paste file from clipboard
+    vim.keymap.set('n', 'p', function()
+      if not clipboard then
+        vim.notify('No file in clipboard. Use "c" to copy a file first.', vim.log.levels.WARN)
+        return
+      end
+        
+      local node = flat[selection]
+      if node and node.type == 'directory' then
+        local src_file = io.open(clipboard, 'r')
+        if not src_file then
+          vim.notify('Source file not found: ' .. clipboard, vim.log.levels.ERROR)
+          return
+        end
+        src_file:close()
+        
+        local filename = vim.fn.fnamemodify(clipboard, ':t')
+        local dest_path = node.path .. '/' .. filename
+        
+        -- Check if destination file exists
+        local dest_file = io.open(dest_path, 'r')
+        if dest_file then
+          dest_file:close()
+          local confirm = vim.fn.input('File exists. Overwrite? (y/N): ')
+          if confirm:lower() ~= 'y' then
+            vim.notify('Paste cancelled', vim.log.levels.INFO)
+            return
+          end
+        end
+        
+        -- Copy the file
+        local src = io.open(clipboard, 'r')
+        local content = src:read('*a')
+        src:close()
+        
+        local dest = io.open(dest_path, 'w')
+        if dest then
+          dest:write(content)
+          dest:close()
+          vim.notify('Pasted file to: ' .. dest_path, vim.log.levels.INFO)
+          -- Rebuild tree and redraw
+          tree = build_tree(context_dir)
+          draw_tree()
+        else
+          vim.notify('Failed to write destination file: ' .. dest_path, vim.log.levels.ERROR)
+        end
+      else
+        vim.notify('Select a directory to paste into', vim.log.levels.WARN)
       end
     end, opts)
   end
@@ -1318,43 +1473,72 @@ end, {})
 -- Helper function to show save location selection popup
 local function show_save_location_popup(callback)
   local save_options = {
-    { text = "1. Save to external/user (reference)", value = {"external_user"} },
-    { text = "2. Save to manual_inclusions (full inclusion)", value = {"manual_inclusions"} },
-    { text = "3. Save to both locations", value = {"external_user", "manual_inclusions"} }
+    { text = "j -> external references", value = {"external_user"} },
+    { text = "k -> manual inclusions", value = {"manual_inclusions"} },
+    { text = "l -> both", value = {"external_user", "manual_inclusions"} }
   }
   
-  local input = vim.fn.input("Select save location (1-3): ")
-  local choice = tonumber(input)
+  -- Display options
+  local options_text = "Select save location:\n"
+  for _, option in ipairs(save_options) do
+    options_text = options_text .. option.text .. "\n"
+  end
+  options_text = options_text .. "\nEnter j, k, or l: "
   
-  if choice and choice >= 1 and choice <= 3 then
-    callback(save_options[choice].value)
+  local input = vim.fn.input(options_text)
+  local choice = input:lower()
+  
+  if choice == "j" then
+    callback(save_options[1].value)
+  elseif choice == "k" then
+    callback(save_options[2].value)
+  elseif choice == "l" then
+    callback(save_options[3].value)
   else
     vim.notify("Invalid choice. Operation cancelled.", vim.log.levels.WARN)
   end
 end
 
--- Helper function to call Python context injector
-local function call_context_injector(function_name, args)
+-- Helper function to call Python context injector in background
+local function call_context_injector_async(function_name, args, on_complete)
   local cmd = {
     M.config.python_executable,
     "-c",
     string.format([[
 import sys
+import json
 sys.path.insert(0, '%s')
 from tools.context_injector import %s
 result = %s(%s)
-print("SUCCESS:" .. str(result))
+print("SUCCESS:" + json.dumps(result))
 ]], M.config.project_root, function_name, function_name, args)
   }
   
-  local result = vim.fn.system(cmd)
-  if vim.v.shell_error == 0 then
-    local success_match = result:match("SUCCESS:(.+)")
-    if success_match then
-      return true, success_match
+  local output = ""
+  local job_id = vim.fn.jobstart(cmd, {
+    cwd = M.config.project_root,
+    on_stdout = function(_, data, _)
+      if data then
+        for _, line in ipairs(data) do
+          output = output .. line .. "\n"
+        end
+      end
+    end,
+    on_exit = function(_, code, _)
+      if code == 0 then
+        local success_match = output:match("SUCCESS:(.+)")
+        if success_match then
+          on_complete(true, success_match)
+        else
+          on_complete(false, "Invalid response format: " .. output)
+        end
+      else
+        on_complete(false, "Process failed with code " .. code .. ": " .. output)
+      end
     end
-  end
-  return false, result
+  })
+  
+  return job_id
 end
 
 -- Context injection functions for external keybind definition
@@ -1362,12 +1546,19 @@ M.inject_raw_text = function()
   local text = vim.fn.input("Enter text to inject: ")
   if text and text ~= "" then
     show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_raw_text", string.format("'%s', %s", text:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        vim.notify("Raw text injected successfully", vim.log.levels.INFO)
-      else
-        vim.notify("Failed to inject raw text: " .. result, vim.log.levels.ERROR)
-      end
+      vim.notify("Processing text injection...", vim.log.levels.INFO)
+      call_context_injector_async("inject_raw_text", string.format("'%s', %s", text:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+        if success then
+          local saved_paths = vim.json.decode(result)
+          if saved_paths and #saved_paths > 0 then
+            vim.notify("Raw text injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+          else
+            vim.notify("Raw text injected successfully", vim.log.levels.INFO)
+          end
+        else
+          vim.notify("Failed to inject raw text: " .. result, vim.log.levels.ERROR)
+        end
+      end)
     end)
   else
     vim.notify("No text provided. Operation cancelled.", vim.log.levels.WARN)
@@ -1378,12 +1569,19 @@ M.inject_clipboard = function()
   local clipboard = vim.fn.getreg('+')
   if clipboard and clipboard ~= "" then
     show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_clipboard", string.format("'%s', %s", clipboard:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        vim.notify("Clipboard content injected successfully", vim.log.levels.INFO)
-      else
-        vim.notify("Failed to inject clipboard: " .. result, vim.log.levels.ERROR)
-      end
+      vim.notify("Processing clipboard injection...", vim.log.levels.INFO)
+      call_context_injector_async("inject_clipboard", string.format("'%s', %s", clipboard:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+        if success then
+          local saved_paths = vim.json.decode(result)
+          if saved_paths and #saved_paths > 0 then
+            vim.notify("Clipboard content injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+          else
+            vim.notify("Clipboard content injected successfully", vim.log.levels.INFO)
+          end
+        else
+          vim.notify("Failed to inject clipboard: " .. result, vim.log.levels.ERROR)
+        end
+      end)
     end)
   else
     vim.notify("Clipboard is empty", vim.log.levels.WARN)
@@ -1391,19 +1589,32 @@ M.inject_clipboard = function()
 end
 
 M.inject_filepath = function()
-  local filepath = vim.fn.input("Enter file path (or drag file here): ")
-  if filepath and filepath ~= "" then
-    -- Remove quotes if present (from drag and drop)
-    filepath = filepath:gsub('^["\'](.*)["\']$', '%1')
-    
-    show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_filepath", string.format("'%s', %s", filepath:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        vim.notify("File injected successfully", vim.log.levels.INFO)
-      else
-        vim.notify("Failed to inject file: " .. result, vim.log.levels.ERROR)
-      end
-    end)
+  local input = vim.fn.input("Enter file path (or drag file here): ")
+  if input and input ~= "" then
+    -- Extract the first continuous string (handles drag and drop with trailing spaces)
+    local filepath = input:match("^%s*([^%s]+)")
+    if filepath then
+      -- Remove quotes if present (from drag and drop)
+      filepath = filepath:gsub('^["\'](.*)["\']$', '%1')
+      
+      show_save_location_popup(function(save_locations)
+        vim.notify("Processing file injection...", vim.log.levels.INFO)
+        call_context_injector_async("inject_filepath", string.format("'%s', %s", filepath:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+          if success then
+            local saved_paths = vim.json.decode(result)
+            if saved_paths and #saved_paths > 0 then
+              vim.notify("File injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+            else
+              vim.notify("File injected successfully", vim.log.levels.INFO)
+            end
+          else
+            vim.notify("Failed to inject file: " .. result, vim.log.levels.ERROR)
+          end
+        end)
+      end)
+    else
+      vim.notify("No valid file path found in input. Operation cancelled.", vim.log.levels.WARN)
+    end
   else
     vim.notify("No file path provided. Operation cancelled.", vim.log.levels.WARN)
   end
@@ -1413,33 +1624,42 @@ M.inject_directory = function()
   local dirpath = vim.fn.input("Enter directory path: ")
   if dirpath and dirpath ~= "" then
     show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_directory", string.format("'%s', %s", dirpath:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        -- Parse the result to get file list
-        local files_data = vim.json.decode(result)
-        if files_data and files_data.files then
-          -- Show file list for confirmation
-          local file_list = "Files to be included:\n"
-          for i, file in ipairs(files_data.files) do
-            file_list = file_list .. string.format("%d. %s\n", i, file)
-          end
-          file_list = file_list .. "\nInclude all files? (y/N): "
-          
-          local confirm = vim.fn.input(file_list)
-          if confirm:lower() == 'y' then
-            local process_success, process_result = call_context_injector("process_directory_files", string.format("%s, %s", vim.json.encode(files_data.files), vim.json.encode(save_locations)))
-            if process_success then
-              vim.notify("Directory files injected successfully", vim.log.levels.INFO)
-            else
-              vim.notify("Failed to process directory files: " .. process_result, vim.log.levels.ERROR)
+      vim.notify("Scanning directory...", vim.log.levels.INFO)
+      call_context_injector_async("inject_directory", string.format("'%s', %s", dirpath:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+        if success then
+          -- Parse the result to get file list
+          local files_data = vim.json.decode(result)
+          if files_data and files_data.files then
+            -- Show file list for confirmation
+            local file_list = "Files to be included:\n"
+            for i, file in ipairs(files_data.files) do
+              file_list = file_list .. string.format("%d. %s\n", i, file)
             end
-          else
-            vim.notify("Directory injection cancelled", vim.log.levels.INFO)
+            file_list = file_list .. "\nInclude all files? (y/N): "
+            
+            local confirm = vim.fn.input(file_list)
+            if confirm:lower() == 'y' then
+              vim.notify("Processing directory files...", vim.log.levels.INFO)
+              call_context_injector_async("process_directory_files", string.format("%s, %s", vim.json.encode(files_data.files), vim.json.encode(save_locations)), function(process_success, process_result)
+                if process_success then
+                  local saved_paths = vim.json.decode(process_result)
+                  if saved_paths and #saved_paths > 0 then
+                    vim.notify("Directory files injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+                  else
+                    vim.notify("Directory files injected successfully", vim.log.levels.INFO)
+                  end
+                else
+                  vim.notify("Failed to process directory files: " .. process_result, vim.log.levels.ERROR)
+                end
+              end)
+            else
+              vim.notify("Directory injection cancelled", vim.log.levels.INFO)
+            end
           end
+        else
+          vim.notify("Failed to scan directory: " .. result, vim.log.levels.ERROR)
         end
-      else
-        vim.notify("Failed to scan directory: " .. result, vim.log.levels.ERROR)
-      end
+      end)
     end)
   else
     vim.notify("No directory path provided. Operation cancelled.", vim.log.levels.WARN)
@@ -1450,12 +1670,19 @@ M.inject_website = function()
   local url = vim.fn.input("Enter website URL: ")
   if url and url ~= "" then
     show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_website", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        vim.notify("Website content injected successfully", vim.log.levels.INFO)
-      else
-        vim.notify("Failed to inject website: " .. result, vim.log.levels.ERROR)
-      end
+      vim.notify("Processing website content...", vim.log.levels.INFO)
+      call_context_injector_async("inject_website", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+        if success then
+          local saved_paths = vim.json.decode(result)
+          if saved_paths and #saved_paths > 0 then
+            vim.notify("Website content injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+          else
+            vim.notify("Website content injected successfully", vim.log.levels.INFO)
+          end
+        else
+          vim.notify("Failed to inject website: " .. result, vim.log.levels.ERROR)
+        end
+      end)
     end)
   else
     vim.notify("No URL provided. Operation cancelled.", vim.log.levels.WARN)
@@ -1466,16 +1693,55 @@ M.inject_video = function()
   local url = vim.fn.input("Enter video URL: ")
   if url and url ~= "" then
     show_save_location_popup(function(save_locations)
-      local success, result = call_context_injector("inject_video", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)))
-      if success then
-        vim.notify("Video transcript injected successfully", vim.log.levels.INFO)
-      else
-        vim.notify("Failed to inject video: " .. result, vim.log.levels.ERROR)
-      end
+      vim.notify("Processing video transcript (this may take a while)...", vim.log.levels.INFO)
+      call_context_injector_async("inject_video", string.format("'%s', %s", url:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+        if success then
+          local saved_paths = vim.json.decode(result)
+          if saved_paths and #saved_paths > 0 then
+            vim.notify("Video transcript injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+          else
+            vim.notify("Video transcript injected successfully", vim.log.levels.INFO)
+          end
+        else
+          vim.notify("Failed to inject video: " .. result, vim.log.levels.ERROR)
+        end
+      end)
     end)
   else
     vim.notify("No URL provided. Operation cancelled.", vim.log.levels.WARN)
   end
+end
+
+M.inject_current_buffer = function()
+  local filepath = vim.api.nvim_buf_get_name(0)
+  if not filepath or filepath == "" then
+    vim.notify("Current buffer has no associated file. Operation cancelled.", vim.log.levels.WARN)
+    return
+  end
+  
+  -- Check if file exists
+  local file = io.open(filepath, "r")
+  if not file then
+    vim.notify("File does not exist or is not readable: " .. filepath, vim.log.levels.ERROR)
+    return
+  end
+  file:close()
+  
+  show_save_location_popup(function(save_locations)
+    vim.notify("Processing current buffer file injection...", vim.log.levels.INFO)
+    call_context_injector_async("inject_filepath", string.format("'%s', %s", filepath:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+      if success then
+        local saved_paths = vim.json.decode(result)
+        if saved_paths and #saved_paths > 0 then
+          vim.notify("Current buffer file injected successfully to: " .. table.concat(saved_paths, ", "), vim.log.levels.INFO)
+        else
+          vim.notify("Current buffer file injected successfully", vim.log.levels.INFO)
+        end
+      else
+        vim.notify("Failed to inject current buffer file: " .. result, vim.log.levels.ERROR)
+      end
+    end)
+  end)
 end
 
 return M 

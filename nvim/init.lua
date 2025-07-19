@@ -758,6 +758,7 @@ vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context
 vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "[a]i inject [t]ext" })
 vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "[a]i inject [c]lipboard" })
 vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "[a]i inject [f]ile" })
+vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "[a]i inject [f]ile" })
 vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "[a]i inject [d]irectory" })
 vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "[a]i inject [w]ebsite" })
 vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "[a]i inject [v]ideo" })
