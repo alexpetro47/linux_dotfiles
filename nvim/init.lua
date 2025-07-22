@@ -755,13 +755,13 @@ vim.keymap.set("n", "<leader>aP", function() require('main_plugin').stop_agent()
 vim.keymap.set("n", "<leader>as", function() require('main_plugin').open_config_popup() end, { desc = "[a]i [s]ettings" })
 vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context_popup() end, { desc = "[a]i [c]ontext" })
 -- Context injection functions
-vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "[a]i inject [t]ext" })
-vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "[a]i inject [c]lipboard" })
-vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "[a]i inject [f]ile" })
-vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "[a]i inject [f]ile" })
-vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "[a]i inject [d]irectory" })
-vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "[a]i inject [w]ebsite" })
-vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "[a]i inject [v]ideo" })
+vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "text" })
+vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "clipboard" })
+vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "filepath" })
+vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "current file" })
+vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "directory" })
+vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "website" })
+vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "video" })
 
 
 
