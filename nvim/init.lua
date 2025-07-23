@@ -197,10 +197,11 @@ vim.keymap.set('n', '<leader>DE', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 
 vim.keymap.set('n', '<leader>DT', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
-vim.keymap.set('n', '<leader>c1', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'convert pptx to pdf' })
-vim.keymap.set('n', '<leader>c2', ':!pandoc % --wrap=none -f gfm -o %:r.pdf<CR>', { desc = 'convert markdown to pdf' })
-vim.keymap.set('n', '<leader>c3', ":! firefox<CR>:!markmap % --offline <CR>", {desc = 'create markmap of current file'})
-vim.keymap.set('v', '<leader>c4', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
+vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
+vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none -f gfm -o %:r.pdf<CR>', { desc = 'markdown -> pdf' })
+vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'markdown -> txt' })
+vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'markdown -> mind-map (html)'})
+-- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
 --Debugging

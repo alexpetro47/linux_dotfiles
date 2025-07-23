@@ -6,23 +6,54 @@
 
 local M = {}
 
--- Default configuration
+-- Default configuration (now only for window UI, not agent settings)
 M.config = {
-  project_root = "/home/alexpetro/Documents/code/local-rag",
-  python_executable = "/home/alexpetro/Documents/code/local-rag/venv/bin/python3",
-  buffer_name = "[RAG]",
   window = {
     split_direction = "vsplit",
     width = 80,
   },
+  config_path = "/home/alexpetro/Documents/code/local-agi/config.ini",
 }
+
+-- Load agent config from config.ini [PROJECT] section
+local function load_agent_config()
+  local get_config_value = function(section, key)
+    local file = io.open(M.config.config_path, "r")
+    if not file then return nil end
+    local lines = {}
+    for line in file:lines() do table.insert(lines, line) end
+    file:close()
+    local in_section = false
+    for _, line in ipairs(lines) do
+      if line:match("^%[" .. section .. "%]$") then
+        in_section = true
+      elseif in_section and line:match("^%[") then
+        break
+      elseif in_section then
+        local k, v = line:match("^(.-)%s*=%s*(.*)")
+        if k and vim.trim(k) == key then return vim.trim(v) end
+      end
+    end
+    return nil
+  end
+  M.config.project_root = get_config_value("PROJECT", "project_root")
+  M.config.python_executable = get_config_value("PROJECT", "python_executable")
+  M.config.buffer_name = get_config_value("PROJECT", "buffer_name")
+  M.config.home_dir = get_config_value("PROJECT", "home_dir")
+  if not (M.config.project_root and M.config.python_executable and M.config.buffer_name and M.config.home_dir) then
+    vim.notify("[RAG] Error: project_root, python_executable, buffer_name, and HOME_DIR must be set in [PROJECT] section of config.ini. Plugin will not function.", vim.log.levels.ERROR)
+    return
+  end
+end
+
+load_agent_config()
 
 -- Session state (private to the module)
 local session = {
   job_id = nil,
   buffer = nil,
   model_override = nil,
-  prompt_override = nil,
+  mode_override = nil,
   tools_used = nil,
 }
 
@@ -175,7 +206,7 @@ function M.open_config_popup()
     
     -- Get current settings from config
     local current_model_id = get_config_value("SETTINGS", "model") or ""
-    local current_prompt_key = get_config_value("SETTINGS", "prompt_name") or "default"
+    local current_mode_key = get_config_value("SETTINGS", "mode_name") or "default"
     local current_source_dir = get_config_value("SETTINGS", "source_dir") or ""
     
     -- Source Directory Section
@@ -280,21 +311,21 @@ if config.has_section('IGNORE_PATTERNS'):
     
     table.insert(state.menu_items, { text = "", type = "spacer" })
     
-    -- Prompts Section (existing, updated to use full names)
-    table.insert(state.menu_items, { text = "--- Modes (Prompts) ---", type = "header" })
-    local available_prompts = get_available_items_from_config("AVAILABLE_PROMPTS")
-    local sorted_prompt_names = {}
-    for name, _ in pairs(available_prompts) do
-      table.insert(sorted_prompt_names, name)
+    -- Modes Section (existing, updated to use full names)
+    table.insert(state.menu_items, { text = "--- Modes ---", type = "header" })
+    local available_modes = get_available_items_from_config("AVAILABLE_MODES")
+    local sorted_mode_names = {}
+    for name, _ in pairs(available_modes) do
+      table.insert(sorted_mode_names, name)
     end
-    table.sort(sorted_prompt_names)
+    table.sort(sorted_mode_names)
     
-    for _, name in ipairs(sorted_prompt_names) do
-      local id = available_prompts[name]
-      local is_active = (id == current_prompt_key)
-      table.insert(state.menu_items, { text = id, id = id, type = "prompt", is_active = is_active })
+    for _, name in ipairs(sorted_mode_names) do
+      local id = available_modes[name]
+      local is_active = (id == current_mode_key)
+      table.insert(state.menu_items, { text = id, id = id, type = "mode", is_active = is_active })
     end
-    table.insert(state.menu_items, { text = "+ Add new prompt", type = "add_prompt" })
+    table.insert(state.menu_items, { text = "+ Add new mode", type = "add_mode" })
   end
 
   -- Draws the menu in the buffer
@@ -304,11 +335,11 @@ if config.has_section('IGNORE_PATTERNS'):
     local lines = {}
     for i, item in ipairs(state.menu_items) do
       local line
-      if item.type == "model" or item.type == "prompt" or item.type == "source_dir" or item.type == "ignore_pattern" then
+      if item.type == "model" or item.type == "mode" or item.type == "source_dir" or item.type == "ignore_pattern" then
         local active_marker = item.is_active and "* " or "  "
         local select_marker = (i == state.selection) and "> " or "  "
         line = select_marker .. active_marker .. item.text
-      elseif item.type == "add_model" or item.type == "add_prompt" or item.type == "add_source_dir" or item.type == "add_ignore_pattern" then
+      elseif item.type == "add_model" or item.type == "add_mode" or item.type == "add_source_dir" or item.type == "add_ignore_pattern" then
         local select_marker = (i == state.selection) and "> " or "  "
         line = select_marker .. item.text
       else
@@ -376,8 +407,8 @@ if config.has_section('IGNORE_PATTERNS'):
       if state.selection < 1 then state.selection = #state.menu_items end
       
       local item_type = state.menu_items[state.selection].type
-      if item_type == "model" or item_type == "prompt" or item_type == "source_dir" or item_type == "ignore_pattern" or 
-         item_type == "add_model" or item_type == "add_prompt" or item_type == "add_source_dir" or item_type == "add_ignore_pattern" then
+      if item_type == "model" or item_type == "mode" or item_type == "source_dir" or item_type == "ignore_pattern" or 
+         item_type == "add_model" or item_type == "add_mode" or item_type == "add_source_dir" or item_type == "add_ignore_pattern" then
         break -- Found a selectable item
       end
       if state.selection == original_selection then break end -- Prevent infinite loop
@@ -395,7 +426,7 @@ if config.has_section('IGNORE_PATTERNS'):
       vim.defer_fn(function()
         require('telescope.builtin').find_files({
           prompt_title = "Select Source Directory",
-          cwd = "/home/alexpetro/",
+          cwd = M.config.home_dir,
           attach_mappings = function(prompt_bufnr, map)
             local actions = require('telescope.actions')
             local action_state = require('telescope.actions.state')
@@ -403,7 +434,7 @@ if config.has_section('IGNORE_PATTERNS'):
             map('i', '<CR>', function()
               local selection = action_state.get_selected_entry()
               if selection then
-                local selected_path = "/home/alexpetro/" .. selection[1]
+                local selected_path = M.config.home_dir .. "/" .. selection[1]
                 -- Add to available source directories list
                 local cmd = {
                   M.config.python_executable,
@@ -537,10 +568,10 @@ print("SUCCESS")
           vim.notify("Failed to add model: " .. result, vim.log.levels.ERROR)
         end
       end
-    elseif item.type == "add_prompt" then
-      local new_prompt = vim.fn.input("Enter new prompt name: ")
-      if new_prompt and new_prompt ~= "" then
-        -- Add to available prompts list first
+    elseif item.type == "add_mode" then
+      local new_mode = vim.fn.input("Enter new mode ID: ")
+      if new_mode and new_mode ~= "" then
+        -- Add to available modes list first
         local cmd = {
           M.config.python_executable,
           "-c",
@@ -554,28 +585,28 @@ config_path = os.path.join('%s', 'config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
-if not config.has_section('AVAILABLE_PROMPTS'):
-    config.add_section('AVAILABLE_PROMPTS')
+if not config.has_section('AVAILABLE_MODES'):
+    config.add_section('AVAILABLE_MODES')
 
-config.set('AVAILABLE_PROMPTS', '%s', '%s')
+config.set('AVAILABLE_MODES', '%s', '%s')
 
 with open(config_path, 'w') as config_file:
     config.write(config_file)
 print("SUCCESS")
-]], M.config.project_root, M.config.project_root, new_prompt:gsub("'", "\\'"), new_prompt:gsub("'", "\\'"))
+]], M.config.project_root, M.config.project_root, new_mode:gsub("'", "\\'"), new_mode:gsub("'", "\\'"))
         }
         
         local result = vim.fn.system(cmd)
         if vim.v.shell_error == 0 then
-          -- Then set as active prompt
-          set_config_value("prompts", new_prompt)
+          -- Then set as active mode
+          set_config_value("modes", new_mode)
           vim.defer_fn(function()
-            vim.notify("Added prompt to list and set as active: " .. new_prompt)
+            vim.notify("Added mode to list and set as active: " .. new_mode)
             build_menu_items()
             draw_menu()
           end, 100)
         else
-          vim.notify("Failed to add prompt: " .. result, vim.log.levels.ERROR)
+          vim.notify("Failed to add mode: " .. result, vim.log.levels.ERROR)
         end
       end
     elseif item.type == "source_dir" then
@@ -638,10 +669,10 @@ print(action)
         build_menu_items()
         draw_menu()
       end, 100)
-    elseif item.type == "prompt" then
-      set_config_value("prompts", item.id)
+    elseif item.type == "mode" then
+      set_config_value("modes", item.id)
       vim.defer_fn(function()
-        vim.notify("Set prompt to: " .. item.text)
+        vim.notify("Set mode to: " .. item.text)
         build_menu_items()
         draw_menu()
       end, 100)
@@ -686,7 +717,7 @@ function M.submit()
   end
   vim.api.nvim_buf_set_lines(buf, -1, -1, false, { "", "---", "[Agent] Thinking..." })
   vim.api.nvim_win_set_cursor(win, { vim.api.nvim_buf_line_count(buf), 0 })
-  local rag_script = M.config.project_root .. "/rag.py"
+  local rag_script = M.config.project_root .. "/main.py"
   local command = { M.config.python_executable, rag_script }
   
   -- Apply session overrides first, then fall back to config file settings
@@ -696,10 +727,10 @@ function M.submit()
     table.insert(command, model_to_use)
   end
   
-  local prompt_to_use = session.prompt_override or get_config_value("SETTINGS", "system_prompt_name")
-  if prompt_to_use then
-    table.insert(command, "--system-prompt-name")
-    table.insert(command, prompt_to_use)
+  local mode_to_use = session.mode_override or get_config_value("SETTINGS", "mode_name")
+  if mode_to_use then
+    table.insert(command, "--mode-name")
+    table.insert(command, mode_to_use)
   end
 
   session.tools_used = nil -- Reset before job start
@@ -766,7 +797,7 @@ function M.submit()
         end
       end
       
-      local prompt_name = session.prompt_override or get_config_value("SETTINGS", "system_prompt_name") or "default"
+      local mode_name = session.mode_override or get_config_value("SETTINGS", "mode_name") or "default"
       local tools_str = session.tools_used
       if not tools_str or tools_str == "" then
         tools_str = "none"
@@ -788,7 +819,7 @@ function M.submit()
         "   " .. source_dir_full,
         "🤖 **Model & Configuration**",
         "   Model: " .. model_display_name,
-        "   Mode:  " .. prompt_name,
+        "   Mode:  " .. mode_name,
         "🔧 **Tools Used**",
         "   " .. tools_str,
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
@@ -1570,7 +1601,7 @@ M.inject_clipboard = function()
   if clipboard and clipboard ~= "" then
     show_save_location_popup(function(save_locations)
       vim.notify("Processing clipboard injection...", vim.log.levels.INFO)
-      call_context_injector_async("inject_clipboard", string.format("'%s', %s", clipboard:gsub("'", "\\'"), vim.json.encode(save_locations)), function(success, result)
+      call_context_injector_async("inject_clipboard", string.format("%s, %s", vim.json.encode(clipboard), vim.json.encode(save_locations)), function(success, result)
         if success then
           local saved_paths = vim.json.decode(result)
           if saved_paths and #saved_paths > 0 then
