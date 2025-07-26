@@ -12,7 +12,7 @@ M.config = {
     split_direction = "vsplit",
     width = 80,
   },
-  config_path = "/home/alexpetro/Documents/code/local-agi/config.ini",
+  config_path = "/home/alexpetro/Documents/code/local-agi/config/config.ini",
 }
 
 -- Load agent config from config.ini [PROJECT] section
@@ -108,7 +108,7 @@ end
 
 --- Gets a single value from a section in config.ini
 local function get_config_value(section_name, key_name)
-  local config_path = M.config.project_root .. "/config.ini"
+  local config_path = M.config.config_path
   local file = io.open(config_path, "r")
   if not file then
     vim.notify("config.ini not found at " .. config_path, vim.log.levels.WARN)
@@ -142,7 +142,7 @@ end
 ---@return table A table where keys are display names and values are IDs.
 local function get_available_items_from_config(section_name)
   local items = {}
-  local config_path = M.config.project_root .. "/config.ini"
+  local config_path = M.config.config_path
   local file = io.open(config_path, "r")
   if not file then
     vim.notify("config.ini not found at " .. config_path, vim.log.levels.WARN)
@@ -170,23 +170,35 @@ end
 
 
 --- Sets a value in config.ini by calling the python utility
-local function set_config_value(item_type, value)
-  local cmd = {
-    M.config.python_executable,
-    M.config.project_root .. "/config_util.py",
-    "set",
-    item_type,
-    value
-  }
+local function set_config_value(item_type, value, extra)
+  local cmd
+  if item_type == "ignore_pattern" then
+    -- value = pattern, extra = true/false
+    cmd = {
+      M.config.python_executable,
+      M.config.project_root .. "/config/config_helper.py",
+      "set",
+      "ignore_pattern",
+      value,
+      extra
+    }
+  else
+    cmd = {
+      M.config.python_executable,
+      M.config.project_root .. "/config/config_helper.py",
+      "set",
+      item_type,
+      value
+    }
+  end
   local job_id = vim.fn.jobstart(cmd, {
     cwd = M.config.project_root,
     on_exit = function(_, code)
       if code ~= 0 then
-        vim.notify("Error setting config value via script.", vim.log.levels.ERROR)
+        vim.notify("Error setting config value via config_helper.py.", vim.log.levels.ERROR)
       end
     end
   })
-  -- Wait for the job to complete to ensure the file is written
   vim.fn.jobwait({job_id})
 end
 
@@ -240,7 +252,7 @@ sys.path.insert(0, '%s')
 import configparser
 import os
 
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
@@ -293,7 +305,7 @@ if config.has_section('IGNORE_PATTERNS'):
     
     table.insert(state.menu_items, { text = "", type = "spacer" })
     
-    -- Models Section (existing, updated to use full names)
+    -- Models Section (now only uses [AVAILABLE_MODELS] from config.ini)
     table.insert(state.menu_items, { text = "--- Models ---", type = "header" })
     local available_models = get_available_items_from_config("AVAILABLE_MODELS")
     local sorted_model_names = {}
@@ -301,10 +313,9 @@ if config.has_section('IGNORE_PATTERNS'):
       table.insert(sorted_model_names, name)
     end
     table.sort(sorted_model_names)
-    
     for _, name in ipairs(sorted_model_names) do
       local id = available_models[name]
-      local is_active = (id == current_model_id)
+      local is_active = (vim.trim(id) == vim.trim(current_model_id))
       table.insert(state.menu_items, { text = id, id = id, type = "model", is_active = is_active })
     end
     table.insert(state.menu_items, { text = "+ Add new model", type = "add_model" })
@@ -353,6 +364,12 @@ if config.has_section('IGNORE_PATTERNS'):
     vim.api.nvim_buf_set_option(state.buf, 'modifiable', true)
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
     vim.api.nvim_buf_set_option(state.buf, 'modifiable', false)
+  end
+
+  -- Helper to reload config after a change
+  local function reload_and_redraw()
+    build_menu_items()
+    draw_menu()
   end
 
   -- Create and configure the floating window
@@ -445,7 +462,7 @@ sys.path.insert(0, '%s')
 import configparser
 import os
 
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
@@ -499,7 +516,7 @@ sys.path.insert(0, '%s')
 import configparser
 import os
 
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
@@ -520,8 +537,7 @@ print("SUCCESS")
         if vim.v.shell_error == 0 then
           vim.defer_fn(function()
             vim.notify("Added ignore pattern: " .. new_pattern)
-            build_menu_items()
-            draw_menu()
+            reload_and_redraw()
           end, 100)
         else
           vim.notify("Failed to add ignore pattern: " .. result, vim.log.levels.ERROR)
@@ -530,40 +546,40 @@ print("SUCCESS")
     elseif item.type == "add_model" then
       local new_model = vim.fn.input("Enter new model ID: ")
       if new_model and new_model ~= "" then
+        -- Check for uniqueness
+        local available_models = get_available_items_from_config("AVAILABLE_MODELS")
+        for _, id in pairs(available_models) do
+          if vim.trim(id) == vim.trim(new_model) then
+            vim.notify("Model already exists in AVAILABLE_MODELS.", vim.log.levels.WARN)
+            return
+          end
+        end
         -- Add to available models list first
         local cmd = {
           M.config.python_executable,
           "-c",
-          string.format([[
-import sys
+          string.format([[import sys
 sys.path.insert(0, '%s')
 import configparser
 import os
-
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
-
 if not config.has_section('AVAILABLE_MODELS'):
     config.add_section('AVAILABLE_MODELS')
-
 config.set('AVAILABLE_MODELS', '%s', '%s')
-
 with open(config_path, 'w') as config_file:
     config.write(config_file)
-print("SUCCESS")
-]], M.config.project_root, M.config.project_root, new_model:gsub("'", "\\'"), new_model:gsub("'", "\\'"))
+print("SUCCESS")]], M.config.project_root, M.config.project_root, new_model:gsub("'", "\\'"), new_model:gsub("'", "\\'"))
         }
-        
         local result = vim.fn.system(cmd)
         if vim.v.shell_error == 0 then
           -- Then set as active model
-          set_config_value("models", new_model)
+          set_config_value("model", new_model)
           vim.defer_fn(function()
             vim.notify("Added model to list and set as active: " .. new_model)
-            build_menu_items()
-            draw_menu()
-          end, 100)
+            reload_and_redraw()
+          end, 150)
         else
           vim.notify("Failed to add model: " .. result, vim.log.levels.ERROR)
         end
@@ -581,7 +597,7 @@ sys.path.insert(0, '%s')
 import configparser
 import os
 
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
@@ -602,8 +618,7 @@ print("SUCCESS")
           set_config_value("modes", new_mode)
           vim.defer_fn(function()
             vim.notify("Added mode to list and set as active: " .. new_mode)
-            build_menu_items()
-            draw_menu()
+            reload_and_redraw()
           end, 100)
         else
           vim.notify("Failed to add mode: " .. result, vim.log.levels.ERROR)
@@ -613,8 +628,7 @@ print("SUCCESS")
       set_config_value("source_dir", item.id)
       vim.defer_fn(function()
         vim.notify("Set source directory to: " .. item.text)
-        build_menu_items()
-        draw_menu()
+        reload_and_redraw()
       end, 100)
     elseif item.type == "ignore_pattern" then
       -- Toggle pattern on/off using individual keys approach
@@ -627,7 +641,7 @@ sys.path.insert(0, '%s')
 import configparser
 import os
 
-config_path = os.path.join('%s', 'config.ini')
+config_path = os.path.join('%s', 'config/config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
@@ -656,25 +670,22 @@ print(action)
         local action = vim.trim(result)
         vim.defer_fn(function()
           vim.notify("Pattern " .. action .. ": " .. item.text)
-          build_menu_items()
-          draw_menu()
+          reload_and_redraw()
         end, 100)
       else
         vim.notify("Failed to toggle pattern: " .. result, vim.log.levels.ERROR)
       end
     elseif item.type == "model" then
-      set_config_value("models", item.id)
+      set_config_value("model", item.id)
       vim.defer_fn(function()
         vim.notify("Set model to: " .. item.text)
-        build_menu_items()
-        draw_menu()
-      end, 100)
+        reload_and_redraw()
+      end, 150)
     elseif item.type == "mode" then
       set_config_value("modes", item.id)
       vim.defer_fn(function()
         vim.notify("Set mode to: " .. item.text)
-        build_menu_items()
-        draw_menu()
+        reload_and_redraw()
       end, 100)
     end
   end
@@ -720,18 +731,8 @@ function M.submit()
   local rag_script = M.config.project_root .. "/main.py"
   local command = { M.config.python_executable, rag_script }
   
-  -- Apply session overrides first, then fall back to config file settings
-  local model_to_use = session.model_override or get_config_value("SETTINGS", "model")
-  if model_to_use then
-    table.insert(command, "--model")
-    table.insert(command, model_to_use)
-  end
-  
-  local mode_to_use = session.mode_override or get_config_value("SETTINGS", "mode_name")
-  if mode_to_use then
-    table.insert(command, "--mode-name")
-    table.insert(command, mode_to_use)
-  end
+  -- Note: main.py loads model and mode from config.ini automatically
+  -- Session overrides are not supported by main.py at this time
 
   session.tools_used = nil -- Reset before job start
   local thinking_line_num = vim.api.nvim_buf_line_count(buf)
@@ -774,60 +775,7 @@ function M.submit()
       end
     end,
     on_exit = function(_, code)
-      local status = code == 0 and "Finished" or "Error"
-
-      local source_dir_full = get_config_value("SETTINGS", "source_dir") or "unknown_dir"
-      local dir_name = vim.fn.fnamemodify(source_dir_full, ':t')
-
-      local model_id = session.model_override or get_config_value("SETTINGS", "model")
-      local model_display_name = "default"
-      if model_id then
-        local cmd_path = M.config.project_root .. "/config_util.py"
-        local cmd_str = string.format("cd %s && %s %s get model-name %s",
-                                      M.config.project_root,
-                                      M.config.python_executable,
-                                      cmd_path,
-                                      model_id)
-        local result = vim.fn.system(cmd_str)
-
-        if vim.v.shell_error ~= 0 then
-            model_display_name = vim.fn.fnamemodify(model_id, ':t')
-        else
-          model_display_name = vim.trim(result)
-        end
-      end
-      
-      local mode_name = session.mode_override or get_config_value("SETTINGS", "mode_name") or "default"
-      local tools_str = session.tools_used
-      if not tools_str or tools_str == "" then
-        tools_str = "none"
-      end
-      
-      local final_status = status
-      local status_emoji = "✅"
-      if status == "Error" then
-        final_status = status .. " (code: " .. code .. ")"
-        status_emoji = "❌"
-      end
-
-      local lines_to_add = {
-        "",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        status_emoji .. " SESSION COMPLETE: " .. final_status,
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "📁 **Working Directory**",
-        "   " .. source_dir_full,
-        "🤖 **Model & Configuration**",
-        "   Model: " .. model_display_name,
-        "   Mode:  " .. mode_name,
-        "🔧 **Tools Used**",
-        "   " .. tools_str,
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "",
-        "",
-      }
-      
-      vim.api.nvim_buf_set_lines(buf, -1, -1, false, lines_to_add)
+      -- Remove the block that appends session details to the buffer after agent completion
       session.job_id = nil
       session.tools_used = nil -- Clean up
       vim.api.nvim_buf_set_option(buf, "modified", false)
@@ -840,7 +788,7 @@ end
 -- Helper to get context_dir path from config.ini
 local function get_context_dir_path()
   local source_dir = get_config_value("SETTINGS", "source_dir")
-  local context_dir = get_config_value("SETTINGS", "context_dir") or ".agent-context/"
+  local context_dir = get_config_value("SETTINGS", "context_dir") or ".agent_context/"
   if not source_dir or source_dir == "" then
     vim.notify("Error: source_dir is not set in config.ini. Aborting context operation.", vim.log.levels.ERROR)
     return nil
@@ -848,7 +796,7 @@ local function get_context_dir_path()
   return source_dir .. "/" .. context_dir
 end
 
--- AgentInjectFile: Injects the full contents of the current file into .agent-context/session/ under the configured source_dir
+-- AgentInjectFile: Injects the full contents of the current file into .agent_context/ under the configured source_dir
 vim.api.nvim_create_user_command('AgentInjectFile', function()
   -- Get context dir path, strictly relative to source_dir from config.ini
   local context_dir = get_context_dir_path()
@@ -1122,7 +1070,7 @@ M.inject_url_content = nil
 
 -- Agent Context Popup (central floating window, nvim-tree style, preview, file ingest command)
 function M.open_context_popup()
-  -- Helper to get .agent-context/external/ path
+  -- Helper to get .agent_context/external/ path
   local function get_external_dir()
     local context_dir = get_context_dir_path()
     if not context_dir then return nil end
@@ -1131,7 +1079,7 @@ function M.open_context_popup()
     return ext_dir
   end
 
-  -- Recursively build a tree of .agent-context
+  -- Recursively build a tree of .agent_context
   local function build_tree(dir, depth)
     depth = depth or 0
     local tree = {}
@@ -1326,6 +1274,10 @@ function M.open_context_popup()
       if node and node.type == 'file' then
         vim.api.nvim_win_close(preview_win, true)
         vim.api.nvim_win_close(main_win, true)
+        -- Open file in 80-width vertical split
+        vim.cmd('vsplit')
+        local win = vim.api.nvim_get_current_win()
+        vim.api.nvim_win_set_width(win, 80)
         vim.cmd('edit ' .. vim.fn.fnameescape(node.path))
       end
     end, opts)
@@ -1458,7 +1410,7 @@ function M.open_context_popup()
   set_keymaps()
 end
 
--- Command to ingest a file into .agent-context/external/
+-- Command to ingest a file into .agent_context/external/
 vim.api.nvim_create_user_command('AgentIngestExternal', function()
   local ext_dir = (function()
     local context_dir = get_context_dir_path()
@@ -1498,7 +1450,7 @@ vim.api.nvim_create_user_command('AgentIngestExternal', function()
   end
   dest:write(content)
   dest:close()
-  vim.notify('Ingested file into .agent-context/external/: ' .. dest_path)
+  vim.notify('Ingested file into .agent_context/external/: ' .. dest_path)
 end, {})
 
 -- Helper function to show save location selection popup
@@ -1773,6 +1725,12 @@ M.inject_current_buffer = function()
       end
     end)
   end)
+end
+
+-- Helper to reload config after a change
+local function reload_and_redraw(build_menu_items, draw_menu)
+  build_menu_items()
+  draw_menu()
 end
 
 return M 

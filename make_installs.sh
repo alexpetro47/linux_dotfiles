@@ -75,7 +75,15 @@ snap_apps=(
 # flatpak install flathub com.boxy_svg.BoxySVG
 # # run with `flatpak run com.boxy_svg.BoxySVG`
 # ---
-#
+
+# npm ??
+# npm install -g
+# @anthropic-ai/claude-code
+# repomix
+# markmap-cli
+# mdpdf
+# n8n
+
 
 for app in "${apps[@]}"; do
     echo "Installing $app..."

@@ -88,6 +88,7 @@ vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true,
 vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
+vim.keymap.set('n', '<leader>da', 'ggdG', {desc = 'delete all'})
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
 vim.keymap.set('n', '<leader>db', 'V:s/**//g<CR>i<Esc>', {desc = 'delete bolded selection'})
@@ -147,9 +148,9 @@ vim.keymap.set('n', '{', '{zz', { noremap = true })
 
 -- Code 
 vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
-vim.keymap.set('n', '<leader>Rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
-vim.keymap.set('n', '<leader>Rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
-vim.keymap.set('n', '<leader>Rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
+-- vim.keymap.set('n', '<leader>Rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
+-- vim.keymap.set('n', '<leader>Rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
+-- vim.keymap.set('n', '<leader>Rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
