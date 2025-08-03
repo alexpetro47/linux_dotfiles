@@ -763,7 +763,7 @@ require('lazy').setup({
 --MY CONFIGS----------------------------------
 
 
-require('main_plugin').setup()
+-- require('main_plugin').setup()
 -- Main plugin functions
 vim.keymap.set("n", "<leader>ao", function() require('main_plugin').open() end, { desc = "[a]i open buffer" })
 vim.keymap.set("n", "<leader>ap", function() require('main_plugin').submit() end, { desc = "[a]i [p]rocess" })

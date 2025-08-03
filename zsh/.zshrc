@@ -90,6 +90,7 @@ alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xarg
 alias pipIR="pip install -r requirements.txt"
 alias dockerR="docker compose down && docker compose up -d"
 alias svg="flatpak run com.boxy_svg.BoxySVG &"
+alias db="dbeaver &"
 
 # update nvim (built from source)
 # ends up in /usr/local/bin/nvim
