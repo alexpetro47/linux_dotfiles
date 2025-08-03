@@ -77,6 +77,7 @@ vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
 vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
+vim.keymap.set("n", "<leader>dc", [[:?```<CR>V/```<CR>d]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
 vim.keymap.set("n", "P", '"+p')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
@@ -95,7 +96,7 @@ vim.keymap.set('n', '<leader>d*', 'V:s/**//g<CR>i<Esc>', {desc = 'delete bolded 
 vim.keymap.set('v', "<leader>'", "c''<Esc>hp", {desc = 'quote visual selection'})
 vim.keymap.set('v', '<leader>i', 'c**<Esc>hp', {desc = 'italicize visual selection'})
 vim.keymap.set('n', '<leader>b', 'I**<Esc>$bA**<Esc>', {desc = 'bold current line'})
-vim.keymap.set('n', '<leader>~', 'I~~<Esc>$bA~~<Esc>', {desc = 'strikethrough current line'})
+vim.keymap.set('n', '<leader>~', 'I~<Esc>$bA~<Esc>', {desc = 'strikethrough current line'})
 vim.keymap.set('n', '<leader>i', 'I*<Esc>$bA*<Esc>', {desc = 'italic current line'})
 vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in selection'})
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
@@ -164,15 +165,15 @@ vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>'
 vim.keymap.set('n', '<leader>dd', ':cd ~/Documents<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'documents'})
 vim.keymap.set('n', '<leader>dP', ":e ~/Documents/notes/code-notes/ai/prompting/saved-prompts.md<CR>:pwd<CR>", {desc = 'saved prompts'})
 vim.keymap.set('n', '<leader>dT', ":cd ~/.local/share/Trash/files<CR>:NvimTreeOpen<CR>:pwd<CR>", {desc = 'trash'})
-vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:lcd %:p:h<CR>:pwd<CR>:Copilot disable<CR>', {desc = 'notes'})
-vim.keymap.set('n', '<leader>db', ':e ~/Documents/notes/business.md<CR>:lcd %:p:h<CR>:pwd<CR>:Copilot disable<CR>', {desc = 'business'})
-vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'workspace'})
-vim.keymap.set('n', '<leader>dO', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'mental orientation'})
-vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:Copilot disable<CR>:pwd<CR>', {desc = 'processing'})
+vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'notes'})
+vim.keymap.set('n', '<leader>db', ':e ~/Documents/notes/business.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'business'})
+vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:pwd<CR>', {desc = 'workspace'})
+vim.keymap.set('n', '<leader>dO', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:pwd<CR>', {desc = 'mental orientation'})
+vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
-vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
-vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobile-notes.md<CR>:Copilot disable<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
-vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>:Copilot disable<CR>", {desc = 'new journal'})
+vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
+vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobile-notes.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
+vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
 vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
 vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc = 'harpoon mark' })
@@ -203,6 +204,7 @@ vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file
 vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
+vim.keymap.set('n', '<leader>c0', ":!firefox<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})
 -- vim.keymap.set('n', '<leader>Dv', ':!svg<CR>' , { desc = 'svg editor' })
 -- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
@@ -338,6 +340,16 @@ require('lazy').setup({
 
   --preview substitutions
   'markonm/traces.vim',
+
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && npm install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" },
+  },
 
   --colorscheme
   {

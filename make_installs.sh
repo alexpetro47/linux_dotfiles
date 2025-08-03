@@ -197,10 +197,6 @@ ln -s ~/.config/zsh/.zshrc ~/.zshrc
 ln -s ~/.config/zsh/.p10k.zsh ~/.p10k.zsh
 source ~/.zshrc
 
-echo "linking aider conf from config to ~/"
-rm ~/.aider.conf.yml
-ln -s ~/.config/aider/.aider.conf.yml ~/.aider.conf.yml 
-
 echo "changing default shell to zsh"
 chsh -s $(which zsh)
 source ~/.zshrc
