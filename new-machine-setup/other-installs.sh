@@ -18,6 +18,7 @@ apt_apps=(
   mintupgrade
 
   fzf
+  nemo
   fd-find
   ripgrep
 
