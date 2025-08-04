@@ -14,7 +14,7 @@ multiplier = 5
 hide_when_typing = true
 
 [font]
-size = 14
+size = 15
 normal = {family = "JetBrainsMono NF", style = "Regular"}
 bold = {family = "JetBrainsMono NF", style = "Bold"}
 italic = {family = "JetBrainsMono NF", style = "Italic"}
