@@ -51,6 +51,9 @@ sudo apt install\
   golang\
   zoxide\
   eza\
+  texlive-latex-recommended texlive-fonts-recommended\
+  texlive-latex-extra texlive-science texlive-pictures\
+  texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -90,6 +93,7 @@ cargo binstall\
   xh\
   starship\
 
+
 ### **GOOGLE CHROME**
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
@@ -103,17 +107,20 @@ sudo apt update
 sudo apt install spotify-client
 
 ### CURSOR
-go to website [https://cursor.com/en/downloads]
+***go to website [https://cursor.com/en/downloads] & download in browser***
 cd ~/Downloads
 sudo install Cursor-*.AppImage /usr/local/bin/cursor
 rm Cursor-*.AppImage
 
+### CLOUDFLARED
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt update
+sudo apt install cloudflared
 
+### NEO4J
+curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/neotechnology.gpg
+echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
+sudo apt update && sudo apt install neo4j
 
-
-
-
-cloudflared
-dbeaver
-neo4j
-need to find latex installs as well
