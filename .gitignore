@@ -87,4 +87,9 @@ btop/*
 
 !wallpaper.png
 
+!os-settings
+os-settings/*
+!os-settings/.xsessionrc
+
+
 .env

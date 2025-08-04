@@ -10,8 +10,11 @@ padding = { x = 0, y = 0 }
 history = 25000
 multiplier = 5
 
+[mouse]
+hide_when_typing = true
+
 [font]
-size = 10
+size = 14
 normal = {family = "JetBrainsMono NF", style = "Regular"}
 bold = {family = "JetBrainsMono NF", style = "Bold"}
 italic = {family = "JetBrainsMono NF", style = "Italic"}
