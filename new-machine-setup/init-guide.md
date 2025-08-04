@@ -9,6 +9,7 @@ sudo apt install google-chrome
 
 ## GITHUB
 *(may need to:) generate net Personal Access Token (classic w. all boxes checked, no expiration) (settings->developer settings-> classic token)* sudo apt install gh 
+sudo apt install git
 gh auth setup-git
 git config --global user.name "Alex Petro"
 git config --global user.email "alexmpetro@gmail.com"
@@ -68,10 +69,14 @@ pkill -KILL -u $USER
 ## NERD FONTS + CURSOR THEME
 cd ~/Documents
 git clone  https://github.com/justatoaster47/os_styling
+cd os_styling
 mkdir -p /home/alexpetro/.local/share/fonts
 cp -r JetBrainsMonoNF/*.ttf /home/alexpetro/.local/share/fonts
 mkdir -p /home/alexpetro/.icons
 cp -r ComixCursorWhite/ /home/alexpetro/.icons/
+
+other opts listed in the installation.md as well
+
 
 ## SYNC NEW .CONFIG TO GITHUB
 cd ~/.config
