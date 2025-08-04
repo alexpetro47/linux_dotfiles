@@ -89,7 +89,7 @@ bindsym $mod+g exec --no-startup-id systemd-run --user --scope --property=CPUQuo
 
 exec --no-startup-id xset r rate 200 30
 exec --no-startup-id xcompmgr -C
-exec --no-startup-id feh --bg-scale ~/.config/wallpapers/wallpaper.png
+exec --no-startup-id feh --bg-scale ~/.config/wallpaper.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # the below keybind maps capslock to ctrl and sets us keyboard
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us 
