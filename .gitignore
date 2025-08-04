@@ -94,5 +94,9 @@ new-machine-setup/*
 !new-machine-setup/init-guide.md
 !new-machine-setup/other-installs.md
 
+!starship
+starship/*
+!starship/starship.toml
+
 
 .env

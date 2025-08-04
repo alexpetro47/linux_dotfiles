@@ -1,20 +1,36 @@
 
-export ZSH="/home/alexpetro/.oh-my-zsh"
 export EDITOR=nvim
-export PGDATABASE=postgres #for default postgres entry
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
-HISTORY=25000
-SAVEHIST=25000
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+HISTORY=50000
 
-source $ZSH/oh-my-zsh.sh
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+zinit load zsh-users/zsh-autosuggestions
+zinit load zsh-users/zsh-syntax-highlighting
+zinit snippet OMZ::plugins/git/git.plugin.zsh
+zinit load zsh-users/zsh-completions
+zinit load agkozak/zsh-z
+zinit load junegunn/fzf
+zinit load rupa/z
+zinit load zsh-users/zsh-history-substring-search
+zinit load hlissner/zsh-autopair
 
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
 
-alias s="source ~/.zshrc ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap'"
+alias s="source ~/.zshrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship'"
 alias v="nvim"
 alias c="clear"
 alias x="exit"
@@ -53,3 +69,26 @@ zle -N fzf-history-widget
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
 [ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
 
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zdharma-continuum/zinit-annex-as-monitor \
+    zdharma-continuum/zinit-annex-bin-gem-node \
+    zdharma-continuum/zinit-annex-patch-dl \
+    zdharma-continuum/zinit-annex-rust
+
+### End of Zinit's installer chunk

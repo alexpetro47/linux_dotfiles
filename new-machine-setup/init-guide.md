@@ -32,12 +32,10 @@ nvim --version && which nvim
 use lazy-lock restore if broken packages
 
 ## ZSH
-sudo apt install zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting
+bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 rm ~/.zshrc
 ln -s ~/.config/zsh/.zshrc ~/.zshrc
-git clone https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 source ~/.zshrc
 chsh -s $(which zsh)
 
