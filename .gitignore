@@ -81,4 +81,6 @@ rclone/rclone.conf
 btop/*
 !btop/btop.conf
 
+!wallpaper.png
+
 .env
