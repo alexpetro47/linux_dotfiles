@@ -3,7 +3,8 @@
 
 
 ## APT
-sudo apt update &&\
+sudo apt update
+
 sudo apt install\
   git\
   cmake\
@@ -48,15 +49,15 @@ sudo apt install\
   flatpak\
   gimp\
   golang\
-  cargo\
-  rustc\
+  zoxide\
+  eza\
+
 
 ## UV (PIP/PIPX ALTERNATIVE)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 uv tool install jupyterlab
 uv tool install ruff
-uv tool install httpie
 
 
 ## BUN (NPM/NPX ALTERNATIVE)
@@ -74,19 +75,20 @@ bun add -g\
   vercel\
   pyright\
   eslint\
+  nodemon\
+  serve\
+  prettier\
+  typescript\
 
+## RUST/CARGO/BINSTALL
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.zshrc
+rustup update
+cargo install cargo-binstall
 
-## CARGO 
-cargo-tauri
-
-## APP IMAGES
-cursor
-neo4j
-
-need to find latex installs as well
-
-
-## VIA GPG KEY
+cargo binstall\
+  xh\
+  starship\
 
 ### **GOOGLE CHROME**
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
@@ -100,5 +102,18 @@ echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/so
 sudo apt update
 sudo apt install spotify-client
 
+### CURSOR
+go to website [https://cursor.com/en/downloads]
+cd ~/Downloads
+sudo install Cursor-*.AppImage /usr/local/bin/cursor
+rm Cursor-*.AppImage
+
+
+
+
+
+
 cloudflared
 dbeaver
+neo4j
+need to find latex installs as well
