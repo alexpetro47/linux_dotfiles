@@ -29,24 +29,20 @@ sudo apt install\
   simplescreenrecorder\
   playerctl\
   vlc\
-  pipes-sh\
   cbonsai\
   lldb\
   clang\
   python3\
-  pylint\
   xclip\
   xdotool\
   curl\
   zip\
+  unzip\
   wget\
   rclone\
   qjackctl\
-  pipx\
   neofetch\
   jq\
-  jupyter\
-  flatpak\
   gimp\
   golang\
   zoxide\

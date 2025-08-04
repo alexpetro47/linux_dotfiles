@@ -35,14 +35,13 @@ use lazy-lock restore if broken packages
 sudo apt install zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 rm ~/.zshrc
-rm ~/.p10k.zsh
 ln -s ~/.config/zsh/.zshrc ~/.zshrc
-ln -s ~/.config/zsh/.p10k.zsh ~/.p10k.zsh
 git clone https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 source ~/.zshrc
 chsh -s $(which zsh)
+
+[use starship (rust+cargo) instead of p10k]
 
 ## TMUX/ALACRITTY
 sudo apt install tmux alacritty
@@ -78,6 +77,8 @@ cp -r ComixCursorWhite/ /home/alexpetro/.icons/
 
 other opts listed in the installation.md as well
 
+## X11 / XCONF SETTINGS
+ln -s ~/.config/.xsessionrc ~/.xsessionrc
 
 ## SYNC NEW .CONFIG TO GITHUB
 cd ~/.config

@@ -87,9 +87,7 @@ btop/*
 
 !wallpaper.png
 
-!os-settings
-os-settings/*
-!os-settings/.xsessionrc
+!.xsessionrc
 
 !new-machine-setup
 new-machine-setup/*
