@@ -5,6 +5,7 @@ sudo apt update + upgrade
 
 ## INSTALL CHROME
 sudo apt install google-chrome
+  *may need to wget its key to add to apt*
 *log into google account, github*
 
 ## GITHUB

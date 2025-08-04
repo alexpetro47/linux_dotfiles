@@ -94,7 +94,7 @@ os-settings/*
 !new-machine-setup
 new-machine-setup/*
 !new-machine-setup/init-guide.md
-!new-machine-setup/other-installs.sh
+!new-machine-setup/other-installs.md
 
 
 .env
