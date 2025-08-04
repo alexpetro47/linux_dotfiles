@@ -77,6 +77,10 @@ rclone/rclone.conf
 !rclone/backup-exclude.txt
 !rclone/config-backup-filter.txt
 
+!picom
+picom/*
+!picom/picom.conf
+
 !btop
 btop/*
 !btop/btop.conf
