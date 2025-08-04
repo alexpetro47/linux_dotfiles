@@ -14,30 +14,37 @@ apt_apps=(
   # rofi
   # feh
   # picom
+ 
+  mintupgrade
 
-  snap
+  fzf
+  fd-find
+  ripgrep
+
+  lf
+  btop
+  ranger
+  trash-cli
+
+  flameshot
+  simplescreenrecorder
+  playerctl
+  vlc
+
+  pipes-sh
+  cbonsai
+
+  lldb
   clang
   python3
-  fzf
-  flameshot
-  playerctl
-  ripgrep
-  lldb
-  xclip
-  cbonsai
-  kdeconnect
-  fd-find
-  mintupgrade
-  btop
-  lf
-  trash-cli
-  ranger # use this for its "rifle" opener package
-  xdotool
-  vlc
   pylint
-  pipes-sh
-  shotcut
-  simplescreenrecorder
+
+  snap
+  xclip
+  xdotool
 )
 
-
+for app in "${apt_apps[@]}"; do
+    echo "Installing $app..."
+    sudo apt install -y "$app"
+done

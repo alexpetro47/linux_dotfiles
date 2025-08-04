@@ -96,5 +96,8 @@ mkdir code
 clone any current code projects into Documents/code/
 git clone https://www.github.com/justatoaster47/
 
+## OTHER INSTALLS
+
+see [./other-installs.sh]
 
 
