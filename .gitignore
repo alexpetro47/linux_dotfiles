@@ -91,5 +91,9 @@ btop/*
 os-settings/*
 !os-settings/.xsessionrc
 
+!new-machine-setup
+new-machine-setup/*
+!new-machine-setup/init-guide.md
+
 
 .env

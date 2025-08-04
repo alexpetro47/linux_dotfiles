@@ -313,7 +313,7 @@ vim.cmd[[
 
 --sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=77
+autocmd FileType markdown setlocal textwidth=110
 ]])
 
 -- package manager
@@ -356,10 +356,10 @@ require('lazy').setup({
   {
     'sainnhe/gruvbox-material',
     config = function()
-      vim.o.background = 'dark'
-      vim.g.gruvbox_material_transparent_background = 2
-      -- vim.o.background = 'light'
-      -- vim.g.gruvbox_material_transparent_background = 0
+      -- vim.o.background = 'dark'
+      -- vim.g.gruvbox_material_transparent_background = 2
+      vim.o.background = 'light'
+      vim.g.gruvbox_material_transparent_background = 0
       vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
