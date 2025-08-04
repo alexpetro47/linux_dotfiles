@@ -12,7 +12,7 @@ history = 25000
 multiplier = 5
 
 [font]
-size = 8
+size = 10
 normal = {family = "JetBrainsMono NF", style = "Regular"}
 bold = {family = "JetBrainsMono NF", style = "Bold"}
 italic = {family = "JetBrainsMono NF", style = "Italic"}
@@ -21,7 +21,7 @@ bold_italic = {family = "JetBrainsMono NF", style = "Bold Italic"}
 [terminal]
 osc52 = "CopyPaste"
 
-[terminal.shell]
-program= "/usr/bin/tmux"
+[shell]
+program= "tmux"
 args = ["new-session", "-A"]
 

@@ -23,9 +23,9 @@ export N8N_RUNNERS_ENABLED=true
 
 # auto export env variables into my path
 # includes: gemini api key, 
-set -a
-source /home/alexpetro/.config/.env
-set +a 
+# set -a
+# source /home/alexpetro/.config/.env
+# set +a 
 
 #for debugpy path
 export PATH="$HOME/.debugpy-env/bin:$PATH"

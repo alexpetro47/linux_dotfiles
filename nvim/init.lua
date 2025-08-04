@@ -252,6 +252,7 @@ vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' }
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
 vim.keymap.set('n', '<leader>gF', ':Git push --force<CR>', { desc = 'force push' })
+vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch origin' })
 vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
 -- vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch' })
 vim.keymap.set('n', '<leader>gcm', ':Git commit -m ""<Left>', { desc = 'commit with message' })
