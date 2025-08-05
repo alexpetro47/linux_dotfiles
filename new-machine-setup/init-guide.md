@@ -97,7 +97,21 @@ clone any current code projects into Documents/code/
 git clone https://www.github.com/justatoaster47/
 
 ## OTHER INSTALLS
-
 see [./other-installs.sh]
+
+### keychron config in browser
+https://launcher.keychron.com/#/keymap
+https://usevia.app/
+
+generally linux permissions issues.
+* check usevia logs
+* check `chrome://device-log`
+
+fixes found:
+`echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3434", ATTRS{idProduct}=="0340", MODE="0666"' | sudo tee /etc/udev/rules.d/92-viia.rules`
+`sudo udevadm control --reload-rules && sudo udevadm trigger`
+
+
+
 
 
