@@ -40,11 +40,12 @@ alias lsr='eza --icons --group-directories-first --tree'
 alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff'
-alias nc='rm -rf .next && : > npm_errors.log && echo "nextjs cache and error log cleared"'
-alias nC='rm -rf node_modules && rm package-lock.json && npm cache clean --force && npm install'
-alias nr='npm run dev '
-alias nb='npm run build --debug'
-alias nl='npm run lint'
+alias br='bun dev '
+alias bc='rm -rf .next && echo "nextjs cache and error log cleared"'
+alias bC='rm -rf .next node_modules bun.lockb && bun install && echo "nextjs cache and error log cleared"'
+alias bi='bun install'
+alias bb='bun --bun run build'
+alias bl='bun --bun run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest'
 alias sv="source .venv/bin/activate && echo 'venv activated'" 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 

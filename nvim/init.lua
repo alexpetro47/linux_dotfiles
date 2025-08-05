@@ -1,3 +1,4 @@
+-- ~/.local/share/nvim/lazy/
 --Set leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -204,7 +205,7 @@ vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file
 vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
-vim.keymap.set('n', '<leader>c0', ":!firefox<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})
+vim.keymap.set('n', '<leader>c0', ":!google-chrome<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})
 -- vim.keymap.set('n', '<leader>Dv', ':!svg<CR>' , { desc = 'svg editor' })
 -- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
@@ -313,7 +314,7 @@ vim.cmd[[
 
 --sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=110
+autocmd FileType markdown setlocal textwidth=92
 ]])
 
 -- package manager
@@ -342,10 +343,22 @@ require('lazy').setup({
   --preview substitutions
   'markonm/traces.vim',
 
+  -- need to download npm temporarily:
+    -- curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    -- sudo apt-get install nodejs
+  -- then manually install plugin
+    -- cd ~/.local/share/nvim/lazy/markdown-preview/app
+    -- ./install.sh
+  -- plugin should now work
+  -- then uninstall node/npm afterwards
+    -- sudo apt-get remove --purge nodejs npm && sudo apt-get autoremove && sudo rm -f etc/apt/sources.list.d/nodesource.list && sudo apt-get update
+  -- check uninstalled
+    -- which node npm
+  -- plugin should still work
+    -- :MarkdownPreview
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && npm install",
     init = function()
       vim.g.mkdp_filetypes = { "markdown" }
     end,
