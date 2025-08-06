@@ -121,6 +121,12 @@ curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -
 echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt update && sudo apt install neo4j
 
+### NODE/NPM
+*(this is a dep for many installs, even if not for personal use)*
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install nodejs
+
+
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
 enable firewall: `sudo ufw enable`

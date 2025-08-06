@@ -343,22 +343,10 @@ require('lazy').setup({
   --preview substitutions
   'markonm/traces.vim',
 
-  -- need to download npm temporarily:
-    -- curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-    -- sudo apt-get install nodejs
-  -- then manually install plugin
-    -- cd ~/.local/share/nvim/lazy/markdown-preview/app
-    -- ./install.sh
-  -- plugin should now work
-  -- then uninstall node/npm afterwards
-    -- sudo apt-get remove --purge nodejs npm && sudo apt-get autoremove && sudo rm -f etc/apt/sources.list.d/nodesource.list && sudo apt-get update
-  -- check uninstalled
-    -- which node npm
-  -- plugin should still work
-    -- :MarkdownPreview
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
     init = function()
       vim.g.mkdp_filetypes = { "markdown" }
     end,
@@ -522,6 +510,7 @@ require('lazy').setup({
       handlers = {},
       ensure_installed = {
         'codelldb',
+        'pyright',
         -- 'delve', -- fucks up go debugging lw
         'debugpy'
       },

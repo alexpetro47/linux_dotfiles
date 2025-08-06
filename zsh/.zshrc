@@ -36,10 +36,22 @@ alias c="clear"
 alias x="exit"
 alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
-alias lsr='eza --icons --group-directories-first --tree'
+alias lst='eza --icons --group-directories-first --tree'
 alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff'
+alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
+alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
+
+alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
+alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
+alias rcloneSetup="rclone config reconnect google-drive:"
+alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
+alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
+
+alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
+alias j1="clear; cbonsai -l -i -S" 
+
 alias br='bun dev '
 alias bc='rm -rf .next && echo "nextjs cache and error log cleared"'
 alias bC='rm -rf .next node_modules bun.lockb && bun install && echo "nextjs cache and error log cleared"'
@@ -47,17 +59,14 @@ alias bi='bun install'
 alias bb='bun --bun run build'
 alias bl='bun --bun run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest'
-alias sv="source .venv/bin/activate && echo 'venv activated'" 
-alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
-alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
-alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
-alias rcloneSetup="rclone config reconnect google-drive:"
-alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
-alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
-alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
-alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
-alias pipIR="uv pip install -r requirements.txt"
-alias j1="clear; cbonsai -l -i -S" 
+
+alias uvs='uv sync'
+alias uvr='uv run'
+alias uva='uv add'
+alias uvd='uv remove'
+alias uvi='uv init'
+alias uvl='uv lock'
+alias uvt='uv tree'
 
 bindkey '^R' fzf-history-widget
 fzf-history-widget() {
