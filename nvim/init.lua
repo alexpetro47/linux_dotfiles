@@ -85,7 +85,7 @@ vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
 vim.keymap.set('v', '<leader>.', 's/^/ /<CR>', {noremap=true, silent=true, desc="add space to start of line in visual selection"})
 vim.keymap.set('v', '`', 'c``<Esc>hp0', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
-vim.keymap.set('v', '<leader>`', 'o<Esc>O```<Esc>gvo<Esc>o```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
+vim.keymap.set('v', '<leader>`', 'o<Esc>o```<Esc>gvo<Esc>O```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
 vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
@@ -768,21 +768,26 @@ require('lazy').setup({
 --MY CONFIGS----------------------------------
 
 
+  
+
+
+
+
 -- require('main_plugin').setup()
 -- Main plugin functions
-vim.keymap.set("n", "<leader>ao", function() require('main_plugin').open() end, { desc = "[a]i open buffer" })
-vim.keymap.set("n", "<leader>ap", function() require('main_plugin').submit() end, { desc = "[a]i [p]rocess" })
-vim.keymap.set("n", "<leader>aP", function() require('main_plugin').stop_agent() end, { desc = "[a]i stop [P]rocess" })
-vim.keymap.set("n", "<leader>as", function() require('main_plugin').open_config_popup() end, { desc = "[a]i [s]ettings" })
-vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context_popup() end, { desc = "[a]i [c]ontext" })
--- Context injection functions
-vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "text" })
-vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "clipboard" })
-vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "filepath" })
-vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "current file" })
-vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "directory" })
-vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "website" })
-vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "video" })
+-- vim.keymap.set("n", "<leader>ao", function() require('main_plugin').open() end, { desc = "[a]i open buffer" })
+-- vim.keymap.set("n", "<leader>ap", function() require('main_plugin').submit() end, { desc = "[a]i [p]rocess" })
+-- vim.keymap.set("n", "<leader>aP", function() require('main_plugin').stop_agent() end, { desc = "[a]i stop [P]rocess" })
+-- vim.keymap.set("n", "<leader>as", function() require('main_plugin').open_config_popup() end, { desc = "[a]i [s]ettings" })
+-- vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context_popup() end, { desc = "[a]i [c]ontext" })
+-- -- Context injection functions
+-- vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "text" })
+-- vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "clipboard" })
+-- vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "filepath" })
+-- vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "current file" })
+-- vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "directory" })
+-- vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "website" })
+-- vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "video" })
 
 
 

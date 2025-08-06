@@ -2,6 +2,8 @@
 export EDITOR=nvim
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
+export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 HISTORY=50000
@@ -60,6 +62,12 @@ alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
 alias lst='eza --icons --group-directories-first --tree'
 alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
+alias grep='rg'
+alias search='rg'
+alias curl='xh'
+alias tp='trash-put'
+alias del='trash-put'
+alias restore='trash-restore'
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff'
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
@@ -90,12 +98,6 @@ alias uvi='uv init'
 alias uvl='uv lock'
 alias uvt='uv tree'
 
-
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
-[ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
-
-
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
     print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
@@ -117,4 +119,7 @@ zinit light-mode for \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
 
-### End of Zinit's installer chunk
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
+[ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
