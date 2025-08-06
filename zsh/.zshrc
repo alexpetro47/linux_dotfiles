@@ -4,6 +4,7 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/.bun/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 HISTORY=50000
@@ -62,6 +63,7 @@ alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
 alias lst='eza --icons --group-directories-first --tree'
 alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
+alias cl="claude"
 alias grep='rg'
 alias search='rg'
 alias curl='xh'
@@ -122,4 +124,6 @@ zinit light-mode for \
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
 [ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
-[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver
+[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver >/dev/null 2>&1
+
+
