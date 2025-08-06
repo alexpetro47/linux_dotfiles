@@ -143,10 +143,17 @@ ruby: `gem install --user-install solargraph`
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
-enable firewall: `sudo ufw enable`
-allow only local access to redis port: `sudo ufw allow from 127.0.0.1 to any port 6379`
-check applied: `sudo ufw status numbered`
 *redis config at: `/etc/redis/redis.conf`*
+* enable firewall: `sudo ufw enable`
+* allow only local access to redis port: `sudo ufw allow from 127.0.0.1 to any port 6379`
+* check applied: `sudo ufw status numbered`
+---
+* Enable auto-start: `sudo systemctl enable redis-server`
+* Status: `sudo systemctl status redis-server`
+* Test connection: `redis-cli ping` (should return PONG)
+
+
+
 
 
 ##### COMPLETE CHECKS
