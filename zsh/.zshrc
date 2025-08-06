@@ -39,6 +39,16 @@ zinit load rupa/z
 zinit load zsh-users/zsh-history-substring-search
 zinit load hlissner/zsh-autopair
 
+fzf-history-widget() {
+    BUFFER=$(fc -rl 1 | fzf --no-sort | sed 's/^[ 0-9]*//')
+    CURSOR=$#BUFFER
+}
+zle -N fzf-history-widget
+
+bindkey '^R' fzf-history-widget
+bindkey '^[OA' history-beginning-search-backward
+bindkey '^[OB' history-beginning-search-forward
+
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
@@ -79,14 +89,6 @@ alias uvd='uv remove'
 alias uvi='uv init'
 alias uvl='uv lock'
 alias uvt='uv tree'
-
-
-fzf-history-widget() {
-    BUFFER=$(fc -rl 1 | fzf --no-sort | sed 's/^[ 0-9]*//')
-    CURSOR=$#BUFFER
-}
-zle -N fzf-history-widget
-bindkey '^R' fzf-history-widget
 
 
 
