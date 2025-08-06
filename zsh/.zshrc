@@ -39,8 +39,8 @@ zinit load rupa/z
 zinit load zsh-users/zsh-history-substring-search
 zinit load hlissner/zsh-autopair
 
-eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
 
 alias s="source ~/.zshrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship'"
 alias v="nvim"
@@ -80,13 +80,15 @@ alias uvi='uv init'
 alias uvl='uv lock'
 alias uvt='uv tree'
 
-bindkey '^R' fzf-history-widget
+
 fzf-history-widget() {
-    BUFFER=$(fc -rl 1 | fzf | sed 's/^[ 0-9]*//')
+    BUFFER=$(fc -rl 1 | fzf --no-sort | sed 's/^[ 0-9]*//')
     CURSOR=$#BUFFER
-    zle accept-line
 }
 zle -N fzf-history-widget
+bindkey '^R' fzf-history-widget
+
+
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
 [ -s "/home/alexpetro/.bun/_bun" ] && source "/home/alexpetro/.bun/_bun"
