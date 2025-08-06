@@ -50,6 +50,7 @@ sudo apt install\
   texlive-latex-recommended texlive-fonts-recommended\
   texlive-latex-extra texlive-science texlive-pictures\
   texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
+  redis-server\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
