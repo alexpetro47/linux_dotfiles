@@ -121,3 +121,13 @@ curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -
 echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt update && sudo apt install neo4j
 
+#### FIREWALL
+*for redis local setup, using firewall to block any external access*
+enable firewall: `sudo ufw enable`
+allow only local access to redis port: `sudo ufw allow from 127.0.0.1 to any port 6379`
+check applied: `sudo ufw status numbered`
+*redis config at: `/etc/redis/redis.conf`*
+
+
+
+
