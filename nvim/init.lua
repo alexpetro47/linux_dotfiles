@@ -196,14 +196,14 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 --Distant / SSH
-vim.keymap.set('n', '<leader>DL', ':DistantLaunch<Up>' , { desc = 'Distant Launch' })
-vim.keymap.set('n', '<leader>DI', ':Distant<CR>' , { desc = 'Distant Info' })
-vim.keymap.set('n', '<leader>DE', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 'Distant Explorer' })
-vim.keymap.set('n', '<leader>DT', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
+vim.keymap.set('n', '<leader>Dl', ':DistantLaunch ssh://root@<UP>' , { desc = 'Distant Launch' })
+vim.keymap.set('n', '<leader>Di', ':Distant<CR>' , { desc = 'Distant Info' })
+vim.keymap.set('n', '<leader>De', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 'Distant Explorer' })
+vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
 vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
-vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
+vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
 vim.keymap.set('n', '<leader>c0', ":!google-chrome<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})

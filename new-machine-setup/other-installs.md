@@ -52,6 +52,8 @@ sudo apt install\
   texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
   redis-server\
   ruby-dev\
+  rclone\
+  pandoc\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -83,6 +85,7 @@ bun add -g\
   typescript-language-server\
   typescript\
   vscode-langservers-extracted\
+  pandoc-mermaid-filter\
 
 
 ## RUST/CARGO/BINSTALL
@@ -123,7 +126,6 @@ curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -
 echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt update && sudo apt install neo4j
 
-
 ### NODE/NPM
 *(this is a dep for many installs, even if not for personal use)*
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -134,12 +136,19 @@ curl https://raw.githubusercontent.com/DhavalKapil/luaver/master/install.sh | sh
 source ~/.zshrc
 luaver install 5.4.7
 
+### D2
+curl -fsSL https://d2lang.com/install.sh | sh
 
 ### LSP SERVERS
 go:   `go install golang.org/x/tools/gopls@latest`
 lua: via nvim mason
 ruby: `gem install --user-install solargraph`
 
+### DRAW IO
+cd ~/Downloads
+wget https://github.com/jgraph/drawio-desktop/releases/download/v28.0.6/drawio-x86_64-28.0.6.AppImage
+chmod +x drawio-x86_64-28.0.6.AppImage
+mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*

@@ -63,23 +63,24 @@ alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
 alias lst='eza --icons --group-directories-first --tree'
 alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
-alias cl="claude"
 alias grep='rg'
 alias search='rg'
-alias curl='xh'
 alias tp='trash-put'
 alias del='trash-put'
 alias restore='trash-restore'
-alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
-alias gdp='git --no-pager diff'
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
 
 alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
-alias rcloneSetup="rclone config reconnect google-drive:"
+alias rcloneSetup="rclone config reconnect google-drive: || rclone config "
 alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
+
+alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
+alias gdp='git --no-pager diff'
+alias cl="claude"
+alias clr="claude -r"
 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
 alias j1="clear; cbonsai -l -i -S" 
@@ -99,6 +100,8 @@ alias uvd='uv remove'
 alias uvi='uv init'
 alias uvl='uv lock'
 alias uvt='uv tree'
+alias jl='jupyter-lab'
+
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
