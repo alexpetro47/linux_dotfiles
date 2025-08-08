@@ -82,13 +82,13 @@ bun add -g\
   serve\
   prettier\
   typescript\
-  cc-lsp\
   typescript-language-server\
   typescript\
   vscode-langservers-extracted\
   @mermaid-js/mermaid-cli\
   puppeteer\
 
+  cc-lsp\
 
 ## RUST/CARGO/BINSTALL
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -137,9 +137,6 @@ sudo apt-get install nodejs
 curl https://raw.githubusercontent.com/DhavalKapil/luaver/master/install.sh | sh
 source ~/.zshrc
 luaver install 5.4.7
-
-### D2
-curl -fsSL https://d2lang.com/install.sh | sh
 
 ### LSP SERVERS
 go:   `go install golang.org/x/tools/gopls@latest`

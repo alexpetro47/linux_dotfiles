@@ -77,6 +77,7 @@ bindsym $mod+s exec --no-startup-id rofi -show drun
 bindsym $mod+r exec gnome-terminal -- qjackctl; exec --no-startup-id reaper
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
+bindsym $mod+d exec --no-startup-id drawio
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 

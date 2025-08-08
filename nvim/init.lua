@@ -202,11 +202,15 @@ vim.keymap.set('n', '<leader>De', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 
 vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
-vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
-vim.keymap.set('n', '<leader>c1', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
-vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
-vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
 vim.keymap.set('n', '<leader>c0', ":!google-chrome<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})
+vim.keymap.set('n', '<leader>c1', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
+vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
+vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
+vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
+vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent -t neutral && xdg-open %:r.png &<CR>', {desc = 'mermaid -> png'})
+vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
+
+
 -- vim.keymap.set('n', '<leader>Dv', ':!svg<CR>' , { desc = 'svg editor' })
 -- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })

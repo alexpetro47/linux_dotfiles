@@ -98,5 +98,9 @@ new-machine-setup/*
 starship/*
 !starship/starship.toml
 
+!flameshot
+flameshot/*
+!flameshot/flameshot.ini
+
 
 .env
