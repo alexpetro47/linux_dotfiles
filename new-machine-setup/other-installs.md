@@ -62,6 +62,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv tool install jupyterlab
 uv tool install ruff
 uv tool install python-lsp-server
+uv tool install pandoc-mermaid-filter
 
 ## BUN (NPM/NPX ALTERNATIVE)
 curl -fsSL https://bun.sh/install | bash
@@ -85,7 +86,8 @@ bun add -g\
   typescript-language-server\
   typescript\
   vscode-langservers-extracted\
-  pandoc-mermaid-filter\
+  @mermaid-js/mermaid-cli\
+  puppeteer\
 
 
 ## RUST/CARGO/BINSTALL
