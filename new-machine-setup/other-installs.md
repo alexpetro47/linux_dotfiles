@@ -39,7 +39,6 @@ sudo apt install\
   zip\
   unzip\
   wget\
-  rclone\
   qjackctl\
   neofetch\
   jq\
@@ -52,8 +51,8 @@ sudo apt install\
   texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
   redis-server\
   ruby-dev\
-  rclone\
   pandoc\
+  tree\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -149,6 +148,30 @@ wget https://github.com/jgraph/drawio-desktop/releases/download/v28.0.6/drawio-x
 chmod +x drawio-x86_64-28.0.6.AppImage
 mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 
+### REAPER
+1. download x86_64 version from reaper.fm -> Download
+2. extract from tar file...
+  * `cd Downloads`
+  * `tar -xvf reaper*.xz`
+  * cd into extracted folder; same name as above without the .tar.xz
+  * `./install-reaper.sh`
+  * `ln -s ~/opt/REAPER/reaper ~/.local/bin/reaper`
+5. in reaper->settings->audio device
+  * auto connect jack to hardware
+  * auto connect jack to midi 
+  * auto suspend pulseaudio
+6. quit reaper
+---
+1. install jack & dependencies
+`sudo apt update && sudo apt install jackd2 qjackctl jack-tools qjackctl`
+2. plug in scarlett, check its connected
+`aplay -l | grep -i scarlett`
+3. configure qjackctl
+`qjackctl`
+setup -> interface -> find scarlett hw:USB -> save
+start
+
+
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
 *redis config at: `/etc/redis/redis.conf`*
@@ -168,7 +191,7 @@ mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 ```
 
 echo "=== SYSTEM TOOLS (APT) ==="
-for tool in git cmake zsh tmux alacritty i3 polybar rofi feh picom fzf nemo fdfind rg lf btop ranger trash flameshot simplescreenrecorder playerctl vlc cbonsai lldb clangd python3 xclip xdotool curl zip unzip wget rclone qjackctl neofetch jq gimp go zoxide eza pdflatex latexmk redis-server lua-language-server; do
+for tool in git cmake zsh tmux alacritty i3 polybar rofi feh picom fzf nemo fdfind rg lf btop ranger trash flameshot simplescreenrecorder playerctl vlc cbonsai lldb clangd python3 xclip xdotool curl zip unzip wget qjackctl neofetch jq gimp go zoxide eza pdflatex latexmk redis-server lua-language-server; do
   which $tool >/dev/null && echo "✅ $tool" || echo "❌ $tool"
 done
 

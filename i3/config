@@ -68,9 +68,6 @@ bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
 bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
-bindsym $mod+plus exec sudo brightnessctl set +10%
-bindsym $mod+minus exec sudo brightnessctl set 10%-
-bindsym $mod+shift+plus exec sudo brightnessctl set 50%
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
 bindsym $mod+s exec --no-startup-id rofi -show drun
