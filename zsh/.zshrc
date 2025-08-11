@@ -81,6 +81,7 @@ alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat
 alias gdp='git --no-pager diff'
 alias cl="claude"
 alias clr="claude -r"
+alias vid="openshot-qt"
 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
 alias j1="clear; cbonsai -l -i -S" 

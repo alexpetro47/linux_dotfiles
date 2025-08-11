@@ -53,6 +53,7 @@ sudo apt install\
   ruby-dev\
   pandoc\
   tree\
+  openshot-qt\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -170,6 +171,7 @@ mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 `qjackctl`
 setup -> interface -> find scarlett hw:USB -> save
 start
+4. open reaper, should be good
 
 
 #### FIREWALL

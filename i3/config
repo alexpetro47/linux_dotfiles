@@ -71,7 +71,7 @@ bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
 bindsym $mod+s exec --no-startup-id rofi -show drun
-bindsym $mod+r exec gnome-terminal -- qjackctl; exec --no-startup-id reaper
+bindsym $mod+r exec --no-startup-id qjackctl --start; exec --no-startup-id reaper
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
 bindsym $mod+d exec --no-startup-id drawio
@@ -94,4 +94,7 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us 
 # exec --no-startup-id i3-msg "workspace 1; exec alacritty"
 # exec --no-startup-id i3-msg "workspace 2; exec google-chrome"
+
+# Auto-assign applications to specific workspaces
+assign [class="QjackCtl"] 8
 
