@@ -1,5 +1,7 @@
 prod/repeaks/
 node_modules/
+.vercel
+.venv/
 venv/
 .git/
 .next/
@@ -15,3 +17,6 @@ venv/
 *.m4a
 *.mp3
 *.mp4
+__pycache__/
+
+

@@ -54,6 +54,11 @@ sudo apt install\
   pandoc\
   tree\
   openshot-qt\
+  rclone\
+  keepassxc\
+  rename\
+  ffmpeg\
+  caffeine\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -172,6 +177,24 @@ mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 setup -> interface -> find scarlett hw:USB -> save
 start
 4. open reaper, should be good
+---
+`cd ~/Documents && mkdir prod && cd prod && mkdir -p projects recordings renders repeaks`
+options->preferences->General->Paths
+  "Default path to save new projects"
+    preferred path: `/home/alexpetro/Documents/prod/projects/`
+  "Default render path..."
+    preferred path: `/home/alexpetro/Documents/prod/renders/`
+  "Default recording path..."
+  preferred path: `/home/alexpetro/Documents/prod/recordings/`
+  check "Store all peak caches (.repeaks) in alternate path"
+  "Alternate path for peak caches..."
+    preferred path: `/home/alexpetro/Documents/prod/repeaks/`
+click "Apply" then "Okay"
+press `?` to enter keybinds
+* "remove items/tracks/..."
+    add <Backspace> 
+* "Track: Mute/Unmute Track"
+    add "Alt-M"
 
 
 #### FIREWALL

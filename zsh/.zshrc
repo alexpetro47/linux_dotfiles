@@ -70,12 +70,16 @@ alias del='trash-put'
 alias restore='trash-restore'
 alias clickKill="xdotool selectwindow | xargs -I WID i3-msg \"[id=WID] kill\""
 alias wifiConnect='nmcli dev wifi list | fzf | awk "{printf \"%s\", \$2}" | xargs -I {} nmcli dev wifi connect "{}"'
+alias k3000='sudo fuser -k 3000/tcp'
 
-alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/backup-exclude.txt ~/Documents/ google-drive:DOCUMENTS-RCLONE-BACKUP"
-alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google-drive:CONFIG-RCLONE-BACKUP"
+alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/documents-backup-exclude.txt ~/Documents/ google_drive:DOCUMENTS"
+alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google_drive:CONFIG"
 alias rcloneSetup="rclone config reconnect google-drive: || rclone config "
+alias rcloneFavoritesAdd="rclone copy ~/Documents/prod/favorites/ google_drive:favorites_prod && trash-put ~/Documents/prod/favorites/*"
+
 alias musicExport="rclone sync -v ~/Documents/prod/exports/ google-drive:music/workspace/alex-exports"
 alias musicImport="rclone sync -v google-drive:music/workspace/gill-exports ~/Documents/prod/imports/"
+alias noteSync="uvr ~/Documents/code/simplenote_sync/simplenote_sync.py"
 
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff'

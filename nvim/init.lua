@@ -135,7 +135,7 @@ vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
 vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
 vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
-vim.keymap.set('n', '<leader>n', ':enew<CR>', {desc = 'new buffer'})
+vim.keymap.set('n', '<leader>n', ':enew | setlocal buftype=nofile<CR>', {desc = 'new buffer'})
 
 --Navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
@@ -173,8 +173,8 @@ vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:pwd<CR>
 vim.keymap.set('n', '<leader>dO', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:pwd<CR>', {desc = 'mental orientation'})
 vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
+vim.keymap.set('n', '<leader>dm', ':cd ~/Documents/notes/phone<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
-vim.keymap.set('n', '<leader>dm', ':e ~/Documents/notes/mobile-notes.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
 vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })

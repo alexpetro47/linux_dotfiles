@@ -74,7 +74,7 @@ aider/*
 rclone/*
 # rclone conf has sensitive data
 rclone/rclone.conf 
-!rclone/backup-exclude.txt
+!rclone/documents-backup-exclude.txt
 !rclone/config-backup-filter.txt
 
 !picom
