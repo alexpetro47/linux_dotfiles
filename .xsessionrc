@@ -43,5 +43,4 @@ gtk-cursor-theme-name="ComixCursorWhite"
 gtk-cursor-theme-size=60
 EOF
 
-xset r rate 225 50
 xrandr --dpi 125
