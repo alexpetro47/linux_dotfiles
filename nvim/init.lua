@@ -583,6 +583,22 @@ require('lazy').setup({
     opts = {},
   },
 
+  {
+    "coder/claudecode.nvim",
+    dependencies = { "folke/snacks.nvim" },
+    config = function()
+      require("claudecode").setup()
+    end,
+    opts = {
+      terminal_cmd = "/home/alexpetro/.bun/bin/claude", -- Point to local installation
+    },
+    keys = {
+      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Claude Code" },
+      { mode="v", "<leader>av", "<cmd>ClaudeCodeSend<cr>", desc = "Send to Claude" },
+      { "<leader>af", "<cmd>ClaudeCodeAdd %:p<cr>", desc = "Add file" }
+    },
+  },
+
   --DEFAULTS-----------------------------------
 
   -- Git related plugins

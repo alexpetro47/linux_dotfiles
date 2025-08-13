@@ -73,10 +73,10 @@ bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
 bindsym $mod+s exec --no-startup-id rofi -show drun
-bindsym $mod+r exec --no-startup-id "i3-msg 'workspace 5; exec qjackctl --start' & sleep 1 && i3-msg 'workspace 3; exec nemo ~/Documents/prod' & i3-msg 'workspace 4; exec reaper' &"
+bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspace 5; exec nemo ~/Documents/prod' &"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
-bindsym $mod+d exec --no-startup-id drawio
+bindsym $mod+shift+d exec --no-startup-id drawio
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
@@ -93,8 +93,14 @@ exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id "sleep 3 && xset r rate 225 50"
+exec --no-startup-id alacritty
+exec --no-startup-id google-chrome
 # the below keybind maps capslock to ctrl and sets us keyboard
 
 # Auto-assign applications to specific workspaces
-# assign [class="QjackCtl"] 8
+assign [class="Alacritty"] 1
+assign [class="Google-chrome"] 2
+assign [class="REAPER"] 4
+assign [class="draw.io"] 3
+assign [class="QjackCtl"] 5
 
