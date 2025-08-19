@@ -6,6 +6,7 @@ export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
 
 HISTORY=50000
 HISTSIZE=50000
@@ -86,6 +87,7 @@ alias gdp='git --no-pager diff'
 alias cl="claude"
 alias clr="claude -r"
 alias vid="openshot-qt"
+alias sql="sqlitebrowser &"
 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
 alias j1="clear; cbonsai -l -i -S" 

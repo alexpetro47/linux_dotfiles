@@ -108,16 +108,16 @@ vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('v', '<leader>8', ":'<,'>normal! I* <CR>", { silent = true, desc = 'Insert bullet point * on visual selection' })
 vim.keymap.set('n', '<leader>l', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('n', '<leader>#', '0i#<Esc>0', {desc = 'insert header'})
-vim.keymap.set('n', '<leader>1', '0i# <Esc>0V~', {desc = 'insert header'})
-vim.keymap.set('n', '<leader>2', '0i## <Esc>0V~', {desc = 'insert header'})
-vim.keymap.set('n', '<leader>3', '0i### <Esc>0V~', {desc = 'insert header'})
-vim.keymap.set('n', '<leader>4', '0i#### <Esc>0V~', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>1', '0i# <Esc>0VgU', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>2', '0i## <Esc>0VgU', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>3', '0i### <Esc>0VgU', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>4', '0i#### <Esc>0VgU', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>,', [[i* <Esc>V:s/,\s*/\r* /g<CR>]], {desc = 'comma list -> bullet list'})
 vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on current line'})
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
 vim.keymap.set('v', '<leader>}', ":g/^\\s*$/s/^/  /<CR>", { desc = 'Add two spaces to start of each blank line in selection' })
-vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$V~I# <Esc>V:s/[_-]/ /g<CR>2o<Esc>', {desc = 'insert filename as title'})
+vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$VgUI# <Esc>V:s/[_-]/ /g<CR>2o<Esc>', {desc = 'insert filename as title'})
 vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
@@ -171,9 +171,9 @@ vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>:lcd %:p:h<C
 vim.keymap.set('n', '<leader>db', ':e ~/Documents/notes/business.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'business'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:pwd<CR>', {desc = 'workspace'})
 vim.keymap.set('n', '<leader>dO', ':e ~/Documents/notes/personal/concepts/mental-orientation.md<CR>:pwd<CR>', {desc = 'mental orientation'})
-vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/processing.md<CR>:pwd<CR>', {desc = 'processing'})
+vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/ingestion/processing.md<CR>:pwd<CR>', {desc = 'processing'})
 vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
-vim.keymap.set('n', '<leader>dm', ':cd ~/Documents/notes/phone<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'mobile notes'})
+vim.keymap.set('n', '<leader>dm', ':cd ~/Documents/notes/ingestion/phone<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
 vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
 vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
@@ -202,7 +202,7 @@ vim.keymap.set('n', '<leader>De', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 
 vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
-vim.keymap.set('n', '<leader>c0', ":!google-chrome<CR>:MarkdownPreview<CR>", {desc = 'markdown preview'})
+vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
 vim.keymap.set('n', '<leader>c1', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
 vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
@@ -515,9 +515,12 @@ require('lazy').setup({
       handlers = {},
       ensure_installed = {
         'codelldb',
+        'clangd',
         'pyright',
-        -- 'delve', -- fucks up go debugging lw
-        'debugpy'
+        'ruff',
+        'biome',
+        'vtsls',
+        'lua-language-server'
       },
     },
   },

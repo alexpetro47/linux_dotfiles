@@ -31,7 +31,6 @@ sudo apt install\
   vlc\
   cbonsai\
   lldb\
-  clangd\
   python3\
   xclip\
   xdotool\
@@ -59,6 +58,8 @@ sudo apt install\
   rename\
   ffmpeg\
   caffeine\
+  sqlite-3\
+  sqlitebrowser\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -66,7 +67,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 uv tool install jupyterlab
 uv tool install ruff
-uv tool install python-lsp-server
 uv tool install pandoc-mermaid-filter
 
 ## BUN (NPM/NPX ALTERNATIVE)
@@ -81,17 +81,15 @@ bun add -g\
   svg-to-excalidraw\
   tsx\
   vercel\
-  pyright\
   eslint\
   nodemon\
   serve\
   prettier\
   typescript\
-  typescript-language-server\
-  typescript\
   vscode-langservers-extracted\
   @mermaid-js/mermaid-cli\
   puppeteer\
+  @biomejs/biome\
 
   cc-lsp\
 
@@ -177,24 +175,15 @@ mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 setup -> interface -> find scarlett hw:USB -> save
 start
 4. open reaper, should be good
----
-`cd ~/Documents && mkdir prod && cd prod && mkdir -p projects recordings renders repeaks`
-options->preferences->General->Paths
-  "Default path to save new projects"
-    preferred path: `/home/alexpetro/Documents/prod/projects/`
-  "Default render path..."
-    preferred path: `/home/alexpetro/Documents/prod/renders/`
-  "Default recording path..."
-  preferred path: `/home/alexpetro/Documents/prod/recordings/`
-  check "Store all peak caches (.repeaks) in alternate path"
-  "Alternate path for peak caches..."
-    preferred path: `/home/alexpetro/Documents/prod/repeaks/`
-click "Apply" then "Okay"
-press `?` to enter keybinds
-* "remove items/tracks/..."
-    add <Backspace> 
-* "Track: Mute/Unmute Track"
-    add "Alt-M"
+
+### SQLITE VECTOR EXTENSION
+`mkdir -p ~/.local/lib && cd ~/.local/lib`
+`curl -L https://github.com/asg017/sqlite-vec/releases/download/v0.1.3/sqlite-vec-0.1.3-loadable-linux-x86_64.tar.gz | tar -xz && chmod +x vec0.so`
+verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version();"`
+
+### AZURE CLI
+`curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
+`which az`
 
 
 #### FIREWALL
@@ -210,57 +199,5 @@ press `?` to enter keybinds
 
 
 
-
-
-##### COMPLETE CHECKS
-```
-
-echo "=== SYSTEM TOOLS (APT) ==="
-for tool in git cmake zsh tmux alacritty i3 polybar rofi feh picom fzf nemo fdfind rg lf btop ranger trash flameshot simplescreenrecorder playerctl vlc cbonsai lldb clangd python3 xclip xdotool curl zip unzip wget qjackctl neofetch jq gimp go zoxide eza pdflatex latexmk redis-server lua-language-server; do
-  which $tool >/dev/null && echo "✅ $tool" || echo "❌ $tool"
-done
-
-echo ""
-echo "=== UV TOOLS ==="
-for tool in uv; do
-  which $tool >/dev/null && echo "✅ $tool" || echo "❌ $tool"
-done
-uv tool list 2>/dev/null && echo "✅ UV tools installed" || echo "❌ UV tools missing"
-
-echo ""
-echo "=== BUN TOOLS ==="
-for tool in bun node npm gemini markmap plantuml-cli pm2 repomix tsx vercel pyright eslint nodemon serve prettier tsc typescript-language-server ; do
-  which $tool >/dev/null && echo "✅ $tool" || echo "❌ $tool"
-done
-
-echo ""
-echo "=== RUST/CARGO TOOLS ==="
-for tool in rustc cargo rustup xh starship; do
-  which $tool >/dev/null && echo "✅ $tool" || echo "❌ $tool"
-done
-
-echo ""
-echo "=== LANGUAGE SERVERS (MINIMAL) ==="
-for server in typescript-language-server clangd gopls rust-analyzer lua-language-server; do
-  which $server >/dev/null && echo "✅ $server" || echo "❌ $server"
-done
-uvx --from python-lsp-server pylsp --version >/dev/null 2>&1 && echo "✅ python-lsp-server" || echo "❌ python-lsp-server"
-
-
-echo ""
-echo "=== OTHER APPLICATIONS ==="
-for app in claude google-chrome spotify cloudflared neo4j; do
-  which $app >/dev/null && echo "✅ $app" || echo "❌ $app"
-done
-
-echo ""
-echo "=== RUNTIME VERSIONS ==="
-python3 --version 2>/dev/null && echo "✅ Python" || echo "❌ Python"
-go version 2>/dev/null && echo "✅ Go" || echo "❌ Go" 
-rustc --version 2>/dev/null && echo "✅ Rust" || echo "❌ Rust"
-ruby --version 2>/dev/null && echo "✅ Ruby" || echo "❌ Ruby"
-node --version 2>/dev/null && echo "✅ Node" || echo "❌ Node"
-bun --version 2>/dev/null && echo "✅ Bun" || echo "❌ Bun"
-```
 
 
