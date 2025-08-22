@@ -90,6 +90,7 @@ bun add -g\
   @mermaid-js/mermaid-cli\
   puppeteer\
   @biomejs/biome\
+  @ast-grep/cli
 
   cc-lsp\
 
@@ -112,6 +113,9 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dear
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 sudo apt update
 sudo apt install google-chrome-stable
+
+### GIT SETUP
+git config --global push.autoSetupRemote true
 
 ### SPOTIFY
 curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
@@ -145,6 +149,11 @@ luaver install 5.4.7
 go:   `go install golang.org/x/tools/gopls@latest`
 lua: via nvim mason
 ruby: `gem install --user-install solargraph`
+
+### BLENDER
+curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.tar.xz | tar -xJ -C ~/.local
+ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
+which blender
 
 ### DRAW IO
 cd ~/Downloads
@@ -183,7 +192,7 @@ verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version
 
 ### AZURE CLI
 `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
-`which az`
+`az login`
 
 
 #### FIREWALL
