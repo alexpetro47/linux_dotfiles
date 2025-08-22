@@ -60,6 +60,7 @@ sudo apt install\
   caffeine\
   sqlite-3\
   sqlitebrowser\
+  yq\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -116,6 +117,7 @@ sudo apt install google-chrome-stable
 
 ### GIT SETUP
 git config --global push.autoSetupRemote true
+git config --global init.defaultBranch main
 
 ### SPOTIFY
 curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg

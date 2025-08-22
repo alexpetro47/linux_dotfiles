@@ -52,6 +52,9 @@ zle -N fzf-history-widget
 bindkey '^R' fzf-history-widget
 bindkey '^[OA' history-beginning-search-backward
 bindkey '^[OB' history-beginning-search-forward
+bindkey '^F' forward-word
+bindkey '^B' backward-word
+bindkey '^D' kill-word
 
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
@@ -84,6 +87,7 @@ alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_
 
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff'
+alias gi='git init && touch temp && git add . && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && rm temp && git status'
 alias cl="claude"
 alias clm="claude mcp list"
 alias clr="claude -r"
