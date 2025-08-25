@@ -76,8 +76,9 @@ bindsym $mod+s exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspace 5; exec nemo ~/Documents/prod' &"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
-bindsym $mod+shift+d exec --no-startup-id drawio
-bindsym $mod+ctrl+d exec --no-startup-id xdg-open "https://excalidraw.com"
+# bindsym $mod+shift+d exec --no-startup-id drawio
+bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
+# bindsym $mod+shift+d exec --no-startup-id google-chrome --app=https://excalidraw.com
 bindsym $mod+shift+e exec --no-startup-id openshot-qt
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
@@ -86,7 +87,6 @@ bindsym $mod+shift+e exec --no-startup-id openshot-qt
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
-bindsym $mod+c exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G cursor
 
 exec --no-startup-id ~/.xsessionrc
 # exec_always --no-startup-id xset r rate 225 50

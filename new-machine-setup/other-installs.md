@@ -60,6 +60,7 @@ sudo apt install\
   caffeine\
   sqlite-3\
   sqlitebrowser\
+  libsqlite3-dev\
   yq\
 
 
@@ -79,7 +80,6 @@ bun add -g\
   plantuml-cli\
   pm2\
   repomix\
-  svg-to-excalidraw\
   tsx\
   vercel\
   eslint\
@@ -157,7 +157,7 @@ curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.
 ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
 which blender
 
-### DRAW IO
+~### DRAW IO~
 cd ~/Downloads
 wget https://github.com/jgraph/drawio-desktop/releases/download/v28.0.6/drawio-x86_64-28.0.6.AppImage
 chmod +x drawio-x86_64-28.0.6.AppImage

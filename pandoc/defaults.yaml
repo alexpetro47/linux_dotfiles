@@ -1,0 +1,28 @@
+# PANDOC DEFAULTS
+
+reader: gfm
+writer: pdf
+
+standalone: true
+pdf-engine: pdflatex
+
+wrap: none
+columns: 72
+
+filters:
+  - mermaid-filter
+
+highlight-style: pygments
+
+metadata:
+  geometry: margin=1in
+  fontsize: 11pt
+  documentclass: article
+  papersize: letter
+  colorlinks: true
+  linkcolor: blue
+  urlcolor: blue
+
+variables:
+  geometry: margin=1in
+  fontsize: 11pt

@@ -102,5 +102,8 @@ starship/*
 flameshot/*
 !flameshot/flameshot.ini
 
+!pandoc
+pandoc/*
+!pandoc/defaults.yaml
 
 .env

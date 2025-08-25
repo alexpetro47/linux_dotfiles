@@ -78,6 +78,7 @@ vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
 vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
+vim.keymap.set("n", "yC", [[:?```<CR>kVj/```<CR>"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard w. ticks'})
 vim.keymap.set("n", "<leader>dc", [[:?```<CR>V/```<CR>d]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
 vim.keymap.set("n", "P", '"+p')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
@@ -107,7 +108,9 @@ vim.keymap.set('n', '<leader><', ':cd ..<CR>:pwd<CR>', {noremap=true, silent=tru
 vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('v', '<leader>8', ":'<,'>normal! I* <CR>", { silent = true, desc = 'Insert bullet point * on visual selection' })
+vim.keymap.set('v', '<leader>*', ":s/[0-9]. /* /<CR>", { silent = true, desc = 'list -> bullets' })
 vim.keymap.set('n', '<leader>l', 'I1. <Esc>', {desc = 'insert list'})
+vim.keymap.set('v', '<leader>l', ":'<,'>normal! I1. <CR>gvojg<c-a>", { silent = true, desc = 'insert list on visual selection' })
 vim.keymap.set('n', '<leader>#', '0i#<Esc>0', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>1', '0i# <Esc>0VgU', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>2', '0i## <Esc>0VgU', {desc = 'insert header'})
@@ -184,17 +187,7 @@ vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc =
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
 --open files with absolute path
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "NvimTree",
-  callback = function(args)
-    vim.keymap.set("n", "gx", function()
-      local node = require("nvim-tree.api").tree.get_node_under_cursor()
-      if node and node.absolute_path then
-        vim.fn.system({"xdg-open", node.absolute_path})
-      end
-    end, { buffer = args.buf, noremap = true, silent = true })
-  end,
-})
+vim.api.nvim_create_autocmd("FileType", { pattern = "NvimTree", callback = function(args) vim.keymap.set("n", "gx", function() local node = require("nvim-tree.api").tree.get_node_under_cursor() if node and node.absolute_path then vim.fn.system({"xdg-open", node.absolute_path}) end end, { buffer = args.buf, noremap = true, silent = true }) end, })
 
 --Distant / SSH
 vim.keymap.set('n', '<leader>Dl', ':DistantLaunch ssh://root@<UP>' , { desc = 'Distant Launch' })
@@ -206,7 +199,8 @@ vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
 vim.keymap.set('n', '<leader>c1', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
-vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
+-- vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
+vim.keymap.set('n', '<leader>c3', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
 vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent -t neutral && xdg-open %:r.png &<CR>', {desc = 'mermaid -> png'})
 vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
@@ -355,6 +349,9 @@ require('lazy').setup({
     build = "cd app && yarn install",
     init = function()
       vim.g.mkdp_filetypes = { "markdown" }
+      vim.g.mkdp_preview_options = {
+        disable_sync_scroll = 0
+      }
     end,
     ft = { "markdown" },
   },
@@ -822,7 +819,7 @@ require("outline").setup({
   },
   outline_window = {
     position = 'left',
-    width = 20,
+    width = 23,
     auto_jump = true,
   },
   outline_items = {
