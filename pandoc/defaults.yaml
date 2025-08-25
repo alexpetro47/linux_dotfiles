@@ -12,9 +12,14 @@ columns: 72
 filters:
   - mermaid-filter
 
-highlight-style: pygments
+highlight-style: haddock
 
 metadata:
+  mermaidFilter:
+    theme: dark
+    width: 1200
+    format: svg
+    background: transparent
   geometry: margin=1in
   fontsize: 11pt
   documentclass: article
@@ -22,6 +27,11 @@ metadata:
   colorlinks: true
   linkcolor: blue
   urlcolor: blue
+  mainfont: "DejaVu Serif"
+  sansfont: "DejaVu Sans"
+  monofont: "DejaVu Sans Mono"
+  pagestyle: plain
+  listings: true
 
 variables:
   geometry: margin=1in

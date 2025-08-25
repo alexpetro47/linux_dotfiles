@@ -197,10 +197,10 @@ vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 
 --file conversions
 vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
-vim.keymap.set('n', '<leader>c1', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
+vim.keymap.set('n', '<leader>c1', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
+vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 -- vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
-vim.keymap.set('n', '<leader>c3', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
 vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent -t neutral && xdg-open %:r.png &<CR>', {desc = 'mermaid -> png'})
 vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
@@ -349,6 +349,7 @@ require('lazy').setup({
     build = "cd app && yarn install",
     init = function()
       vim.g.mkdp_filetypes = { "markdown" }
+      vim.g.mkdp_refresh_slow = 0
       vim.g.mkdp_preview_options = {
         disable_sync_scroll = 0
       }
