@@ -197,7 +197,7 @@ vim.keymap.set('n', '<leader>Dt', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 
 --file conversions
 vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
-vim.keymap.set('n', '<leader>c1', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
+vim.keymap.set('n', '<leader>c9', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
 vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 -- vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })

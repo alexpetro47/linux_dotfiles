@@ -1,6 +1,6 @@
 # PANDOC DEFAULTS
 
-reader: gfm+hard_line_breaks
+reader: gfm+hard_line_breaks+strikeout+task_lists+smart
 writer: pdf
 
 standalone: true
@@ -13,7 +13,7 @@ filters:
   - /home/alexpetro/.config/pandoc/highlight-filter.lua
   - mermaid-filter
 
-highlight-style: haddock
+highlight-style: tango
 
 metadata:
   mermaidFilter:
@@ -21,7 +21,7 @@ metadata:
     width: 1200
     format: svg
     background: transparent
-  geometry: margin=1in
+  geometry: margin=0.75in
   fontsize: 11pt
   documentclass: article
   papersize: letter
@@ -35,7 +35,7 @@ metadata:
   listings: true
 
 variables:
-  geometry: margin=1in
+  geometry: margin=0.75in
   fontsize: 11pt
 
 include-in-header:

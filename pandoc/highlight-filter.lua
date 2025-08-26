@@ -1,5 +1,12 @@
--- Filter to handle [highlight] syntax with GFM reader
+-- Filter to handle [highlight] syntax and ~~strikethrough~~ with GFM reader
 -- GFM splits [text with spaces] into multiple Str elements
+
+-- Handle Strikeout elements that pandoc creates from ~~text~~
+function Strikeout(elem)
+  -- Convert to LaTeX \sout command for better rendering
+  local content = pandoc.utils.stringify(elem.content)
+  return pandoc.RawInline('latex', '\\sout{' .. content .. '}')
+end
 
 function Inlines(inlines)
   local result = {}
