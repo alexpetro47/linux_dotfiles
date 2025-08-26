@@ -9,3 +9,7 @@
 \setlist{itemsep=0.5pt,topsep=1pt,parsep=1pt,partopsep=0pt}
 % Code wrapping
 \fvset{breaklines=true, breakanywhere}
+% Center level 1 headers
+\usepackage{titlesec}
+\titleformat{\section}[block]{\Large\bfseries\centering}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
