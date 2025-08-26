@@ -106,4 +106,7 @@ flameshot/*
 pandoc/*
 !pandoc/defaults.yaml
 
+!pandoc/highlight-header.tex
+!pandoc/highlight-filter.lua
+
 .env

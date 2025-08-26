@@ -1,15 +1,16 @@
 # PANDOC DEFAULTS
 
-reader: gfm
+reader: gfm+hard_line_breaks
 writer: pdf
 
 standalone: true
 pdf-engine: pdflatex
 
-wrap: none
+wrap: preserve
 columns: 72
 
 filters:
+  - /home/alexpetro/.config/pandoc/highlight-filter.lua
   - mermaid-filter
 
 highlight-style: haddock
@@ -36,3 +37,6 @@ metadata:
 variables:
   geometry: margin=1in
   fontsize: 11pt
+
+include-in-header:
+  - /home/alexpetro/.config/pandoc/highlight-header.tex
