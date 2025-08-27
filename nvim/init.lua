@@ -138,7 +138,6 @@ vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
 vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
-vim.keymap.set('n', '<leader>E', ':new<CR>', {desc = 'new buffer'})
 vim.keymap.set('n', '<leader>n', ':enew | setlocal buftype=nofile<CR>', {desc = 'new buffer'})
 
 --Navigation
@@ -274,38 +273,7 @@ vim.keymap.set('n', '<leader>gRH', ':! git clean -fd && git reset --hard HEAD<CR
 vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
 vim.keymap.set('n', '<leader>F', function() require('telescope.builtin').fd({ cwd = vim.fn.expand('~/Downloads'), attach_mappings = function(_, map) map('i', '<cr>', function(bufnr) local entry = require('telescope.actions.state').get_selected_entry(); require('telescope.actions').close(bufnr); vim.fn.system('cp ' .. vim.fn.shellescape(entry.path) .. ' .'); vim.notify('Copied: ' .. vim.fn.fnamemodify(entry.path, ':t')) end); return true end }) end, { desc = '[F]ind in Downloads & Copy to CWD' })
 
-
--- vim.keymap.set('n', '<leader>I', function()
---  require('telescope.pickers').new({}, {
---    prompt_title = "Downloads (3 most recent)",
---    finder = require('telescope.finders').new_oneshot_job(
---      { 'sh', '-c', 'ls -1t ~/Downloads | head -5' },
---      {}
---    ),
---    sorter = require('telescope.config').values.file_sorter({}),
---    previewer = require('telescope.config').values.file_previewer({}),
---    initial_mode = "normal",
---    attach_mappings = function(_, map)
---      map('n', '<tab><tab>', function() end)
---      map('n', '<tab>', require('telescope.actions').toggle_selection)
---      map('n', '<cr>', function(bufnr)
---        local actions = require('telescope.actions')
---        actions.add_selection(bufnr)
---        local picker = require('telescope.actions.state').get_current_picker(bufnr)
---        local multi = picker:get_multi_selection()
---        actions.close(bufnr)
---        for _, entry in ipairs(multi) do
---          local src = vim.fn.expand('~/Downloads/') .. entry.value
---          vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' .')
---        end
---        vim.notify('Copied ' .. #multi .. ' files')
---      end)
---      return true
---    end
---  }):find()
--- end)
-
-
+       
 vim.keymap.set('n', '<leader>I', function()
  require('telescope.pickers').new({}, {
    prompt_title = "Downloads (3 most recent)",
@@ -321,25 +289,30 @@ vim.keymap.set('n', '<leader>I', function()
      map('n', '<tab>', require('telescope.actions').toggle_selection)
      map('n', '<cr>', function(bufnr)
        local actions = require('telescope.actions')
-       actions.add_selection(bufnr)
        local picker = require('telescope.actions.state').get_current_picker(bufnr)
        local multi = picker:get_multi_selection()
+       
+       if #multi == 0 then
+         actions.add_selection(bufnr)
+         multi = picker:get_multi_selection()
+       end
+       
        actions.close(bufnr)
+       
+       local dest_dir = vim.fn.expand('%:p:h')
        local paths = {}
        for _, entry in ipairs(multi) do
          local src = vim.fn.expand('~/Downloads/') .. entry.value
-         vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' .')
+         vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest_dir))
          table.insert(paths, src)
        end
        vim.fn.setreg('+', table.concat(paths, '\n'))
-       vim.notify('Copied ' .. #multi .. ' files and paths to clipboard')
+       vim.notify('Copied ' .. #multi .. ' files to ' .. dest_dir .. ' and paths to clipboard')
      end)
      return true
    end
  }):find()
 end)
-
-
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config

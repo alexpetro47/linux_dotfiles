@@ -109,4 +109,8 @@ pandoc/*
 !pandoc/highlight-header.tex
 !pandoc/highlight-filter.lua
 
+!kitty/
+kitty/*
+!kitty/kitty.conf
+
 .env

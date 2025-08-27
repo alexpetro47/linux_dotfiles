@@ -40,6 +40,7 @@ gaps top 26
 
 for_window [class="^.*"] border pixel 2
 # for_window [class="^.*"] title_format ""
+focus_on_window_activation focus
 
 client.focused          #FF0000 #FFFFFF #000000
 client.unfocused        #888888 #222222 #888888
@@ -72,7 +73,7 @@ bindsym $mod+w kill
 bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+Shift+c exec --no-startup-id flameshot gui
-bindsym $mod+s exec --no-startup-id rofi -show drun
+bindsym $mod+f exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspace 5; exec nemo ~/Documents/prod' &"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id nemo ~/Downloads
@@ -86,7 +87,8 @@ bindsym $mod+shift+e exec --no-startup-id openshot-qt
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
-bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
+# bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
+bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
 
 exec --no-startup-id ~/.xsessionrc
 # exec_always --no-startup-id xset r rate 225 50
@@ -95,12 +97,12 @@ exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id "sleep 3 && xset r rate 225 50"
-exec --no-startup-id alacritty
+exec --no-startup-id kitty
 exec --no-startup-id google-chrome
 # the below keybind maps capslock to ctrl and sets us keyboard
 
 # Auto-assign applications to specific workspaces
-assign [class="Alacritty"] 1
+assign [class="kitty"] 1
 assign [class="Google-chrome"] 2
 assign [class="REAPER"] 4
 assign [class="draw.io"] 3
