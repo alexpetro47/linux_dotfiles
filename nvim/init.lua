@@ -275,6 +275,37 @@ vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history b
 vim.keymap.set('n', '<leader>F', function() require('telescope.builtin').fd({ cwd = vim.fn.expand('~/Downloads'), attach_mappings = function(_, map) map('i', '<cr>', function(bufnr) local entry = require('telescope.actions.state').get_selected_entry(); require('telescope.actions').close(bufnr); vim.fn.system('cp ' .. vim.fn.shellescape(entry.path) .. ' .'); vim.notify('Copied: ' .. vim.fn.fnamemodify(entry.path, ':t')) end); return true end }) end, { desc = '[F]ind in Downloads & Copy to CWD' })
 
 
+-- vim.keymap.set('n', '<leader>I', function()
+--  require('telescope.pickers').new({}, {
+--    prompt_title = "Downloads (3 most recent)",
+--    finder = require('telescope.finders').new_oneshot_job(
+--      { 'sh', '-c', 'ls -1t ~/Downloads | head -5' },
+--      {}
+--    ),
+--    sorter = require('telescope.config').values.file_sorter({}),
+--    previewer = require('telescope.config').values.file_previewer({}),
+--    initial_mode = "normal",
+--    attach_mappings = function(_, map)
+--      map('n', '<tab><tab>', function() end)
+--      map('n', '<tab>', require('telescope.actions').toggle_selection)
+--      map('n', '<cr>', function(bufnr)
+--        local actions = require('telescope.actions')
+--        actions.add_selection(bufnr)
+--        local picker = require('telescope.actions.state').get_current_picker(bufnr)
+--        local multi = picker:get_multi_selection()
+--        actions.close(bufnr)
+--        for _, entry in ipairs(multi) do
+--          local src = vim.fn.expand('~/Downloads/') .. entry.value
+--          vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' .')
+--        end
+--        vim.notify('Copied ' .. #multi .. ' files')
+--      end)
+--      return true
+--    end
+--  }):find()
+-- end)
+
+
 vim.keymap.set('n', '<leader>I', function()
  require('telescope.pickers').new({}, {
    prompt_title = "Downloads (3 most recent)",
@@ -294,18 +325,19 @@ vim.keymap.set('n', '<leader>I', function()
        local picker = require('telescope.actions.state').get_current_picker(bufnr)
        local multi = picker:get_multi_selection()
        actions.close(bufnr)
-       
+       local paths = {}
        for _, entry in ipairs(multi) do
          local src = vim.fn.expand('~/Downloads/') .. entry.value
          vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' .')
+         table.insert(paths, src)
        end
-       vim.notify('Copied ' .. #multi .. ' files')
+       vim.fn.setreg('+', table.concat(paths, '\n'))
+       vim.notify('Copied ' .. #multi .. ' files and paths to clipboard')
      end)
      return true
    end
  }):find()
 end)
-
 
 
 
