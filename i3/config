@@ -87,8 +87,8 @@ bindsym $mod+shift+e exec --no-startup-id openshot-qt
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
-# bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
-bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
+bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
+# bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
 
 exec --no-startup-id ~/.xsessionrc
 # exec_always --no-startup-id xset r rate 225 50
@@ -96,13 +96,14 @@ exec --no-startup-id ~/.xsessionrc
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id "sleep 3 && xset r rate 225 50"
+exec --no-startup-id "sleep 3 && xset r rate 150 50"
 exec --no-startup-id kitty
 exec --no-startup-id google-chrome
 # the below keybind maps capslock to ctrl and sets us keyboard
 
 # Auto-assign applications to specific workspaces
-assign [class="kitty"] 1
+# assign [class="kitty"] 1
+assign [class="alacritty"] 1
 assign [class="Google-chrome"] 2
 assign [class="REAPER"] 4
 assign [class="draw.io"] 3
