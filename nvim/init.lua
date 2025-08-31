@@ -107,6 +107,7 @@ vim.keymap.set('n', '<leader>=', ':set shiftwidth=2<CR>', {noremap=true, silent=
 vim.keymap.set('n', '<leader><', ':cd ..<CR>:pwd<CR>', {noremap=true, silent=true, desc="cd back 1 dir"})
 vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
+vim.keymap.set('n', '<leader>-', 'I- <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('v', '<leader>8', ":'<,'>normal! I* <CR>", { silent = true, desc = 'Insert bullet point * on visual selection' })
 vim.keymap.set('v', '<leader>*', ":s/[0-9]. /* /<CR>", { silent = true, desc = 'list -> bullets' })
 vim.keymap.set('n', '<leader>l', 'I1. <Esc>', {desc = 'insert list'})
@@ -164,6 +165,7 @@ vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore cur
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 -- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+vim.keymap.set('v', '<leader>P', '<Esc>:let @+ = expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
@@ -186,7 +188,11 @@ vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc =
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
 --open files with absolute path
-vim.api.nvim_create_autocmd("FileType", { pattern = "NvimTree", callback = function(args) vim.keymap.set("n", "gx", function() local node = require("nvim-tree.api").tree.get_node_under_cursor() if node and node.absolute_path then vim.fn.system({"xdg-open", node.absolute_path}) end end, { buffer = args.buf, noremap = true, silent = true }) end, })
+vim.api.nvim_create_autocmd("FileType", { pattern = "NvimTree", callback =
+  function(args) vim.keymap.set("n", "gx", function() local node =
+    require("nvim-tree.api").tree.get_node_under_cursor() if node and
+      node.absolute_path then vim.fn.jobstart({"xdg-open", node.absolute_path}, {detach = true})
+    end end, { buffer = args.buf, noremap = true, silent = true }) end, })
 
 --Distant / SSH
 vim.keymap.set('n', '<leader>Dl', ':DistantLaunch ssh://root@<UP>' , { desc = 'Distant Launch' })
@@ -271,10 +277,8 @@ vim.keymap.set('n', '<leader>gRX', ':! git checkout -- .<CR>:! git clean -fd<CR>
 vim.keymap.set('n', '<leader>gRx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
 vim.keymap.set('n', '<leader>gRH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
 vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
-vim.keymap.set('n', '<leader>F', function() require('telescope.builtin').fd({ cwd = vim.fn.expand('~/Downloads'), attach_mappings = function(_, map) map('i', '<cr>', function(bufnr) local entry = require('telescope.actions.state').get_selected_entry(); require('telescope.actions').close(bufnr); vim.fn.system('cp ' .. vim.fn.shellescape(entry.path) .. ' .'); vim.notify('Copied: ' .. vim.fn.fnamemodify(entry.path, ':t')) end); return true end }) end, { desc = '[F]ind in Downloads & Copy to CWD' })
-
        
-vim.keymap.set('n', '<leader>I', function()
+vim.keymap.set('n', '<leader>F', function()
  require('telescope.pickers').new({}, {
    prompt_title = "Downloads (3 most recent)",
    finder = require('telescope.finders').new_oneshot_job(

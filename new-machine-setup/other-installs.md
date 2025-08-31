@@ -70,6 +70,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv tool install jupyterlab
 uv tool install ruff
 uv tool install pandoc-mermaid-filter
+uv tool install pytest
 
 ## BUN (NPM/NPX ALTERNATIVE)
 curl -fsSL https://bun.sh/install | bash
@@ -195,6 +196,10 @@ verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version
 ### AZURE CLI
 `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
 `az login`
+
+### D2
+curl -fsSL https://d2lang.com/install.sh | sh
+which d2
 
 
 #### FIREWALL

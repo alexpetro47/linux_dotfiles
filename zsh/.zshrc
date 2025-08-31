@@ -7,6 +7,7 @@ export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
+export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 
 HISTORY=50000
 HISTSIZE=50000
