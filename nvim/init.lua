@@ -165,7 +165,7 @@ vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore cur
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 -- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
-vim.keymap.set('v', '<leader>P', '<Esc>:let @+ = expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
+vim.keymap.set('v', '<leader>P', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
 vim.keymap.set('n', '<leader>dC', ':cd ~/Documents/code<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'code'})
 vim.keymap.set('n', '<leader>dD', ':cd ~/Downloads<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'downloads'})
