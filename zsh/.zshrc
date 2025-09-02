@@ -79,6 +79,8 @@ alias k3000='sudo fuser -k 3000/tcp'
 
 alias rcloneBackupDocuments="rclone sync -v --exclude-from ~/.config/rclone/documents-backup-exclude.txt ~/Documents/ google_drive:DOCUMENTS"
 alias rcloneBackupConfig="rclone sync -v --filter-from ~/.config/rclone/config-backup-filter.txt ~/.config/ google_drive:CONFIG"
+alias rcloneBackupClaude="rclone sync -v --exclude-from ~/.config/rclone/claude-backup-exclude.txt ~/.claude/ google_drive:CLAUDE"
+alias rcBACKUP="rcloneBackupDocuments && rcloneBackupConfig && rcloneBackupClaude"
 alias rcloneSetup="rclone config reconnect google-drive: || rclone config "
 alias rcloneFavoritesAdd="rclone move ~/Documents/prod/favorites/ google_drive:favorites_prod"
 

@@ -1,0 +1,11 @@
+.context/
+.git/
+ide/
+plugins/
+projects/
+shell-snapshots/
+statsig/
+todos/
+.credentials.json
+client_secret*
+.env

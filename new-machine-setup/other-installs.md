@@ -106,6 +106,7 @@ rustup component add rust-analyzer rust-src
 cargo binstall\
   xh\
   starship\
+  ast-grep
 
 ### CLAUDE CODE
 curl -fsSL https://claude.ai/install.sh | bash

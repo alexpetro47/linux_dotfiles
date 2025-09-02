@@ -76,6 +76,7 @@ rclone/*
 rclone/rclone.conf 
 !rclone/documents-backup-exclude.txt
 !rclone/config-backup-filter.txt
+!rclone/claude-backup-exclude.txt
 
 !picom
 picom/*
