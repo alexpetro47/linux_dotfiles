@@ -116,6 +116,7 @@ vim.keymap.set('v', '<leader>*', ":s/[0-9]. /* /<CR>", { silent = true, desc = '
 vim.keymap.set('n', '<leader>l', 'I1. <Esc>', {desc = 'insert list'})
 vim.keymap.set('v', '<leader>l', ":'<,'>normal! I1. <CR>gvojg<c-a>", { silent = true, desc = 'insert list on visual selection' })
 vim.keymap.set('n', '<leader>#', '0i#<Esc>0', {desc = 'insert header'})
+vim.keymap.set('n', '<leader>@', 'I@<Esc>', {desc = 'insert @'})
 vim.keymap.set('n', '<leader>1', '0i# <Esc>0VgU', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>2', '0i## <Esc>0VgU', {desc = 'insert header'})
 vim.keymap.set('n', '<leader>3', '0i### <Esc>0VgU', {desc = 'insert header'})
@@ -126,12 +127,16 @@ vim.keymap.set('n', '<leader>`', 'I`<Esc>A`<Esc>', {desc = 'insert code block on
 vim.keymap.set('n', '<leader>o', '2o<Esc>', {desc = 'insert blank line below cursor'})
 vim.keymap.set('v', '<leader>r', [[:g/^\s*$/d<CR>]], {desc = 'remove blank lines in selection'})
 vim.keymap.set('v', '<leader>}', ":g/^\\s*$/s/^/  /<CR>", { desc = 'Add two spaces to start of each blank line in selection' })
+vim.keymap.set('v', '<leader>>', ":g/^\\s*[*-]\\s/s/^/  /<CR>", { desc = 'Indent lines starting with bullet points (* or -)' })
 vim.keymap.set('n', '<leader>T', '<Esc>gg0:r !basename %<CR>/\\.<CR>"_d$VgUI# <Esc>V:s/[_-]/ /g<CR>2o<Esc>', {desc = 'insert filename as title'})
 vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'comma separted list to bullets'})
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
 -- vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
+
+--vim-after-object: select last pasted text
+vim.keymap.set('n', 'gv', '`[v`]', {desc = 'select last pasted text'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
@@ -282,7 +287,7 @@ vim.keymap.set('n', '<leader>F', function()
  require('telescope.pickers').new({}, {
    prompt_title = "Downloads (3 most recent)",
    finder = require('telescope.finders').new_oneshot_job(
-     { 'sh', '-c', 'ls -1t ~/Downloads | head -5' },
+     { 'sh', '-c', 'ls -1t ~/Downloads | head -10' },
      {}
    ),
    sorter = require('telescope.config').values.file_sorter({}),
@@ -303,7 +308,7 @@ vim.keymap.set('n', '<leader>F', function()
        
        actions.close(bufnr)
        
-       local dest_dir = vim.fn.expand('%:p:h')
+       local dest_dir = vim.fn.getcwd()
        local paths = {}
        for _, entry in ipairs(multi) do
          local src = vim.fn.expand('~/Downloads/') .. entry.value
@@ -428,6 +433,8 @@ require('lazy').setup({
     --two character searches
     vim.keymap.set('n', 'f', '<Plug>Sneak_s', { noremap = true }),
     vim.keymap.set('n', 'F', '<Plug>Sneak_S', { noremap = true }),
+    vim.keymap.set('v', 'f', '<Plug>Sneak_s', { noremap = true }),
+    vim.keymap.set('v', 'F', '<Plug>Sneak_S', { noremap = true }),
     --one character searches are 'til mode
     vim.keymap.set('n', 't', '<Plug>Sneak_t', { noremap = true }),
     vim.keymap.set('n', 'T', '<Plug>Sneak_T', { noremap = true }),
@@ -629,21 +636,21 @@ require('lazy').setup({
     opts = {},
   },
 
-  {
-    "coder/claudecode.nvim",
-    dependencies = { "folke/snacks.nvim" },
-    config = function()
-      require("claudecode").setup()
-    end,
-    opts = {
-      terminal_cmd = "/home/alexpetro/.bun/bin/claude", -- Point to local installation
-    },
-    keys = {
-      { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Claude Code" },
-      { mode="v", "<leader>av", "<cmd>ClaudeCodeSend<cr>", desc = "Send to Claude" },
-      { "<leader>af", "<cmd>ClaudeCodeAdd %:p<cr>", desc = "Add file" }
-    },
-  },
+  -- {
+  --   "coder/claudecode.nvim",
+  --   dependencies = { "folke/snacks.nvim" },
+  --   config = function()
+  --     require("claudecode").setup()
+  --   end,
+  --   opts = {
+  --     terminal_cmd = "/home/alexpetro/.bun/bin/claude", -- Point to local installation
+  --   },
+  --   keys = {
+  --     { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Claude Code" },
+  --     { mode="v", "<leader>av", "<cmd>ClaudeCodeSend<cr>", desc = "Send to Claude" },
+  --     { "<leader>af", "<cmd>ClaudeCodeAdd %:p<cr>", desc = "Add file" }
+  --   },
+  -- },
 
   --DEFAULTS-----------------------------------
 

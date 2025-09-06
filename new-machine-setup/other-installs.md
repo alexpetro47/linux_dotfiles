@@ -202,6 +202,10 @@ verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version
 curl -fsSL https://d2lang.com/install.sh | sh
 which d2
 
+### DBGATE
+*download dbgate appimage from https://dbgate.org/download/*
+mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
+which dbgate && dbgate &
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
@@ -214,7 +218,8 @@ which d2
 * Status: `sudo systemctl status redis-server`
 * Test connection: `redis-cli ping` (should return PONG)
 
-
+#### DISABLE SLEEP/LOCK (PC)
+~sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target~
 
 
 

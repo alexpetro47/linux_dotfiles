@@ -94,8 +94,9 @@ alias gi='git init && touch temp && git add . && git commit -m "init" && git rem
 alias cl="claude"
 alias clm="claude mcp list"
 alias clr="claude -r"
-alias vid="openshot-qt"
-alias sql="sqlitebrowser &"
+# alias vid="openshot-qt"
+# alias sql="sqlitebrowser &"
+# alias db="dbgate &"
 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
 alias j1="clear; cbonsai -l -i -S" 

@@ -81,6 +81,7 @@ bindsym $mod+e exec --no-startup-id nemo ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
 # bindsym $mod+shift+d exec --no-startup-id google-chrome --app=https://excalidraw.com
 bindsym $mod+shift+e exec --no-startup-id openshot-qt
+bindsym $mod+d exec --no-startup-id dbgate
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
@@ -98,14 +99,12 @@ exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec --no-startup-id "sleep 3 && xset r rate 225 50"
 exec --no-startup-id alacritty
-exec --no-startup-id google-chrome
-exec --no-startup-id xset s off -dpms
-# the below keybind maps capslock to ctrl and sets us keyboard
+
 
 # Auto-assign applications to specific workspaces
 # assign [class="kitty"] 1
-assign [class="alacritty"] 1
-assign [class="Google-chrome"] 2
+# assign [class="alacritty"] 1
+# assign [class="Google-chrome"] 2
 assign [class="REAPER"] 4
 assign [class="draw.io"] 3
 assign [class="QjackCtl"] 5
