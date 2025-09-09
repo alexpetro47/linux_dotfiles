@@ -63,6 +63,7 @@ sudo apt install\
   yq\
   bat\
   miller\
+  universal-ctags\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)

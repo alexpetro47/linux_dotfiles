@@ -2,25 +2,33 @@
 # INFO
 
 
+
+
 ## CLI-ONLY TOOLKIT
 - ast-grep (sg) - AST-based code search/rewrite tool
 - fzf - Fuzzy finder for interactive selection
 - ripgrep (rg) - Fast text search tool
 - jq - JSON processor
+* yq - yaml/xml parsing
 - bat - Syntax-highlighted file viewer
 - miller - Text/CSV data processing tool with SQL-like queries
 - fd-find (fd) - Fast alternative to find with intuitive syntax
 - sd (better "sed") - Intuitive find-and-replace with regex support
+* universal-ctags (ctags) - pseudo lsp information for types, methods, etc
+* git
 * standard unix tools
   * xargs - 9/10 - Essential pipeline bridge
   * head/tail - 9/10 - Data sampling/log monitoring
   * sort - 8/10 - Pipeline data ordering
   * uniq - 8/10 - Deduplicate (with sort)
   * wc - 7/10 - Quick counts
-  * awk - 7/10 - Column processing when miller overkill
+
+* consider integating memory mcp functionality for semantic search 
+  * global db? subdir-based search? 
 
 
-## M COUPLING
+
+### "M COUPLING"
 *File-Level Architecture Assessment*
 - Purpose: "Which files have structural problems?"
 - Scope: Entire codebase health assessment
@@ -68,7 +76,7 @@
 
 
 
-## M REFS
+### "M REFS"
 *Symbol-Level Impact Analysis*
   - Purpose: "What happens if I change this specific symbol?"
   - Scope: Deep relationship tracing for individual symbols
@@ -116,6 +124,65 @@
 ```
 
 
+### "M FIND"
+
+* add vector storage from memory mcp project?
+
+
+
+Text Search Tools
+
+- ripgrep (rg) - Fast regex/text search (already integrated)
+- grep -E - Extended regex patterns
+- ack - Programmer-focused search
+- ag (Silver Searcher) - Fast text search with ignore patterns
+
+File Discovery Tools
+
+- find - File name/path/metadata search
+- fd - Modern, fast alternative to find
+- locate/mlocate - Indexed file search
+- which/whereis - Command/binary location
+
+Code Analysis Tools
+
+- ast-grep - AST-based structural search (partially integrated)
+- semgrep - Semantic code search patterns
+- ctags/universal-ctags - Symbol indexing and search
+- cscope - Code browsing/cross-reference
+
+Content Analysis
+
+- fzf - Fuzzy finder (already integrated for filtering)
+- peco/percol - Interactive filtering
+- jq - JSON querying (for structured code analysis)
+- yq - YAML/XML querying
+
+Git Integration
+
+- git grep - Repository-aware search
+- git log --grep - Commit message search
+- git log -S - Code history search (pickaxe)
+
+Advanced Search Techniques
+
+- Fuzzy matching - Approximate string matching
+- Semantic embeddings - AI-powered similarity search
+- N-gram analysis - Pattern frequency analysis
+- Levenshtein distance - Edit distance matching
+
+Best Non-Redundant Integration Set
+
+m find "pattern"                    # ripgrep + semantic expansion
+m find --files "*.py"               # fd for file discovery
+m find --fuzzy "databse"            # fzf fuzzy matching
+m find --ast "class with methods"   # ast-grep structural search
+m find --git "removed function"     # git log -S code archaeology
+m find --symbols "Manager"          # ctags symbol search
+m find --regex "def \w+_handler"    # Enhanced regex with context
+
+Result: Single command consolidating 15+ CLI tools while avoiding overlap with refs (relationship analysis) and
+coupling (architectural assessment).
 
 
 
@@ -123,6 +190,123 @@
 
 
 
+  Consolidation Analysis
+
+  - Content Tools: rg + grep + ack + ag → Single Content Backend
+  - Structure Tools: ast-grep + semgrep + ctags → Single Structure Backend
+  - File Tools: find + fd + locate + git → Single File Backend
+  - Interactive Tools: fzf + peco + fuzzy → Fuzzy Layer (applies to all)
+
+  Unified Command Structure
+
+  m find "query" [--fuzzy] [--in=scope] [--type=match_type]
+
+  # Examples:
+  m find "database"                    # Auto-detect: content search
+  m find "UserManager" --type=symbol   # Structure backend
+  m find "test_*.py" --type=file       # File backend
+  m find "databse" --fuzzy             # Typo tolerance
+  m find "auth" --in=functions         # Scope filtering
+
+  Key Arguments (Semantic, Not Tool-Based)
+
+  - --type: content|symbol|file|history (backend selection)
+  - --fuzzy: Enable approximate matching
+  - --in: functions|classes|tests|files (scope filtering)
+  - --match: exact|regex|semantic (matching strategy)
+
+  Flexible Fuzzy Search Capabilities
+
+  1. Multi-Level Fuzzy: "databse connction" → fuzzy filename + fuzzy content
+  2. Semantic Fuzzy: "auth --fuzzy" matches login, permission, authenticate
+  3. Pattern Fuzzy: "get*usr --fuzzy" → get_user_profile, getUserData
+  4. Contextual Fuzzy: Search within fuzzy-matched files/functions
+  5. Typo + Concept: "fucntion handlr" → function handler + semantic expansion
+
+
+
+  Replace Interactive Components
+
+  - fzf --filter="pattern" → --limit=k --rank-by=relevance
+  - peco/percol → --top=k --sort-by=score
+  - Interactive selection → --best-match --max-results=k
+
+  Non-Interactive Command Structure
+
+  m find "query" --limit=5 --rank-by=relevance
+  m find "database" --top=3 --sort-by=frequency
+  m find "UserManager" --best-match --threshold=0.8
+  m find "auth" --max-results=10 --min-score=0.5
+
+  Ranking/Filtering Options
+
+  - --limit=k: Return top k results only
+  - --threshold=n: Minimum relevance score (0.0-1.0)
+  - --rank-by: relevance|frequency|recency|alphabetical
+  - --sort-by: score|location|file|type
+  - --best-match: Return single highest-scoring result
+  - --dedup: Remove duplicate/similar results
+
+  AI Agent-Friendly Output
+
+  # Structured output for parsing
+  m find "database" --format=json --limit=5
+  m find "auth" --format=tsv --rank-by=relevance
+  m find "error" --format=lines --best-match
+
+  Default Behavior
+
+  # No flags = top 10 results, relevance-ranked, deduplicated
+  m find "pattern"
+
+  # Equivalent to:
+  m find "pattern" --limit=10 --rank-by=relevance --dedup
+
+
+
+
+
+
+● Universal-ctags/cscope Value Analysis
+
+  Significant Value for find
+
+  - Language-aware symbol search vs ripgrep's text matching
+  - No false positives from comments/strings containing symbol names
+  - Hierarchical understanding: knows UserManager.login() vs AdminManager.login()
+  - Partial completion: m find "User" --type=symbol finds UserManager, UserService
+  - 40+ language support with consistent interface
+
+  Moderate Value for refs
+
+  - More precise call graphs than regex-based relationship detection
+  - Accurate symbol disambiguation (multiple login functions)
+  - Cross-reference accuracy without regex false positives
+
+  Practical Integration
+
+  # Enhanced find with symbol awareness
+  m find "Manager" --type=symbol     # ctags: only actual symbols, not comments
+  m find "get_user" --fuzzy          # ctags: fuzzy symbol matching
+
+  # More accurate refs analysis
+  m refs UserManager --precise       # ctags: accurate call graph vs regex approximation
+
+  Trade-off Considerations
+
+  - Setup cost: Requires index generation/maintenance
+  - Fallback strategy: Use ripgrep when ctags unavailable
+  - Real-time vs indexed: ripgrep works immediately, ctags needs preparation
+
+  Recommendation
+
+  YES - High value addition:
+  - For find: ctags eliminates false positives and provides language-aware symbol search
+  - For refs: Optional --precise mode using ctags for complex codebases
+  - Implementation: ctags-first with ripgrep fallback ensures reliability
+
+  Result: ctags/cscope transform text-based search into code-aware analysis, significantly improving accuracy for
+   symbol operations.
 
 
 
@@ -130,19 +314,165 @@
 
 
 
+  Enhanced Output with AST-grep additions:
+
+  Current:
+  🟢 📞 mcp_server.py:165 [LOW] (db = Database(source_path)...)
+
+  Enhanced:
+  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
+        ├─ Context: async function call_tool() → conditional reinitalization block
+        ├─ AST: assignment_statement → call_expression → identifier
+        ├─ Pattern: Database initialization in conditional branch
+        ├─ Risk: Called conditionally when current_project != project_root
+        └─ Impact: Creates new database connection, reinitializes system state
+
+  Value Proposition Scoring:
+
+  1. Precise Column Location - ⭐⭐⭐⭐
+
+  Addition: :30 (exact column)Value: Enables editor jump-to-exact-position, better than file:line approximation
+  Use case: IDE integration, precise navigation
+
+  2. AST Context Information - ⭐⭐⭐⭐⭐
+
+  Addition: assignment_statement → call_expression → identifier
+  Value: Shows structural context, not just text match - proves it's actual constructor call
+  Use case: Eliminates false positives, confirms usage type
+
+  3. Parent Function Context - ⭐⭐⭐⭐⭐
+
+  Addition: async function call_tool() → conditional reinitalization blockValue: Shows architectural context -
+  this is system initialization code
+  Use case: Understanding change impact scope
+
+  4. Usage Pattern Recognition - ⭐⭐⭐⭐⭐
+
+  Addition: Database initialization in conditional branch
+  Value: Identifies this as conditional initialization pattern vs regular usage
+  Use case: Risk assessment for refactoring
+
+  5. Risk Enhancement - ⭐⭐⭐⭐⭐
+
+  Addition: Risk level change from [LOW] to [MEDIUM] due to conditional context
+  Value: More accurate risk assessment based on structural analysis
+  Use case: Better refactoring decision making
+
+  6. Impact Analysis - ⭐⭐⭐⭐
+
+  Addition: Creates new database connection, reinitializes system state
+  Value: Shows side effects and system impact of this specific usage
+  Use case: Change planning and testing scope
+
+  Overall Enhancement Value: ⭐⭐⭐⭐⭐
+
+  Highest value additions:
+  1. AST Context - Proves it's real usage, not text match
+  2. Parent Function Context - Shows architectural significance
+  3. Usage Pattern Recognition - Enables pattern-based refactoring decisions
+  4. Enhanced Risk Assessment - More accurate than text-based heuristics
+
+  The AST-grep enhancements transform basic location info into comprehensive architectural intelligence.
 
 
 
+  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
+        ├─ Context: async function call_tool() → conditional reinitalization block
+        ├─ AST: assignment_statement → call_expression → identifier
+        ├─ Symbol: class Database defined in database.py:9
+        ├─ Constructor: __init__(self, source_path: str)
+        ├─ Available methods: add_file, add_chunk, get_file_info, close, delete_file
+        │  └─ add_code_chunk(file_id: int, chunk_data: dict[str, Any]) -> int
+        │  └─ search_ast_nodes(...) -> list[dict[str,Any]]
+        │  └─ get_all_code_chunks() -> list[dict[str,Any]]
+        └─ Type signature: Database(source_path: str) -> Database
 
+  Ctags Value Assessment:
 
+  1. Symbol Hierarchy - ⭐⭐
 
+  Real addition: Shows 23 available Database methods
+  Value: Helps understand what operations are possible on this Database instance
+  Practical use: "After creating Database(source_path), you can call .add_file(), .close(), etc."
 
+  2. Type Signatures - ⭐⭐⭐
 
+  Real addition: __init__(self, source_path: str), add_chunk() -> int
+  Value: Shows expected parameters and return types for available methods
+  Practical use: Validates parameter usage, shows return type expectations
 
+  3. Definition Source - ⭐
 
+  Real addition: class Database defined in database.py:9
+  Value: Redundant - already shown by current refs
+  Practical use: Jump to definition (but CCLSP already provides this)
 
+● You're absolutely right! If we're controlling all tool calls from core.sh, we can hardcode the paths and
+  eliminate the compatibility issues.
 
+  Controlled Environment Benefits:
 
+  In core.sh we can hardcode:
+
+  # All ctags operations with explicit path
+  ctags -f .ast-grep/tags -R --languages=Python *.py
+  grep "Database" .ast-grep/tags
+
+  # All ast-grep operations with explicit config
+  ast-grep --config=.ast-grep/sgconfig.yml --pattern "Database($$$)"
+
+  # No user/editor dependency on standard locations
+
+  User Never Sees:
+
+  - File paths - they just run m refs Database
+  - Tool complexity - core.sh handles all path resolution
+  - Configuration details - everything is abstracted
+
+  Implementation Strategy:
+
+  # In core.sh
+  TAGS_FILE=".ast-grep/tags"
+  ASTGREP_CONFIG=".ast-grep/sgconfig.yml"
+
+  generate_tags() {
+      ctags -f "$TAGS_FILE" -R --languages=Python *.py
+  }
+
+  enhanced_refs() {
+      # Use our controlled paths
+      local symbol="$1"
+      grep "$symbol" "$TAGS_FILE"
+      ast-grep --config="$ASTGREP_CONFIG" --pattern "$symbol($$$)"
+  }
+
+  Updated Viability: ⭐⭐⭐⭐⭐
+
+  ✅ Perfect Solution:
+
+  - User simplicity: m refs Database works exactly the same
+  - Clean project root: No visible config/data files
+  - Tool integration: We control all paths internally
+  - No compatibility issues: Users never interact with tools directly
+  - Consistent behavior: All complexity hidden in core.sh
+
+  Implementation:
+
+  # Setup function in core.sh
+  setup_ast_tools() {
+      mkdir -p .ast-grep
+      ctags -f .ast-grep/tags -R --languages=Python *.py
+      mv sgconfig.yml .ast-grep/ 2>/dev/null || true
+  }
+
+  # All refs/find functions use .ast-grep/ paths internally
+
+  Verdict: ⭐⭐⭐⭐⭐ Highly Recommended
+
+  Since users only interact through m commands, we have complete control over file locations and tool arguments.
+  This is actually the ideal architecture - clean project root + hidden complexity.
+
+  Action: Move both files to .ast-grep/ and update all internal tool calls to use explicit paths.
 
 
 
@@ -323,10 +653,6 @@ KNOWLEDGE TRANSFER
 - Onboarding time for new team members
 - Code review efficiency
 - Architectural decision quality
-
----
-
-
 
 
 
