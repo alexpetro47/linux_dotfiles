@@ -10,17 +10,18 @@ wrap: preserve
 columns: 72
 
 filters:
+  - /home/alexpetro/.config/pandoc/newpage-filter.lua
   - /home/alexpetro/.config/pandoc/highlight-filter.lua
-  - mermaid-filter
+  # - mermaid-filter
 
 highlight-style: tango
 
 metadata:
-  mermaidFilter:
-    theme: dark
-    width: 1200
-    format: svg
-    background: transparent
+  # mermaidFilter:
+  #   theme: dark
+  #   width: 1200
+  #   format: svg
+  #   background: transparent
   geometry: margin=0.75in
   fontsize: 11pt
   documentclass: article

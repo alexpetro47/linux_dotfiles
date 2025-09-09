@@ -19,7 +19,6 @@ sudo apt install\
   mintupgrade\
   fzf\
   nemo\
-  fd-find\
   ripgrep\
   lf\
   btop\
@@ -62,6 +61,8 @@ sudo apt install\
   sqlitebrowser\
   libsqlite3-dev\
   yq\
+  bat\
+  miller\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -106,7 +107,9 @@ rustup component add rust-analyzer rust-src
 cargo binstall\
   xh\
   starship\
-  ast-grep
+  ast-grep\
+  fd-find\
+  sd\
 
 ### CLAUDE CODE
 curl -fsSL https://claude.ai/install.sh | bash
@@ -206,6 +209,10 @@ which d2
 *download dbgate appimage from https://dbgate.org/download/*
 mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
 which dbgate && dbgate &
+
+### AST-GREP
+(installed via cargo)
+ln -s ~/.config/ast-grep/sgconfig.yml ~/.sgconfig.yml
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*

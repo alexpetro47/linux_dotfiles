@@ -1,0 +1,64 @@
+#!/bin/bash
+# Memory MCP replacement CLI tool
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/core.sh"
+
+main() {
+    case ${1:-help} in
+        find)         shift; mfind "$@" ;;
+        coupling)            shift; coupling "$@" ;;
+        refs)            shift; mrefs "$@" ;;
+        setup|init)          shift; minit "$@" ;;
+        help|*)              show_help ;;
+    esac
+}
+
+show_help() {
+    cat << 'EOF'
+m - Code Analysis and Architecture Tool
+
+COMMANDS:
+  find <query> [filter]             Semantic code search with context patterns
+  coupling [threshold]              Analyze coupling with specific problem locations
+  refs <symbol> [depth]             Comprehensive reference analysis for symbols
+  setup, init                       Initialize project configuration
+  help                              Show this help
+
+EXAMPLES:
+
+  🔍 Code Discovery:
+    m find "error handling"               # Find error handling patterns
+    m find "database connection"          # Locate database code
+    m find "authentication" auth          # Find auth code, filter by 'auth'
+
+  📊 Architecture Analysis:
+    m coupling 5                          # Files with 5+ dependencies
+    m coupling 10                         # High coupling analysis with suggestions
+
+  🔍 Reference Analysis:
+    m refs UserManager                    # Complete analysis: dependencies, reverse-deps, impact
+    m refs parse_file 3                   # 3-level transitive analysis with blast radius
+
+  ⚙️ Project Setup:
+    m setup                               # Initialize ast-grep rules and configuration
+
+REFS ANALYSIS INCLUDES:
+  📍 Symbol definition location
+  📦 Dependencies (what the symbol uses)
+  ⬅️ Reverse dependencies (what uses the symbol)
+  ⛓️ Transitive impact analysis with configurable depth
+  🛠️ Refactor impact summary with usage hotspots
+  🚨 Risk-based color coding for all relationships
+
+FEATURES:
+  - Interactive fzf filtering and selection
+  - File:line references for easy navigation
+  - Context-aware search with semantic expansion
+  - Risk-based color coding for relationships
+  - Comprehensive dependency and reverse-dependency analysis
+  - Transitive impact analysis for blast radius assessment
+EOF
+}
+
+main "$@"

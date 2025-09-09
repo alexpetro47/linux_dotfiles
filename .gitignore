@@ -109,9 +109,17 @@ pandoc/*
 
 !pandoc/highlight-header.tex
 !pandoc/highlight-filter.lua
+!pandoc/newpage-filter.lua
 
 !kitty/
 kitty/*
 !kitty/kitty.conf
+
+!memory-tools/
+memory-tools/*
+!memory-tools/core.sh
+!memory-tools/m
+!memory-tools/info.md
+
 
 .env

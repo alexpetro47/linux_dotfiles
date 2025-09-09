@@ -8,6 +8,7 @@ export PATH="$HOME/.bun/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
 export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
+export PATH="$HOME/.config/memory-tools:$PATH"
 
 HISTORY=50000
 HISTSIZE=50000
@@ -108,6 +109,8 @@ alias bi='bun install'
 alias bb='bun --bun run build'
 alias bl='bun --bun run lint'
 alias bt='npx @agentdeskai/browser-tools-server@latest'
+
+alias "uv run"="PYTHONPATH=. uv run"
 
 alias uvs='uv sync'
 alias uvr='uv run'

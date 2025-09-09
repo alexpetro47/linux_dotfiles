@@ -63,7 +63,7 @@ vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J
 
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:Ex<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
+vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:q!<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
 vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
 
 --Text Editing
