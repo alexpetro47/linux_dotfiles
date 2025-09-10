@@ -39,14 +39,14 @@ search_symbols() {
     local query="$1"
     
     # Generate ctags if needed
-    if [[ ! -f ".ast-grep/tags" ]] || [[ $(find . -name "*.py" -o -name "*.sh" -newer ".ast-grep/tags" | wc -l) -gt 0 ]]; then
-        mkdir -p .ast-grep
-        ctags -f .ast-grep/tags -R --languages=Sh,Python,JavaScript,TypeScript --exclude=".venv" --exclude="node_modules" . 2>/dev/null
+    if [[ ! -f ".m/tags" ]] || [[ $(find . -name "*.py" -o -name "*.sh" -newer ".m/tags" | wc -l) -gt 0 ]]; then
+        mkdir -p .m
+        ctags -f .m/tags -R --languages=Sh,Python,JavaScript,TypeScript --exclude=".venv" --exclude="node_modules" . 2>/dev/null
     fi
     
     # Search ctags for symbols matching query
-    if [[ -f ".ast-grep/tags" ]]; then
-        grep -v "^!" .ast-grep/tags | grep -i "$query" | while IFS=$'\t' read -r symbol file pattern kind_info; do
+    if [[ -f ".m/tags" ]]; then
+        grep -v "^!" .m/tags | grep -i "$query" | while IFS=$'\t' read -r symbol file pattern kind_info; do
             # Extract kind from kind_info (format: ;"<tab>kind)
             local kind=$(echo "$kind_info" | sed 's/.*"//' | cut -c1)
             
@@ -699,10 +699,10 @@ arch() {
 
 
 minit() {
-    mkdir -p .ast-grep/rules
+    mkdir -p .m/rules
 
     # Create separate rule files (ast-grep prefers one rule per file)
-    cat > .ast-grep/rules/god-function.yml << 'EOF'
+    cat > .m/rules/god-function.yml << 'EOF'
 id: god-function
 message: "Large function detected - consider breaking into smaller functions"
 severity: warning
@@ -713,7 +713,7 @@ rule:
       $$$
 EOF
 
-    cat > .ast-grep/rules/unused-import.yml << 'EOF'
+    cat > .m/rules/unused-import.yml << 'EOF'
 id: unused-import
 message: "Potential unused import - verify usage"
 severity: info
@@ -722,7 +722,7 @@ rule:
   pattern: "import $MODULE"
 EOF
 
-    cat > .ast-grep/rules/complexity.yml << 'EOF'
+    cat > .m/rules/complexity.yml << 'EOF'
 id: complexity
 message: "Complex conditional detected"
 severity: info
@@ -734,7 +734,7 @@ rule:
 EOF
 
     # Add violation detection rules
-    cat > .ast-grep/rules/violations.yml << 'EOF'
+    cat > .m/rules/violations.yml << 'EOF'
 id: direct-db-access
 message: "Direct database access detected - consider using repository pattern"
 severity: warning
@@ -744,7 +744,7 @@ rule:
     $VAR.execute($$$)
 EOF
 
-    cat > .ast-grep/rules/god-class.yml << 'EOF'
+    cat > .m/rules/god-class.yml << 'EOF'
 id: god-class
 message: "Large class detected - consider breaking into smaller classes"
 severity: warning
@@ -755,7 +755,7 @@ rule:
       $$$
 EOF
 
-    cat > .ast-grep/rules/hardcoded-values.yml << 'EOF'
+    cat > .m/rules/hardcoded-values.yml << 'EOF'
 id: hardcoded-values
 message: "Hardcoded string/number detected - consider using configuration"
 severity: info
@@ -770,7 +770,7 @@ EOF
     # Create sgconfig.yml for ast-grep scan
     cat > sgconfig.yml << 'EOF'
 ruleDirs:
-  - .ast-grep/rules
+  - .m/rules
 util: {}
 EOF
 

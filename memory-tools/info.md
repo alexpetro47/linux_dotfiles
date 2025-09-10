@@ -262,11 +262,11 @@ also consider
   In core.sh we can hardcode:
 
   # All ctags operations with explicit path
-  ctags -f .ast-grep/tags -R --languages=Python *.py
-  grep "Database" .ast-grep/tags
+  ctags -f .m/tags -R --languages=Python *.py
+  grep "Database" .m/tags
 
   # All ast-grep operations with explicit config
-  ast-grep --config=.ast-grep/sgconfig.yml --pattern "Database($$$)"
+  ast-grep --config=.m/sgconfig.yml --pattern "Database($$$)"
 
   # No user/editor dependency on standard locations
 
@@ -279,8 +279,8 @@ also consider
   Implementation Strategy:
 
   # In core.sh
-  TAGS_FILE=".ast-grep/tags"
-  ASTGREP_CONFIG=".ast-grep/sgconfig.yml"
+  TAGS_FILE=".m/tags"
+  ASTGREP_CONFIG=".m/sgconfig.yml"
 
   generate_tags() {
       ctags -f "$TAGS_FILE" -R --languages=Python *.py
@@ -307,19 +307,19 @@ also consider
 
   # Setup function in core.sh
   setup_ast_tools() {
-      mkdir -p .ast-grep
-      ctags -f .ast-grep/tags -R --languages=Python *.py
-      mv sgconfig.yml .ast-grep/ 2>/dev/null || true
+      mkdir -p .m
+      ctags -f .m/tags -R --languages=Python *.py
+      mv sgconfig.yml .m/ 2>/dev/null || true
   }
 
-  # All refs/find functions use .ast-grep/ paths internally
+  # All refs/find functions use .m/ paths internally
 
   Verdict: ⭐⭐⭐⭐⭐ Highly Recommended
 
   Since users only interact through m commands, we have complete control over file locations and tool arguments.
   This is actually the ideal architecture - clean project root + hidden complexity.
 
-  Action: Move both files to .ast-grep/ and update all internal tool calls to use explicit paths.
+  Action: Move both files to .m/ and update all internal tool calls to use explicit paths.
 ```
 
 
