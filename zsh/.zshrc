@@ -65,10 +65,10 @@ alias s="source ~/.zshrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.co
 alias v="nvim"
 alias c="clear"
 alias x="exit"
-alias sd="cd ~ && cd \$(find * -type d | fzf)"
+# alias sd="cd ~ && cd \$(find * -type d | fzf)"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
 alias lst='eza --icons --group-directories-first --tree'
-alias lc="git ls-files | grep -v '^project_context/' | xargs wc -l 2>/dev/null"
+# alias lc="git ls-files -z | xargs -0 wc -l 2>/dev/null"
 # alias grep='rg'
 # alias search='rg'
 alias tp='trash-put'
@@ -90,7 +90,7 @@ alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/
 alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_sync.py"
 
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
-alias gdp='git --no-pager diff'
+alias gdp='git --no-pager diff HEAD'
 alias gi='git init && touch temp && git add . && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && rm temp && git status'
 alias cl="claude"
 alias clm="claude mcp list"
@@ -120,6 +120,25 @@ alias uvi='uv init'
 alias uvl='uv lock'
 alias uvt='uv tree'
 alias jl='jupyter-lab'
+
+
+# Memory search tool from memorcy_mcp project
+memory() {
+  ORIGINAL_CWD=$(pwd) uv run --directory /home/alexpetro/Documents/code/memory_mcp python -c "
+import os
+import sys
+if 'ORIGINAL_CWD' in os.environ:
+  os.chdir(os.environ['ORIGINAL_CWD'])
+sys.path.insert(0, '/home/alexpetro/Documents/code/memory_mcp')
+exec(open('/home/alexpetro/Documents/code/memory_mcp/cli.py').read())
+" "$@"
+}
+
+# Shorthand aliases
+alias sem-index='memory index $(pwd) --verbose'
+alias sem-search='memory search'
+
+
 
 
 ### Added by Zinit's installer

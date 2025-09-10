@@ -1,8 +1,73 @@
 
 # INFO
 
+### TODOS
+* integrate semantic search into "find" from memory_mcp project
+* how to make this functional cross language? (python and js/ts/tsx/html/css primarily)
+* add quick-transformation patterns as well? utilizing 
+* for ./m or ./m/memory.db placement always check all parent dirs otherwise put in cwd.
 
 
+## IDEOLOGY
+* `find` - find all possible semantically/fuzzily similar things, identify which one(s) are
+relevant. include context of what each thing is to select intelligently, include enough of a
+signature to inform `refs` precisely. deduplicated always. inherently broad, non-verbose per
+result.
+
+
+
+* `trace` (was "refs")- find all relations of that thing around codebase. dependencies,
+reverse-dependencies, recursive/transitive deps, etc. returns precise locations,
+usage, args/returns/throws/etc. function/class/var/interface/etc relationships. inherently
+specific, verbose per result - ideally 1 result.
+
+* `arch` (was "coupling") - quantitative measurement + identify problem areas for modular
+black-box style architecture ideals. 
+1. Import Fan-Out (3-8 per file) ⭐⭐⭐⭐⭐
+  - Measurable: Count imports per file
+  - Balanced: Prevents god objects without forcing micro-modules
+  - Actionable: >8 imports = clear refactoring target
+  - Reality-friendly: Allows reasonable composition
+2. Change Coupling (>70% co-commits) ⭐⭐⭐⭐⭐
+  - Measurable: Git log analysis of files changing together
+  - Balanced: Identifies actual architectural problems, not theoretical
+  - Actionable: Shows exactly which boundaries are wrong
+  - Reality-friendly: Based on real development patterns
+3. Circular Dependencies (zero tolerance) ⭐⭐⭐⭐⭐
+  - Measurable: Static analysis for import cycles
+  - Balanced: Binary metric - clear architectural violation
+  - Actionable: Always indicates specific refactoring need
+  - Reality-friendly: Unambiguous problem, not subjective
+4. File Length (200-400 lines) ⭐⭐⭐⭐
+  - Measurable: Line count per file
+  - Balanced: Prevents massive files but allows cohesion
+  - Actionable: >400 lines = split target
+  - Reality-friendly: Human-readable size limits
+5. Dead Code Rate (<5%) ⭐⭐⭐⭐
+  - Measurable: Unused imports/functions percentage
+  - Balanced: Allows some experimental code, prevents cruft
+  - Actionable: Direct cleanup targets
+  - Reality-friendly: Easy wins that improve maintainability
+6. Parameter Count (>5 suggests missing abstraction) ⭐⭐⭐⭐
+  - Why it almost made it: Directly identifies design problems
+  - Measurable: Count function parameters across codebase
+  - Actionable: >5 parameters = extract object/config pattern
+  - Complementary: Works with Import Fan-Out to show abstraction gaps
+7. Function Length (>50 lines) ⭐⭐⭐⭐
+  - Why it almost made it: More granular than file length
+  - Measurable: Lines per function
+  - Actionable: Clear extraction targets
+  - Complementary: File length catches big problems, this catches local complexity
+8. Import Fan-In (>15 dependents) ⭐⭐⭐
+  - Why it almost made it: Identifies bottleneck/god modules
+  - Measurable: Count files importing this one
+  - Actionable: Shows modules that need interface splitting
+  - Complementary: Fan-out shows complexity, fan-in shows fragility
+
+* `diffs` - parsing of git diffs to validate implementations
+
+* `transform` - make changes via ast-grep, sd, jq, yq, miller (utilize pre-validated
+filepath+line results)
 
 ## CLI-ONLY TOOLKIT
 - ast-grep (sg) - AST-based code search/rewrite tool
@@ -15,27 +80,137 @@
 - fd-find (fd) - Fast alternative to find with intuitive syntax
 - sd (better "sed") - Intuitive find-and-replace with regex support
 * universal-ctags (ctags) - pseudo lsp information for types, methods, etc
-* git
+* git (--no-pager diff HEAD, log)
 * standard unix tools
   * xargs - 9/10 - Essential pipeline bridge
   * head/tail - 9/10 - Data sampling/log monitoring
   * sort - 8/10 - Pipeline data ordering
   * uniq - 8/10 - Deduplicate (with sort)
   * wc - 7/10 - Quick counts
+* cli semantic search tools `sem-index` to create `.m/memory.db` and `sem-search
+"query contents"` to search the db
 
-* consider integating memory mcp functionality for semantic search 
-  * global db? subdir-based search? 
+ 
+
+also consider
+* duplo
+* hash based matching
+* pmd cpd
+* lizard
+* sonar qube
 
 
+
+
+## ARGS
++ good default thresholds + ranking, sorting
+
+***Target Types (what you're searching for):***
+--target=content|symbol|structure|file|config|test|doc|history
+--lang=py/js+ts+tsx/etc
+
+***Search Strategies (precision/recall trade-off):***
+--strategy=precise|balanced|broad
+* precise: ctags → ast-grep → regex
+* balanced: ripgrep + fuzzy (default)
+* broad: semantic + fuzzy + typo-tolerant
+
+***Scope Filtering (where to look):***
+--in=functions|classes|tests|imports|comments|files|all
+--lang=py|js|rs|go  # Language-specific filtering
+--depth=1-5         # Directory depth limit
+--subdir=subdir/path/
+
+***temporal filtering***
+--timestamp
+--git diff HEAD, logs
+
+***result control***
+--limit=N           # Max results
+--show-context=3    # Lines of context around matches
+--format= ??
+
+
+
+## current implementations
+### "M FIND"
+```
+● Bash(m find "GraphStore")
+  ⎿  === 🔍 SEMANTIC SEARCH: GraphStore ===
+        from graph_store import GraphStore
+        graph_store: GraphStore | None = None
+        graph_store = GraphStore(source_path)
+        graph_store = GraphStore(source_path)
+        graph_store = GraphStore(source_path)
+        from graph_store import GraphStore
+        graph_store: GraphStore | None = None,
+        graph_store = GraphStore(source_path)
+        graph_store: GraphStore | None = None,
+        graph_store = GraphStore(source_path)
+        class GraphStore
+        from graph_store import GraphStore
+        graph_store = GraphStore(self.temp_dir)
+        graph_store = GraphStore(self.temp_dir)
+        graph_store = GraphStore(self.temp_dir)
+        graph_store = GraphStore(large_temp_dir)
+        from graph_store import GraphStore
+        self.graph_store = GraphStore(self.temp_dir)
+        from graph_store import GraphStore
+        self.graph_store = GraphStore(self.temp_dir)
+        """Unit tests for GraphStore."""
+        from graph_store import GraphStore
+        class TestGraphStore(TestCase)
+        """Test cases for GraphStore functionality."""
+        self.graph_store = GraphStore(self.temp_dir)
+        """Test GraphStore initialization."""
+        # Create new GraphStore instance (should load saved graph)
+        new_graph_store = GraphStore(self.temp_dir)
+        from graph_store import GraphStore
+        graph_store = GraphStore(self.temp_dir)
+        graph_store = GraphStore(self.temp_dir)
+```
+
+### "M REFS"
+```
+=== 🔍 COMPREHENSIVE ANALYSIS: Database ===
+📍  Database defined in database.py:9
+=== 📦 DEPENDENCIES (what Database uses) ===
+=== ⬅️  REVERSE DEPENDENCIES (what uses Database) ===
+📦 IMPORTED BY:
+🟢 📦 doc_parser.py:11 [LOW] (from database import Database)
+🟢 📦 mcp_server.py:19 [LOW] (from database import Database)
+🟢 📦 tests/test_performance_benchmarks.py:9 [LOW] (from database import Database)
+🟢 📦 vector_store.py:7 [LOW] (from database import Database)
+🟢 📦 parse_helpers.py:9 [LOW] (from database import Database)
+🟢 📦 tests/test_mcp_integration.py:12 [LOW] (from database import Database)
+📞 CALLED BY:
+🟢 📞 mcp_server.py:165 [LOW] (db = Database(source_path)...)
+🟢 📞 mcp_server.py:254 [LOW] (db = Database(source_path)...)
+🟢 📞 parse_helpers.py:31 [LOW] (db = Database(source_path))
+🟢 📞 parse_helpers.py:165 [LOW] (db = Database(source_path))
+🟢 📞 parse_helpers.py:274 [LOW] (db = Database(source_path))
+🟢 📞 tests/test_performance_benchmarks.py:140 [LOW] (db = Database(self.temp_dir))
+🟢 📞 tests/test_performance_benchmarks.py:179 [LOW] (db = Database(self.temp_dir))
+🟢 📞 tests/test_performance_benchmarks.py:239 [LOW] (db = Database(self.temp_dir))
+🟢 📞 tests/test_performance_benchmarks.py:295 [LOW] (db = Database(self.temp_dir))
+🟢 📞 tests/test_performance_benchmarks.py:350 [LOW] (db = Database(large_temp_dir))
+🟢 📞 tests/test_mcp_integration.py:244 [LOW] (db = Database(self.temp_dir))
+🟢 📞 tests/test_mcp_integration.py:286 [LOW] (db = Database(self.temp_dir))
+🏗️  INSTANTIATED BY:
+=== ⛓️  TRANSITIVE IMPACT (depth: 2) ===
+     No transitive dependencies found
+=== 🛠️  REFACTOR IMPACT SUMMARY ===
+📊 Files affected: 8
+📊 Total usages: 31
+=== 🔥 USAGE HOTSPOTS ===
+🔥 parse_helpers.py (10 usages)
+🔥 tests/test_performance_benchmarks.py (8 usages)
+🔥 mcp_server.py (4 usages)
+🔥 tests/test_mcp_integration.py (3 usages)
+🔥 vector_store.py (2 usages)
+```
 
 ### "M COUPLING"
-*File-Level Architecture Assessment*
-- Purpose: "Which files have structural problems?"
-- Scope: Entire codebase health assessment
-- Granularity: File-level metrics (imports + calls)
-- Output: Problematic files grouped by severity
-- Use Case: Discovery of architectural hotspots
-
 ```
 === 🔗 COUPLING ANALYSIS (threshold: 20) ===
 📊 SUMMARY: 14 Critical, 0 High, 0 Medium, 0 Low
@@ -76,337 +251,9 @@
 
 
 
-### "M REFS"
-*Symbol-Level Impact Analysis*
-  - Purpose: "What happens if I change this specific symbol?"
-  - Scope: Deep relationship tracing for individual symbols
-  - Granularity: Function/class/variable relationships
-  - Output: Bidirectional dependencies + transitive impact
-  - Use Case: Change safety assessment before refactoring
 
+## consolidated dir for all tool configs/caches
 ```
-=== 🔍 COMPREHENSIVE ANALYSIS: Database ===
-📍  Database defined in database.py:9
-=== 📦 DEPENDENCIES (what Database uses) ===
-=== ⬅️  REVERSE DEPENDENCIES (what uses Database) ===
-📦 IMPORTED BY:
-🟢 📦 doc_parser.py:11 [LOW] (from database import Database)
-🟢 📦 mcp_server.py:19 [LOW] (from database import Database)
-🟢 📦 tests/test_performance_benchmarks.py:9 [LOW] (from database import Database)
-🟢 📦 vector_store.py:7 [LOW] (from database import Database)
-🟢 📦 parse_helpers.py:9 [LOW] (from database import Database)
-🟢 📦 tests/test_mcp_integration.py:12 [LOW] (from database import Database)
-📞 CALLED BY:
-🟢 📞 mcp_server.py:165 [LOW] (db = Database(source_path)...)
-🟢 📞 mcp_server.py:254 [LOW] (db = Database(source_path)...)
-🟢 📞 parse_helpers.py:31 [LOW] (db = Database(source_path))
-🟢 📞 parse_helpers.py:165 [LOW] (db = Database(source_path))
-🟢 📞 parse_helpers.py:274 [LOW] (db = Database(source_path))
-🟢 📞 tests/test_performance_benchmarks.py:140 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:179 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:239 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:295 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:350 [LOW] (db = Database(large_temp_dir))
-🟢 📞 tests/test_mcp_integration.py:244 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_mcp_integration.py:286 [LOW] (db = Database(self.temp_dir))
-🏗️  INSTANTIATED BY:
-=== ⛓️  TRANSITIVE IMPACT (depth: 2) ===
-     No transitive dependencies found
-=== 🛠️  REFACTOR IMPACT SUMMARY ===
-📊 Files affected: 8
-📊 Total usages: 31
-=== 🔥 USAGE HOTSPOTS ===
-🔥 parse_helpers.py (10 usages)
-🔥 tests/test_performance_benchmarks.py (8 usages)
-🔥 mcp_server.py (4 usages)
-🔥 tests/test_mcp_integration.py (3 usages)
-🔥 vector_store.py (2 usages)
-```
-
-
-### "M FIND"
-
-* add vector storage from memory mcp project?
-
-
-
-Text Search Tools
-
-- ripgrep (rg) - Fast regex/text search (already integrated)
-- grep -E - Extended regex patterns
-- ack - Programmer-focused search
-- ag (Silver Searcher) - Fast text search with ignore patterns
-
-File Discovery Tools
-
-- find - File name/path/metadata search
-- fd - Modern, fast alternative to find
-- locate/mlocate - Indexed file search
-- which/whereis - Command/binary location
-
-Code Analysis Tools
-
-- ast-grep - AST-based structural search (partially integrated)
-- semgrep - Semantic code search patterns
-- ctags/universal-ctags - Symbol indexing and search
-- cscope - Code browsing/cross-reference
-
-Content Analysis
-
-- fzf - Fuzzy finder (already integrated for filtering)
-- peco/percol - Interactive filtering
-- jq - JSON querying (for structured code analysis)
-- yq - YAML/XML querying
-
-Git Integration
-
-- git grep - Repository-aware search
-- git log --grep - Commit message search
-- git log -S - Code history search (pickaxe)
-
-Advanced Search Techniques
-
-- Fuzzy matching - Approximate string matching
-- Semantic embeddings - AI-powered similarity search
-- N-gram analysis - Pattern frequency analysis
-- Levenshtein distance - Edit distance matching
-
-Best Non-Redundant Integration Set
-
-m find "pattern"                    # ripgrep + semantic expansion
-m find --files "*.py"               # fd for file discovery
-m find --fuzzy "databse"            # fzf fuzzy matching
-m find --ast "class with methods"   # ast-grep structural search
-m find --git "removed function"     # git log -S code archaeology
-m find --symbols "Manager"          # ctags symbol search
-m find --regex "def \w+_handler"    # Enhanced regex with context
-
-Result: Single command consolidating 15+ CLI tools while avoiding overlap with refs (relationship analysis) and
-coupling (architectural assessment).
-
-
-
-
-
-
-
-  Consolidation Analysis
-
-  - Content Tools: rg + grep + ack + ag → Single Content Backend
-  - Structure Tools: ast-grep + semgrep + ctags → Single Structure Backend
-  - File Tools: find + fd + locate + git → Single File Backend
-  - Interactive Tools: fzf + peco + fuzzy → Fuzzy Layer (applies to all)
-
-  Unified Command Structure
-
-  m find "query" [--fuzzy] [--in=scope] [--type=match_type]
-
-  # Examples:
-  m find "database"                    # Auto-detect: content search
-  m find "UserManager" --type=symbol   # Structure backend
-  m find "test_*.py" --type=file       # File backend
-  m find "databse" --fuzzy             # Typo tolerance
-  m find "auth" --in=functions         # Scope filtering
-
-  Key Arguments (Semantic, Not Tool-Based)
-
-  - --type: content|symbol|file|history (backend selection)
-  - --fuzzy: Enable approximate matching
-  - --in: functions|classes|tests|files (scope filtering)
-  - --match: exact|regex|semantic (matching strategy)
-
-  Flexible Fuzzy Search Capabilities
-
-  1. Multi-Level Fuzzy: "databse connction" → fuzzy filename + fuzzy content
-  2. Semantic Fuzzy: "auth --fuzzy" matches login, permission, authenticate
-  3. Pattern Fuzzy: "get*usr --fuzzy" → get_user_profile, getUserData
-  4. Contextual Fuzzy: Search within fuzzy-matched files/functions
-  5. Typo + Concept: "fucntion handlr" → function handler + semantic expansion
-
-
-
-  Replace Interactive Components
-
-  - fzf --filter="pattern" → --limit=k --rank-by=relevance
-  - peco/percol → --top=k --sort-by=score
-  - Interactive selection → --best-match --max-results=k
-
-  Non-Interactive Command Structure
-
-  m find "query" --limit=5 --rank-by=relevance
-  m find "database" --top=3 --sort-by=frequency
-  m find "UserManager" --best-match --threshold=0.8
-  m find "auth" --max-results=10 --min-score=0.5
-
-  Ranking/Filtering Options
-
-  - --limit=k: Return top k results only
-  - --threshold=n: Minimum relevance score (0.0-1.0)
-  - --rank-by: relevance|frequency|recency|alphabetical
-  - --sort-by: score|location|file|type
-  - --best-match: Return single highest-scoring result
-  - --dedup: Remove duplicate/similar results
-
-  AI Agent-Friendly Output
-
-  # Structured output for parsing
-  m find "database" --format=json --limit=5
-  m find "auth" --format=tsv --rank-by=relevance
-  m find "error" --format=lines --best-match
-
-  Default Behavior
-
-  # No flags = top 10 results, relevance-ranked, deduplicated
-  m find "pattern"
-
-  # Equivalent to:
-  m find "pattern" --limit=10 --rank-by=relevance --dedup
-
-
-
-
-
-
-● Universal-ctags/cscope Value Analysis
-
-  Significant Value for find
-
-  - Language-aware symbol search vs ripgrep's text matching
-  - No false positives from comments/strings containing symbol names
-  - Hierarchical understanding: knows UserManager.login() vs AdminManager.login()
-  - Partial completion: m find "User" --type=symbol finds UserManager, UserService
-  - 40+ language support with consistent interface
-
-  Moderate Value for refs
-
-  - More precise call graphs than regex-based relationship detection
-  - Accurate symbol disambiguation (multiple login functions)
-  - Cross-reference accuracy without regex false positives
-
-  Practical Integration
-
-  # Enhanced find with symbol awareness
-  m find "Manager" --type=symbol     # ctags: only actual symbols, not comments
-  m find "get_user" --fuzzy          # ctags: fuzzy symbol matching
-
-  # More accurate refs analysis
-  m refs UserManager --precise       # ctags: accurate call graph vs regex approximation
-
-  Trade-off Considerations
-
-  - Setup cost: Requires index generation/maintenance
-  - Fallback strategy: Use ripgrep when ctags unavailable
-  - Real-time vs indexed: ripgrep works immediately, ctags needs preparation
-
-  Recommendation
-
-  YES - High value addition:
-  - For find: ctags eliminates false positives and provides language-aware symbol search
-  - For refs: Optional --precise mode using ctags for complex codebases
-  - Implementation: ctags-first with ripgrep fallback ensures reliability
-
-  Result: ctags/cscope transform text-based search into code-aware analysis, significantly improving accuracy for
-   symbol operations.
-
-
-
-
-
-
-
-  Enhanced Output with AST-grep additions:
-
-  Current:
-  🟢 📞 mcp_server.py:165 [LOW] (db = Database(source_path)...)
-
-  Enhanced:
-  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
-        ├─ Context: async function call_tool() → conditional reinitalization block
-        ├─ AST: assignment_statement → call_expression → identifier
-        ├─ Pattern: Database initialization in conditional branch
-        ├─ Risk: Called conditionally when current_project != project_root
-        └─ Impact: Creates new database connection, reinitializes system state
-
-  Value Proposition Scoring:
-
-  1. Precise Column Location - ⭐⭐⭐⭐
-
-  Addition: :30 (exact column)Value: Enables editor jump-to-exact-position, better than file:line approximation
-  Use case: IDE integration, precise navigation
-
-  2. AST Context Information - ⭐⭐⭐⭐⭐
-
-  Addition: assignment_statement → call_expression → identifier
-  Value: Shows structural context, not just text match - proves it's actual constructor call
-  Use case: Eliminates false positives, confirms usage type
-
-  3. Parent Function Context - ⭐⭐⭐⭐⭐
-
-  Addition: async function call_tool() → conditional reinitalization blockValue: Shows architectural context -
-  this is system initialization code
-  Use case: Understanding change impact scope
-
-  4. Usage Pattern Recognition - ⭐⭐⭐⭐⭐
-
-  Addition: Database initialization in conditional branch
-  Value: Identifies this as conditional initialization pattern vs regular usage
-  Use case: Risk assessment for refactoring
-
-  5. Risk Enhancement - ⭐⭐⭐⭐⭐
-
-  Addition: Risk level change from [LOW] to [MEDIUM] due to conditional context
-  Value: More accurate risk assessment based on structural analysis
-  Use case: Better refactoring decision making
-
-  6. Impact Analysis - ⭐⭐⭐⭐
-
-  Addition: Creates new database connection, reinitializes system state
-  Value: Shows side effects and system impact of this specific usage
-  Use case: Change planning and testing scope
-
-  Overall Enhancement Value: ⭐⭐⭐⭐⭐
-
-  Highest value additions:
-  1. AST Context - Proves it's real usage, not text match
-  2. Parent Function Context - Shows architectural significance
-  3. Usage Pattern Recognition - Enables pattern-based refactoring decisions
-  4. Enhanced Risk Assessment - More accurate than text-based heuristics
-
-  The AST-grep enhancements transform basic location info into comprehensive architectural intelligence.
-
-
-
-  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
-        ├─ Context: async function call_tool() → conditional reinitalization block
-        ├─ AST: assignment_statement → call_expression → identifier
-        ├─ Symbol: class Database defined in database.py:9
-        ├─ Constructor: __init__(self, source_path: str)
-        ├─ Available methods: add_file, add_chunk, get_file_info, close, delete_file
-        │  └─ add_code_chunk(file_id: int, chunk_data: dict[str, Any]) -> int
-        │  └─ search_ast_nodes(...) -> list[dict[str,Any]]
-        │  └─ get_all_code_chunks() -> list[dict[str,Any]]
-        └─ Type signature: Database(source_path: str) -> Database
-
-  Ctags Value Assessment:
-
-  1. Symbol Hierarchy - ⭐⭐
-
-  Real addition: Shows 23 available Database methods
-  Value: Helps understand what operations are possible on this Database instance
-  Practical use: "After creating Database(source_path), you can call .add_file(), .close(), etc."
-
-  2. Type Signatures - ⭐⭐⭐
-
-  Real addition: __init__(self, source_path: str), add_chunk() -> int
-  Value: Shows expected parameters and return types for available methods
-  Practical use: Validates parameter usage, shows return type expectations
-
-  3. Definition Source - ⭐
-
-  Real addition: class Database defined in database.py:9
-  Value: Redundant - already shown by current refs
-  Practical use: Jump to definition (but CCLSP already provides this)
-
 ● You're absolutely right! If we're controlling all tool calls from core.sh, we can hardcode the paths and
   eliminate the compatibility issues.
 
@@ -473,6 +320,7 @@ coupling (architectural assessment).
   This is actually the ideal architecture - clean project root + hidden complexity.
 
   Action: Move both files to .ast-grep/ and update all internal tool calls to use explicit paths.
+```
 
 
 
@@ -492,6 +340,177 @@ coupling (architectural assessment).
 
 
 
+
+  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
+        ├─ Context: async function call_tool() → conditional reinitalization block
+        ├─ AST: assignment_statement → call_expression → identifier
+        ├─ Symbol: class Database defined in database.py:9
+        ├─ Constructor: __init__(self, source_path: str)
+        ├─ Available methods: add_file, add_chunk, get_file_info, close, delete_file
+        │  └─ add_code_chunk(file_id: int, chunk_data: dict[str, Any]) -> int
+        │  └─ search_ast_nodes(...) -> list[dict[str,Any]]
+        │  └─ get_all_code_chunks() -> list[dict[str,Any]]
+        └─ Type signature: Database(source_path: str) -> Database
+
+  Ctags Value Assessment:
+
+  1. Symbol Hierarchy - ⭐⭐
+
+  Real addition: Shows 23 available Database methods
+  Value: Helps understand what operations are possible on this Database instance
+  Practical use: "After creating Database(source_path), you can call .add_file(), .close(), etc."
+
+  2. Type Signatures - ⭐⭐⭐
+
+  Real addition: __init__(self, source_path: str), add_chunk() -> int
+  Value: Shows expected parameters and return types for available methods
+  Practical use: Validates parameter usage, shows return type expectations
+
+  3. Definition Source - ⭐
+
+  Real addition: class Database defined in database.py:9
+  Value: Redundant - already shown by current refs
+  Practical use: Jump to definition (but CCLSP already provides this)
+
+
+
+
+
+
+  FZF LIMITATIONS FOR SEMANTIC SEARCH
+
+  fzf's fuzzy matching is character-based, not semantic:
+  - "store" → "storage" ❌ (no shared character sequence)
+  - "store" → "stroe" ✅ (typo tolerance)
+  - "store" → "Store" ✅ (case insensitive)
+
+  fzf excels at:
+  - Typo tolerance - databse finds database
+  - Partial matches - stor finds datastore
+  - Character transposition - stroe finds store
+
+  BETTER SEMANTIC OPTIONS
+
+  For synonym/semantic discovery:
+  # Semantic layer via word embeddings
+  memory_mcp          - Vector similarity search
+  wordnet/thesaurus   - Explicit synonym lookup
+  stemming tools      - Root word matching
+
+  Hybrid approach for comprehensive find:
+  # 1. Primary discovery (exact + fuzzy)
+  rg + ctags + fzf → finds exact matches + typos
+
+  # 2. Semantic expansion (if low results)
+  memory_mcp → finds conceptually similar terms
+
+  # 3. Combine results
+  sort/uniq → deduplicated comprehensive list
+
+  fzf is perfect for interactive filtering of results, but semantic discovery needs a different engine first.
+
+
+
+
+
+
+
+  Intelligent Defaults
+
+  m find "Database"
+  # Auto-detects: likely symbol search
+  # Uses: balanced strategy, recent files prioritized
+  # Returns: top 10 results, grouped by relevance
+
+  m find "*.py"
+  # Auto-detects: file search
+  # Uses: precise strategy, fd backend
+
+  m find "error handling"
+  # Auto-detects: content search with semantic expansion
+  # Uses: broad strategy, includes comments/docs
+
+  Search Type Stacks
+
+  Precision Stack (eliminate false positives):
+  1. ctags symbol lookup
+  2. ast-grep structural patterns
+  3. ripgrep with word boundaries
+  4. Fallback to basic grep
+
+  Discovery Stack (maximize recall):
+  1. Semantic similarity (embeddings)
+  2. Fuzzy matching with typo tolerance
+  3. Regex with relaxed patterns
+  4. Full-text search
+
+  Balanced Stack (default):
+  1. ripgrep with smart patterns
+  2. Fuzzy fallback for typos
+  3. Context-aware ranking
+  4. Semantic expansion for low results
+
+
+
+  modular architecture
+  - structure projects into isolated modules with single-owner responsibility
+  - implement black-box encapsulation with well-documented APIs as exclusive interfaces
+  - separate core logic from UI to ensure independent, reusable application cores
+
+  Coupling directly enforces these principles:
+
+  1. Module isolation: High coupling = failed encapsulation
+  2. Single responsibility: Files with 15+ dependencies violate single ownership
+  3. API boundaries: Coupling shows where clean interfaces break down
+
+  M coupling becomes your architecture validator:
+
+  m coupling --threshold=10     # Enforce low coupling limits
+  m coupling --api-boundary     # Check interface violations
+  m coupling --by-module        # Module-level coupling analysis
+
+  Critical for your black-box principle - coupling analysis reveals:
+  - Which modules have "leaked" internals (high external coupling)
+  - Where APIs aren't truly exclusive interfaces (cross-module coupling)
+  - Files that violate single-owner responsibility (too many dependencies)
+
+  Without coupling analysis, you can't verify your modular architecture is actually working. It's the difference
+  between claiming black-box design and proving it through measurable dependency constraints.
+
+  Coupling is your architectural verification tool - essential for maintaining the clean boundaries your slash
+  commands demand.
+
+
+  File-Level Perfection:
+  - Each file: exactly one responsibility, ~200-300 lines max
+  - Imports: 3-5 focused dependencies (not 23!)
+  - Zero circular dependencies, ever
+  - Clear public/private boundaries
+  - High cohesion within, minimal coupling between
+
+  Module-Level Perfection:
+  - Complete black-box encapsulation - no implementation leakage
+  - Stable APIs that never break (only extend)
+  - All external dependencies wrapped in custom layers
+  - Unidirectional dependency flow
+  - Each module independently testable/deployable
+
+  System-Level Perfection:
+  - Core logic completely UI/infrastructure-agnostic
+  - No framework lock-in through abstraction layers
+  - Plugin architectures for all extensibility
+  - Only additive changes, never breaking modifications
+  - "Finished" code requiring no future revision
+
+  But the trade-offs are brutal:
+  - Over-engineering: Wrapping every dependency adds complexity
+  - Analysis paralysis: Perfect interfaces upfront prevent iteration
+  - Velocity killer: Strict modularity slows initial development
+  - Cognitive overhead: 100 tiny modules vs 10 cohesive ones
+  - Domain evolution: Requirements change, boundaries shift
+
+  Maybe the real goal: "Good enough modularity" with tools to detect drift. Start pragmatic, use m arch to
+  identify when coupling gets dangerous, refactor when metrics scream.
 
 ### AST GREP INFO
 get official documentation from context7:
@@ -501,158 +520,152 @@ the executable `m` should give generic descriptions and comprehensive usage exam
 change histories ensure all functionalities are represented here.
 
 
+---
 
 
-## VALUE PROPOSITIONS
-1. ARCHITECTURAL SAFETY ANALYSIS ⭐⭐⭐⭐⭐
-"What breaks if I change this?"
-Core Ideal: Transform abstract code relationships into concrete, actionable safety information for confident
-refactoring decisions.
-Fundamental Principles:
-- Every change impact must be expressed as specific file:line locations
-- Relationship analysis provides transitive dependency chains with distance tracking
-- Coupling analysis identifies functions requiring careful change management
-- Impact prediction enables "blast radius" assessment before modifications
-Value Delivery:
-- Eliminates guesswork in large codebases
-- Prevents cascade failures from seemingly safe changes
-- Enables confident refactoring of legacy systems
-- Reduces time spent debugging broken dependencies
-2. DISCOVERY-DRIVEN DEVELOPMENT ⭐⭐⭐⭐⭐
-"Find not just where code is, but what it does and how it fits"
-Core Ideal: Bridge the gap between semantic intent and structural implementation through intelligent pattern
-recognition.
-Fundamental Principles:
-- Semantic similarity reveals functionally equivalent code
-- Behavioral categorization groups code by purpose, not structure
-- Usage pattern analysis shows how code is actually employed
-- Cross-referencing validates assumptions about code relationships
-Value Delivery:
-- Accelerates understanding of unfamiliar codebases
-- Identifies refactoring opportunities through similarity analysis
-- Reveals architectural patterns and anti-patterns
-- Enables knowledge transfer through pattern documentation
-3. CONCRETE ACTIONABILITY ⭐⭐⭐⭐⭐
-"No abstract metrics, just specific locations and actions"
-Core Ideal: Every analysis result must directly translate to executable developer actions.
-Fundamental Principles:
-- Replace complexity scores with specific problematic locations
-- Provide exact file:line references for all findings
-- Include concrete suggestions for improvement
-- Validate all recommendations through relationship analysis
-Value Delivery:
-- Eliminates analysis paralysis from abstract measurements
-- Enables immediate action on identified issues
-- Reduces cognitive load by providing clear next steps
-- Builds developer confidence through specific guidance
-SECONDARY VALUE PROPOSITIONS
-4. CONTEXTUAL CODE COMPREHENSION ⭐⭐⭐⭐
-"Understanding code through its relationships and usage"
-Core Ideal: Code understanding emerges from relationship context, not isolated analysis.
-Fundamental Principles:
-- Functions are understood through their callers and callees
-- Similar functions reveal architectural patterns
-- Usage contexts show intended vs actual behavior
-- Configuration dependencies expose external influences
-Value Delivery:
-- Faster onboarding to complex codebases
-- Better architectural decision-making
-- Reduced misunderstanding of code intent
-- Improved code review quality
-5. ORPHAN AND DEBT DETECTION ⭐⭐⭐⭐
-"Identify what becomes obsolete before it becomes technical debt"
-Core Ideal: Proactive identification of code that will become abandoned or problematic.
-Fundamental Principles:
-- Dead code detection through reference analysis
-- Orphaned test identification via naming patterns
-- Unused configuration tracking
-- Single-point-of-failure detection
-Value Delivery:
-- Prevents accumulation of technical debt
-- Enables safe cleanup of legacy code
-- Reduces maintenance burden
-- Improves codebase health metrics
-6. CHANGE PROPAGATION ANALYSIS ⭐⭐⭐
-"Understand how changes ripple through systems"
-Core Ideal: Model software as a network where changes have predictable propagation patterns.
-Fundamental Principles:
-- Transitive dependency tracking with distance measurement
-- Impact node identification for comprehensive change planning
-- Coupling metrics to prioritize change order
-- Configuration change impact assessment
-Value Delivery:
-- Enables strategic change planning
-- Reduces unexpected side effects
-- Improves release planning accuracy
-- Supports incremental migration strategies
-SUPPORTING CAPABILITIES
-7. PATTERN-BASED ARCHITECTURE ANALYSIS ⭐⭐⭐
-"Detect architectural patterns and violations"
-Core Ideal: Architecture emerges from code patterns, not documentation.
-Fundamental Principles:
-- Behavioral pattern recognition across functions
-- Structural similarity identification
-- Anti-pattern detection through coupling analysis
-- Architectural boundary validation
-Value Delivery:
-- Validates architectural assumptions
-- Identifies inconsistent implementations
-- Guides refactoring priorities
-- Supports architectural evolution
-8. SEMANTIC CODE NAVIGATION ⭐⭐⭐
-"Navigate by meaning, not just structure"
-Core Ideal: Code navigation should understand intent, not just syntax.
-Fundamental Principles:
-- Vector-based semantic similarity
-- Contextual relationship weighting
-- Multi-modal search (semantic + structural + behavioral)
-- Intent-driven discovery
-Value Delivery:
-- Faster location of relevant code
-- Discovery of unexpected relationships
-- Improved code exploration efficiency
-- Better understanding of code intent
-9. EXTENSIBILITY AND EVOLUTION ⭐⭐
-"Support additive enhancement without disruption"
-Core Ideal: Systems should evolve gracefully without breaking existing functionality.
-Fundamental Principles:
-- Modular architecture with clear boundaries
-- Plugin systems for domain-specific analysis
-- Version-independent analysis techniques
-- Backward-compatible enhancement patterns
-Value Delivery:
-- Future-proof analysis capabilities
-- Customizable for specific domains
-- Incremental adoption possible
-- Sustainable long-term evolution
-PHILOSOPHICAL FOUNDATIONS
-SYSTEMS THINKING
-Code exists within interconnected systems where changes have emergent effects beyond immediate scope.
-EMPIRICAL EVIDENCE
-All analysis must be grounded in observable code behavior, not theoretical models.
-COGNITIVE LOAD REDUCTION
-Minimize the mental effort required to understand complex systems by providing clear, structured information.
-RISK-AWARE DEVELOPMENT
-Every development decision should consider potential negative consequences and provide mitigation strategies.
-ACTIONABLE INTELLIGENCE
-Information without clear next steps is noise; every insight must enable specific developer actions.
-CORE SUCCESS METRICS
-DEVELOPER VELOCITY
-- Time to understand unfamiliar code sections
-- Confidence level in making changes
-- Accuracy of impact predictions
-CODEBASE HEALTH
-- Reduction in coupling over time
-- Elimination of orphaned code
-- Consistency of architectural patterns
-CHANGE SAFETY
-- Reduced post-deployment issues
-- Improved change success rates
-- Faster rollback decision-making
-KNOWLEDGE TRANSFER
-- Onboarding time for new team members
-- Code review efficiency
-- Architectural decision quality
+
+
+
+
+
+
+## FIND TOOL
+the find tool is for discovery only. it should categorize outputs by type and give their
+exact signatures. it should not provide refs like functionality. it should search widely and
+discover each possible variant of a certain term.
+deduplicated always. inherently broad, non-verbose per result.
+
+Categorizes by WHAT TYPE of code element - your symbol categories cover all possible code constructs across
+languages (class, function, variable, etc.)
+Categorizes by WHERE it appears - content (in text/docs) vs structure (filesystem)
+Provides exact signatures - enough detail for refs to target the precise element later
+This is a clean separation: find discovers ALL variants broadly, then refs does deep relationship analysis on
+the specific thing you select.
+
+
+
+### **CATEGORIES:**
+
+```
+1. symbols [return identifying signature, filepath+line to definition/instantiation]
+* class - Class definitions
+* function - Function/method definitions
+* variable - Variable declarations
+* interface - Interface definitions
+* struct - Structure definitions
+* enum - Enumeration definitions
+* typedef - Type definitions
+* macro - Preprocessor macros
+* namespace - Namespace definitions
+* member - Class/struct members
+* field - Data fields
+* method - Class methods
+* property - Object properties
+* constant - Constants
+* label - Code labels
+* prototype - Function prototypes
+* module
+* decorator
+
+2. content [return contents of line]
+* line of content it appears in, documentation-based
+
+3. structure [return filepath]
+* dir/subdir/file names
+```
+
+### **TOOL SELECTIONS**
+```
+ripgrep (rg)              - Primary content/symbol search engine
+ctags                     - Symbol definitions across languages
+fd-find (fd)              - Fast filesystem structure search
+sem-index -> sem-search   - semantic search across cwd
+
+  PROCESSING PIPELINE
+
+sort/uniq        - Deduplication of results
+head/tail        - Result limiting/sampling
+sd               - Text formatting/cleanup
+```
+
+### TOOLING RESPONSIBILITIES
+```
+
+  symbols: ~85-90% coverage
+  - ctags handles well: class, function, variable, interface, struct, enum, typedef, macro, namespace, member,
+  field, method, property, constant, label, prototype
+
+  content: ~95% coverage
+  - rg handles comprehensively: all text content, comments, documentation, strings, regex patterns
+  - minimal gaps: binary files (usually irrelevant), unusual encodings
+
+  structure: ~95% coverage
+  - fd handles comprehensively: directories, files, name patterns, extensions, path matching
+  - minimal gaps: permission-restricted areas, hidden files (configurable)
+```
+
+### FULL LOGIC
+```
+
+  Parallel execution strategy:
+  # All tools run simultaneously on full codebase
+  ctags + rg + fd  →  traditional_results
+  sem-search                  →  semantic_results
+
+  # Merge + deduplicate by file:line location
+  sort/uniq → comprehensive_deduplicated_results
+
+  Key advantages:
+  - no semantic blind spots - traditional tools catch exact matches semantic search might miss
+  - no traditional blind spots - semantic search finds conceptual matches traditional tools miss
+  - redundancy validation - when both find the same result, higher confidence
+  - performance optimization - all tools run concurrently rather than sequentially
+
+  Deduplication logic:
+  - by definition location for the same symbols 
+  - primary key: file_path:line_number
+```
+
+### **OUTPUTS**
+```
+  📍 SYMBOLS
+  class    database.py:9     class Database(BaseModel)
+  function helpers.py:45     def get_database() -> Database
+  variable config.py:12      DATABASE_URL: str = "sqlite:///"
+  constant models.py:8       MAX_DATABASE_CONNECTIONS = 100
+  method   database.py:34    def connect(self, url: str)
+  property user.py:67        @property def database(self)
+  module   __init__.py:1     database
+  decorator auth.py:23       @database_transaction
+
+  📝 CONTENT
+  README.md:34        "Configure your database connection string"
+  parser.py:67        # Database cleanup happens automatically
+  errors.py:23        raise DatabaseError("Connection failed")
+
+  🏗️  STRUCTURE
+  ./database/
+  ./src/database_models.py
+  ./tests/test_database.py
+  ./config/database.yml
+```
+
+Each result shows:
+  - Category type (class, function, etc.)
+  - Location (file:line) [Definition location only for symbols]
+  - Exact signature (enough for refs to target precisely)
+Non-verbose, deduplicated, broadly discovers all variants.
+
+#### SEM-SEARCH OUTPUT FOR REFERENCE
+```
+Result 10 (similarity: 0.139)
+File: /home/alexpetro/.config/memory-tools/core.sh:1-50
+----------------------------------------
+
+content is here
+
+----------------------------------------
+```
 
 
 
