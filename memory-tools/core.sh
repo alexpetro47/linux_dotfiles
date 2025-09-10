@@ -360,56 +360,6 @@ format_output() {
 
 
 
-mfind() {
-    local query="$1"
-    local filter_query="${2:-$query}"
-    
-    echo "=== 🔍 CODE SEARCH: $query ==="
-    
-    # Multi-pattern code search with context grouping
-    local patterns=""
-    
-    # Expand query into pattern variants
-    case "$query" in
-        *"error"*|*"exception"*)
-            patterns="try|except|catch|error|exception|raise|throw"
-            ;;
-        *"database"*|*"db"*)
-            patterns="database|connect|query|sql|cursor|transaction|commit|rollback"
-            ;;
-        *"auth"*|*"login"*)
-            patterns="auth|login|authenticate|authorize|permission|token|session"
-            ;;
-        *"test"*)
-            patterns="test|assert|mock|expect|should|describe|it\("
-            ;;
-        *"config"*|*"setting"*)
-            patterns="config|setting|option|parameter|env|environment"
-            ;;
-        *)
-            # Default: use the query as-is plus common related patterns
-            patterns="$query"
-            ;;
-    esac
-    
-    # Search with enhanced context and grouping
-    rg "$patterns" --type-add 'code:*.{py,js,ts,jsx,tsx,go,rs,c,cpp,h,hpp}' -t code --smart-case -A 2 -B 1 -n | \
-    sed -n '/^[^:]*:[0-9]*:/p' | \
-    while IFS=':' read -r file line content; do
-        # Add relevance context
-        local relevance="🔗"
-        if echo "$content" | grep -qE '(def |class |function |const |let |var )'; then
-            relevance="📍"
-        elif echo "$content" | grep -qE '(import |from |include |require)'; then
-            relevance="📦"
-        fi
-        
-        printf "%s %s:%s\n   %s\n" "$relevance" "$file" "$line" "$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-70)$([ ${#content} -gt 70 ] && echo '...')"
-    done | fzf --filter="$filter_query" --no-sort
-}
-
-
-
 mtrace() {
     local symbol="${1:-}"
     local depth="${2:-2}"

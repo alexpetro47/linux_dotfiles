@@ -6,8 +6,7 @@ source "$SCRIPT_DIR/core.sh"
 
 main() {
     case ${1:-help} in
-        find)         shift; mfind "$@" ;;
-        find2)        shift; find2 "$@" ;;
+        find)         shift; find2 "$@" ;;
         arch)            shift; arch "$@" ;;
         trace)            shift; mtrace "$@" ;;
         init)          shift; minit "$@" ;;
