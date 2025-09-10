@@ -50,8 +50,37 @@ search_symbols() {
             # Extract kind from kind_info (format: ;"<tab>kind)
             local kind=$(echo "$kind_info" | sed 's/.*"//' | cut -c1)
             
-            # Try to extract line number from pattern or use grep to find it
-            local line_num=$(rg -n "^${symbol}\\s*\\(" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+            # Extract line number from ctags pattern field first (most accurate)
+            local line_num=$(echo "$pattern" | grep -o 'line:[0-9]*' | cut -d: -f2)
+            
+            # If no line info in pattern, try extracting from search pattern itself
+            if [[ -z "$line_num" ]]; then
+                # Remove the /^ and $/ wrapping from ctags pattern and search for it
+                local search_pattern=$(echo "$pattern" | sed 's|^/\^||' | sed 's|\$/.*||' | sed 's/\\/\\\\/g')
+                line_num=$(rg -n -F "$search_pattern" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+            fi
+            
+            # If still no match, try broader patterns based on symbol type
+            if [[ -z "$line_num" ]]; then
+                case "$kind" in
+                    f|m) # functions/methods - handle various function syntaxes
+                        line_num=$(rg -n "^\\s*(def|function|fn)\\s+${symbol}\\b" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        [[ -z "$line_num" ]] && line_num=$(rg -n "^\\s*${symbol}\\s*\\(" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        [[ -z "$line_num" ]] && line_num=$(rg -n "\\b${symbol}\\s*=" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        ;;
+                    c) # classes
+                        line_num=$(rg -n "^\\s*class\\s+${symbol}\\b" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        ;;
+                    v) # variables
+                        line_num=$(rg -n "^\\s*(local\\s+|readonly\\s+|declare\\s+|export\\s+|const\\s+|let\\s+|var\\s+)?${symbol}\\s*=" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        ;;
+                    *) # general symbol search
+                        line_num=$(rg -n "\\b${symbol}\\b" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+                        ;;
+                esac
+            fi
+            
+            # Last resort fallback
             [[ -z "$line_num" ]] && line_num="1"
             
             # Map ctags kind to find2 categories
@@ -75,13 +104,13 @@ search_symbols() {
             if [[ -f "$file" ]]; then
                 local signature=$(sed -n "${line_num}p" "$file" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-80)
                 [[ ${#signature} -gt 77 ]] && signature="${signature:0:77}..."
-                echo "SYMBOL|$category|$file|$line_num|$symbol - $signature"
+                echo "SYMBOL|$category|$file|$line_num|$signature"
             fi
         done
     fi
     
-    # Additional ripgrep-based variable detection
-    rg "^[[:space:]]*(local|readonly|declare|export)?[[:space:]]*$query[a-zA-Z0-9_]*[[:space:]]*=" \
+    # Additional ripgrep-based variable detection with more flexible patterns
+    rg "^[[:space:]]*(local|readonly|declare|export)?[[:space:]]*.*$query[a-zA-Z0-9_]*[[:space:]]*=" \
         --type-add 'code:*.{py,js,ts,jsx,tsx,sh,bash,zsh,go,rs,c,cpp,h,hpp,java,rb,php}' \
         -t code \
         --line-number \
@@ -89,14 +118,18 @@ search_symbols() {
         --max-count=5 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
+        # Skip if this looks like a function definition or comment
+        [[ "$content" =~ ^[[:space:]]*# ]] && continue
+        [[ "$content" =~ \(\) ]] && continue
+        
         # Clean up content for display
         local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-80)
         [[ ${#content} -gt 77 ]] && clean_content="${clean_content:0:77}..."
         
-        # Extract variable name from the line
-        local var_name=$(echo "$content" | sed 's/^[[:space:]]*\(local\|readonly\|declare\|export\)*[[:space:]]*//' | sed 's/[[:space:]]*=.*//')
+        # Extract variable name from the line more accurately
+        local var_name=$(echo "$content" | sed 's/^[[:space:]]*\(local\|readonly\|declare\|export\)*[[:space:]]*//' | sed 's/[[:space:]]*=.*//' | sed 's/[[:space:]]*$//')
         
-        echo "SYMBOL|variable|$file|$line|$var_name - $clean_content"
+        echo "SYMBOL|variable|$file|$line|$clean_content"
     done
     
     # Search for const/let/var declarations (JavaScript/TypeScript)
@@ -112,7 +145,7 @@ search_symbols() {
         
         local var_name=$(echo "$content" | sed 's/^[[:space:]]*\(const\|let\|var\)[[:space:]]*//' | sed 's/[[:space:]]*=.*//' | sed 's/[[:space:]]*:.*//')
         
-        echo "SYMBOL|variable|$file|$line|$var_name - $clean_content"
+        echo "SYMBOL|variable|$file|$line|$clean_content"
     done
 }
 

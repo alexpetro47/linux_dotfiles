@@ -670,3 +670,8 @@ content is here
 
 
 
+s.t.
+variable config.py:61   COORDINATION_SPECS_DIR - COORDINATION_SPECS_DIR = get_coordination_specs_dir()
+becomes
+variable config.py:61   COORDINATION_SPECS_DIR = get_coordination_specs_dir()
+
