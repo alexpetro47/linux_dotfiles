@@ -4,12 +4,12 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/core.sh"
 source "$SCRIPT_DIR/find.sh"
+source "$SCRIPT_DIR/trace.sh"
 
 main() {
     case ${1:-help} in
         find)         shift; find2 "$@" ;;
         arch)            shift; arch "$@" ;;
-        trace)            shift; trace2 "$@" ;;
         init)          shift; minit "$@" ;;
         help|*)              show_help ;;
     esac
