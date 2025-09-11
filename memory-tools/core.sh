@@ -478,6 +478,165 @@ arch() {
 
 
 
+# Trace function - tree-sitter + ripgrep symbol analysis
+trace2() {
+    local SYMBOL_NAME="${1:-}"
+    local FILE_PATH="${2:-}"
+    local LINE_NUMBER="${3:-}"
+    local QUERIES_DIR="$SCRIPT_DIR/queries"
+
+    # Usage function
+    trace_usage() {
+        echo "Usage: m trace <symbol_name> <file_path> [line_number]"
+        echo "Example: m trace Database ./src/models.py 45"
+        return 1
+    }
+
+    # Validate arguments
+    [[ -z "$SYMBOL_NAME" || -z "$FILE_PATH" ]] && trace_usage
+    [[ ! -f "$FILE_PATH" ]] && { echo "Error: File not found: $FILE_PATH"; return 1; }
+
+    # Detect language from file extension
+    detect_language() {
+        case "${FILE_PATH##*.}" in
+            py) echo "python" ;;
+            js|jsx) echo "javascript" ;;
+            ts|tsx) echo "typescript" ;;
+            *) echo "unknown" ;;
+        esac
+    }
+
+    local LANGUAGE=$(detect_language)
+
+    # Tree-sitter symbol analysis
+    analyze_symbol_definition() {
+        local query_file="$QUERIES_DIR/$LANGUAGE-functions.scm"
+        
+        if [[ ! -f "$query_file" ]]; then
+            echo "Warning: No query file for $LANGUAGE, using basic parsing"
+            return 1
+        fi
+        
+        echo "📖 DEFINED AT: $FILE_PATH"
+        
+        # Query tree-sitter for symbol definition
+        if tree-sitter query --query-path "$query_file" "$FILE_PATH" 2>/dev/null | grep -q "$SYMBOL_NAME"; then
+            echo "✅ Found symbol definition via tree-sitter"
+            tree-sitter query --query-path "$query_file" "$FILE_PATH" 2>/dev/null | grep "$SYMBOL_NAME" | head -5
+        else
+            echo "⚠️  Symbol not found in tree-sitter analysis, falling back to basic parsing"
+        fi
+    }
+
+    # Extract signature from file
+    extract_signature() {
+        echo "📋 SIGNATURE:"
+        
+        # Find the symbol definition line
+        if [[ -n "$LINE_NUMBER" ]]; then
+            sed -n "${LINE_NUMBER}p" "$FILE_PATH" | sed 's/^[[:space:]]*//'
+        else
+            # Search for function/class definition
+            case "$LANGUAGE" in
+                python)
+                    rg "^(def|class|async def)\s+$SYMBOL_NAME" "$FILE_PATH" --line-number --max-count=1 | head -1
+                    ;;
+                *)
+                    rg "^(function|class|const|let|var)\s+.*$SYMBOL_NAME" "$FILE_PATH" --line-number --max-count=1 | head -1
+                    ;;
+            esac
+        fi
+    }
+
+    # Symbol metadata from tree-sitter
+    extract_metadata() {
+        echo "🏷️  SYMBOL METADATA:"
+        
+        # Look for decorators, docstrings, etc.
+        case "$LANGUAGE" in
+            python)
+                # Check for decorators above the symbol
+                if [[ -n "$LINE_NUMBER" ]]; then
+                    local start_line=$((LINE_NUMBER - 5))
+                    [[ $start_line -lt 1 ]] && start_line=1
+                    sed -n "${start_line},${LINE_NUMBER}p" "$FILE_PATH" | rg "^\s*@\w+" || echo "  No decorators found"
+                fi
+                ;;
+        esac
+    }
+
+    # Cross-file references with ripgrep
+    find_references() {
+        echo "📞 CALLED BY:"
+        
+        # Find all references across the codebase
+        local file_dir=$(dirname "$FILE_PATH")
+        
+        # Search in current directory and subdirectories
+        rg "$SYMBOL_NAME" "$file_dir" \
+            --type py \
+            --line-number \
+            --max-count=10 \
+            --context=0 \
+            --no-heading \
+            --with-filename \
+            | grep -v "^$FILE_PATH:" \
+            | head -10 || echo "  No external references found"
+    }
+
+    # Import analysis
+    find_imports() {
+        echo "📦 IMPORTED BY:"
+        
+        local file_dir=$(dirname "$FILE_PATH")
+        local module_name=$(basename "$FILE_PATH" .py)
+        
+        # Find files that import this module/symbol
+        rg "(from.*$module_name|import.*$module_name|import.*$SYMBOL_NAME)" "$file_dir" \
+            --type py \
+            --line-number \
+            --max-count=5 \
+            | head -5 || echo "  No imports found"
+    }
+
+    # Dependencies analysis
+    find_dependencies() {
+        echo "📦 DEPENDENCIES:"
+        
+        # Find what this symbol imports/uses
+        case "$LANGUAGE" in
+            python)
+                # Look for imports at the top of the file
+                rg "^(import|from)" "$FILE_PATH" --line-number | head -10
+                ;;
+        esac
+    }
+
+    # Main execution
+    echo "=== 🔍 TRACE ANALYSIS: $SYMBOL_NAME ==="
+    echo ""
+    
+    analyze_symbol_definition
+    echo ""
+    
+    extract_signature  
+    echo ""
+    
+    extract_metadata
+    echo ""
+    
+    find_references
+    echo ""
+    
+    find_imports
+    echo ""
+    
+    find_dependencies
+    echo ""
+    
+    echo "=== Analysis Complete ==="
+}
+
 minit() {
     mkdir -p .m/rules
 

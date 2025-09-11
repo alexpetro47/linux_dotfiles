@@ -424,9 +424,33 @@ variable config.py:61   COORDINATION_SPECS_DIR = get_coordination_specs_dir()
 
 
 
+
+
+
+
+
+
+
+
+
+
 ## "M TRACE" 
 * `trace` - comprehensive information about a symbol and all of its relationships.
 inherently specific & ideally 1-2 results per, verbose per result.
+
+
+
+
+now using tree-sitter-cli from cargo binstall
+
+
+
+
+
+
+
+
+
 
 ### TOOLS
 * ctags
@@ -681,3 +705,268 @@ Add:
 - 📦 IMPORTED BY - files that import this symbol
 
 
+---
+
+
+● The Context7 documentation for ast-grep primarily shows basic CLI usage but doesn't provide the detailed
+  pattern syntax for identifying different types of content. Based on the ast-grep documentation available,
+  here's what I can determine about how to find each type of content:
+
+  Basic Pattern Syntax
+
+  - $VARIABLE - captures any expression/identifier
+  - sg -p 'pattern' -l language - basic search pattern
+  - sg -p 'pattern' -r 'replacement' -l language - find and replace
+
+  How to Find Each Content Type:
+
+  CLASSES + INTERFACES + STRUCTS
+  - Class definitions: sg -p 'class $NAME { $$$ }' -l ts
+  - Interface definitions: sg -p 'interface $NAME { $$$ }' -l ts
+  - Constructor calls: sg -p 'new $CLASS($$$)' -l ts
+  - Method calls: sg -p '$OBJ.$METHOD($$$)' -l ts
+
+  FUNCTIONS + METHODS + PROTOTYPES
+  - Function definitions: sg -p 'function $NAME($$$) { $$$ }' -l js
+  - Arrow functions: sg -p '$NAME = ($$$) => $$$' -l js
+  - Method definitions: sg -p '$NAME($$$) { $$$ }' -l ts
+  - Function calls: sg -p '$FUNC($$$)' -l js
+
+  VARIABLES + CONSTANTS + FIELDS + PROPERTIES
+  - Variable declarations: sg -p 'var $NAME = $VALUE' -l js
+  - Let declarations: sg -p 'let $NAME = $VALUE' -l js
+  - Const declarations: sg -p 'const $NAME = $VALUE' -l js
+  - Property access: sg -p '$OBJ.$PROP' -l js
+  - Assignments: sg -p '$VAR = $VALUE' -l js
+
+  IMPORTS + EXPORTS
+  - ES6 imports: sg -p 'import $NAME from $MODULE' -l js
+  - Named imports: sg -p 'import { $$$ } from $MODULE' -l js
+  - Export statements: sg -p 'export $$$' -l js
+  - Require statements: sg -p 'require($MODULE)' -l js
+
+  MODULES + NAMESPACES
+  - Module exports: sg -p 'module.exports = $$$' -l js
+  - Namespace declarations: sg -p 'namespace $NAME { $$$ }' -l ts
+
+  The $$$ wildcard captures multiple statements/expressions, while $VARIABLE captures single elements.
+  Language-specific patterns would need to be adjusted based on the target language syntax.
+
+> redo for python
+
+● Based on the ast-grep documentation and Python syntax, here's how to find each type of content in Python:
+
+  How to Find Each Content Type in Python:
+
+  CLASSES + INTERFACES + STRUCTS
+  - Class definitions: sg -p 'class $NAME: $$$' -l py
+  - Class with inheritance: sg -p 'class $NAME($PARENT): $$$' -l py
+  - Class instantiation: sg -p '$NAME($$$)' -l py
+  - Method calls: sg -p '$OBJ.$METHOD($$$)' -l py
+  - Constructor calls: sg -p '$CLASS.__init__($$$)' -l py
+
+  FUNCTIONS + METHODS + PROTOTYPES
+  - Function definitions: sg -p 'def $NAME($$$): $$$' -l py
+  - Method definitions: sg -p 'def $NAME(self, $$$): $$$' -l py
+  - Lambda functions: sg -p 'lambda $$$: $$$' -l py
+  - Function calls: sg -p '$FUNC($$$)' -l py
+  - Async functions: sg -p 'async def $NAME($$$): $$$' -l py
+  - Decorated functions: sg -p '@$DECORATOR\ndef $NAME($$$): $$$' -l py
+
+  VARIABLES + CONSTANTS + FIELDS + PROPERTIES
+  - Variable assignments: sg -p '$VAR = $VALUE' -l py
+  - Multiple assignments: sg -p '$A, $B = $$$' -l py
+  - Augmented assignments: sg -p '$VAR += $VALUE' -l py
+  - Global variables: sg -p 'global $VAR' -l py
+  - Class attributes: sg -p 'self.$ATTR = $VALUE' -l py
+  - Property decorators: sg -p '@property\ndef $NAME(self): $$$' -l py
+
+  IMPORTS + EXPORTS
+  - Basic imports: sg -p 'import $MODULE' -l py
+  - From imports: sg -p 'from $MODULE import $NAME' -l py
+  - Aliased imports: sg -p 'import $MODULE as $ALIAS' -l py
+  - Wildcard imports: sg -p 'from $MODULE import *' -l py
+  - Relative imports: sg -p 'from .$MODULE import $NAME' -l py
+
+  MODULES + NAMESPACES
+  - Module-level assignments: sg -p '__all__ = [$$$]' -l py
+  - If main block: sg -p 'if __name__ == "__main__": $$$' -l py
+  - Module docstrings: sg -p '"""$$$"""' -l py
+
+  PYTHON-SPECIFIC PATTERNS
+  - Try/except blocks: sg -p 'try: $$$\nexcept $EXCEPTION: $$$' -l py
+  - Context managers: sg -p 'with $CONTEXT as $VAR: $$$' -l py
+  - List comprehensions: sg -p '[$EXPR for $VAR in $ITERABLE]' -l py
+  - Dictionary comprehensions: sg -p '{$KEY: $VALUE for $VAR in $ITERABLE}' -l py
+  - Generator expressions: sg -p '($EXPR for $VAR in $ITERABLE)' -l py
+
+  The $$$ wildcard captures multiple statements, $VARIABLE captures single elements, and patterns must match
+  Python's indentation-based syntax structure.
+
+---
+
+
+
+  ⎿  Function name: load_agent
+     Line number: 278
+     Arguments:
+       - agent_id
+       - anthropic_api_key
+       - modelpack
+     Defaults:
+       - None
+       - None
+     Decorators:
+     Return annotation:
+       - Name(id='ConfigurableAgent', ctx=Load())
+     Docstring:
+       - Convenience function to load an agent.
+     Body statements count: 3
+
+
+
+
+---
+
+##   WHAT UV RUN PYTHON -C AST.PARSE() CAN EXTRACT PERFECTLY:
+
+  ✅ COMPLETE COVERAGE:
+  - 📖 DEFINED AT - line numbers, column positions
+  - 📋 SIGNATURE - parameters, type annotations, return types, defaults
+  - 🏷️  SYMBOL METADATA - decorators, docstrings, async/static flags, access patterns
+  - 🔧 METHOD CATALOG - complete class method inventory with signatures
+  - 🧬 INHERITANCE HIERARCHY - parent classes (from class definition)
+  - 📦 DEPENDENCIES - imports, internal function calls within file
+  - 💎 VALUE ANALYSIS - literal values, computed expressions
+  - 🚨 EXCEPTION RELATIONSHIPS - explicit raise/except within functions
+
+  What ast.parse() CANNOT extract (requires cross-file analysis):
+
+  ❌ CROSS-FILE RELATIONSHIPS:
+  - 📞 CALLED BY - where symbols are used across codebase
+  - 📦 IMPORTED BY - which files import this symbol
+  - 🧬 Child classes - what inherits from this class
+  - 📤📥 PARAMETER/RETURN USAGE - type flow across module boundaries
+  - 🔗 COMPOSITION/AGGREGATION - where class is used as field elsewhere
+  - 📍 REFERENCES - cross-file variable usage
+  - 🔄 VALUE FLOW - assignment chains across files
+  - 📞 USAGE - who imports this module
+
+---
+
+
+
+
+
+What tree-sitter CAN find (7-9/10):
+Structural Analysis
+
+✅ DEFINED AT - Node positions, line/column info
+✅ SIGNATURES - Function parameters, return types (if annotated)
+✅ INHERITANCE HIERARCHY - Parent classes in syntax tree
+✅ IMPORTS/EXPORTS - All import statements, module structure
+✅ SYMBOL METADATA - Decorators, access modifiers, docstrings
+✅ ASSIGNMENTS - All variable assignments
+✅ LITERAL VALUES - Constants, expressions
+
+What tree-sitter CANNOT find (0-3/10):
+Semantic Analysis
+
+❌ IMPORTED BY - No cross-file analysis
+❌ CALLED BY - No reference resolution
+❌ USAGE ANALYSIS - Can't resolve symbol references
+❌ TYPE INFERENCE - Only sees explicit annotations
+❌ VALUE FLOW - No data flow analysis
+❌ COMPOSITION/AGGREGATION - No semantic understanding
+
+
+
+Yes - You can create a hybrid approach combining both tools:
+Architecture
+tree-sitter handles syntax parsing and structural analysis, while LSP provides semantic understanding and cross-file relationships. Script coordinates between both.
+Information Flow
+
+tree-sitter parses file → extracts symbol locations, signatures, syntax structure
+LSP receives symbol position → resolves references, types, cross-file relationships
+Script merges both datasets → comprehensive symbol analysis
+
+Division of Labor
+tree-sitter provides:
+
+Exact syntax positions for targeting LSP queries
+Local structural context (class hierarchy, method signatures)
+Fast initial symbol discovery and filtering
+
+LSP provides:
+
+Cross-file references (IMPORTED BY, CALLED BY)
+Type resolution and inference
+Semantic understanding (what calls what)
+Workspace-wide symbol relationships
+
+Process Benefits
+Efficiency: tree-sitter's speed for bulk parsing + LSP's precision for specific queries
+Completeness: Syntax structure + semantic relationships
+Accuracy: LSP's type system validates tree-sitter's structural findings
+Script Workflow
+Parse with tree-sitter → identify target symbols → query LSP for each symbol → correlate positions → build comprehensive relationship map
+Coverage: ~95% of your original requirements - combines structural completeness with semantic accuracy.
+Performance: Fast initial discovery, targeted semantic queries only where needed.
+
+Rationale: Both tree-sitter and most LSPs have excellent JS bindings
+LSP: Built-in JSON-RPC, widespread LSP client libraries
+tree-sitter: Native Node.js bindings, mature ecosystem
+Install: bun add -g tree-sitter @typescript-eslint/parser vscode-languageserver && which node
+
+
+
+
+  Global Script Location ✅
+
+   Script in ~/.config/memory-tools/
+   Callable from any project directory
+  m trace Database ./src/models.py:45
+
+  Per-Project LSP Requirements ❌⚠️ 
+
+  The problem: LSP servers need project-specific setup:
+
+  // Each project directory needs:
+  - package.json / pyproject.toml (dependencies)
+  - tsconfig.json / pyrightconfig.json (language config)
+  - LSP server initialization in project root
+  - Project-specific type information
+
+  Practical Solutions:
+
+  Option 1: Auto-detect project setup
+  // In your script
+  const projectRoot = findProjectRoot(symbolFile); // walk up for package.json
+  process.chdir(projectRoot);
+  const lspServer = startLSP(detectLanguage(symbolFile));
+
+  Option 2: Graceful degradation
+  // Try LSP first, fallback to tree-sitter only
+  try {
+    const lspData = await queryLSP(symbol, position);
+  } catch {
+    console.warn("LSP unavailable, using tree-sitter only");
+    return treeitterOnlyAnalysis(symbol);
+  }
+
+  Option 3: Project-agnostic mode
+  // Skip workspace-dependent features
+  // Focus on single-file analysis + basic cross-file text search
+  // Combine tree-sitter + ripgrep instead of full LSP
+
+  Reality Check:
+
+  For true project-agnostic operation, you might want:
+  - Tree-sitter for syntax parsing
+  - Ripgrep for cross-file references
+  - Skip full LSP semantic analysis
+
+  This gives you ~80% of the benefits without project setup complexity.
+
+  Recommendation: Start with tree-sitter + ripgrep hybrid for global usage, add LSP as optional enhancement when
+  in properly configured projects.

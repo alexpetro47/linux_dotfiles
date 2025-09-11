@@ -94,7 +94,7 @@ bun add -g\
   @mermaid-js/mermaid-cli\
   puppeteer\
   @biomejs/biome\
-  @ast-grep/cli
+  @ast-grep/cli\
 
   cc-lsp\
 
@@ -111,6 +111,7 @@ cargo binstall\
   ast-grep\
   fd-find\
   sd\
+  tree-sitter-cli\
 
 ### CLAUDE CODE
 curl -fsSL https://claude.ai/install.sh | bash
