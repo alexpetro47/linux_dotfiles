@@ -121,16 +121,5 @@ memory-tools/*
 !memory-tools/find.sh
 !memory-tools/m
 !memory-tools/info.md
-!memory-tools/queries/
-memory-tools/queries/*
-!memory-tools/queries/
-!memory-tools/queries/python-classes.scm
-!memory-tools/queries/python-functions.scm
-!memory-tools/queries/python-imports.scm
-!memory-tools/queries/python-variables.scm
-
-!tree-sitter
-tree-sitter/*
-!tree-sitter/config.json
 
 .env
