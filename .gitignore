@@ -118,6 +118,7 @@ kitty/*
 !memory-tools/
 memory-tools/*
 !memory-tools/core.sh
+!memory-tools/find.sh
 !memory-tools/m
 !memory-tools/info.md
 !memory-tools/queries/
