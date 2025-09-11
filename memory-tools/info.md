@@ -181,12 +181,7 @@ content is here
 
 
 ## TODOS
-* integrate semantic search into "find" from memory_mcp project
-* how to make this functional cross language? (python and js/ts/tsx/html/css primarily)
 * add quick-transformation patterns as well? utilizing 
-* for ./m or ./m/memory.db placement always check all parent dirs otherwise put in cwd.
-
-
 
 `m trace create_agent /home/alexpetro/Documents/code/adaas-poc/load_agent.py 159`
 
