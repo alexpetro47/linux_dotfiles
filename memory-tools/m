@@ -8,7 +8,7 @@ main() {
     case ${1:-help} in
         find)         shift; find2 "$@" ;;
         arch)            shift; arch "$@" ;;
-        trace)            shift; mtrace "$@" ;;
+        trace)            shift; trace2 "$@" ;;
         init)          shift; minit "$@" ;;
         help|*)              show_help ;;
     esac

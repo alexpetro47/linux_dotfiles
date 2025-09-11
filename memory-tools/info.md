@@ -1,6 +1,10 @@
 
 # INFO
 
+
+
+* must run `sem-index` in cli before `m find` s.t. db is available.
+
 ### TODOS
 * integrate semantic search into "find" from memory_mcp project
 * how to make this functional cross language? (python and js/ts/tsx/html/css primarily)
@@ -13,8 +17,6 @@
 relevant. include context of what each thing is to select intelligently, include enough of a
 signature to inform `refs` precisely. deduplicated always. inherently broad, non-verbose per
 result.
-
-
 
 * `trace` (was "refs")- find all relations of that thing around codebase. dependencies,
 reverse-dependencies, recursive/transitive deps, etc. returns precise locations,
@@ -132,83 +134,7 @@ also consider
 
 
 
-## current implementations
-### "M FIND"
-```
-● Bash(m find "GraphStore")
-  ⎿  === 🔍 SEMANTIC SEARCH: GraphStore ===
-        from graph_store import GraphStore
-        graph_store: GraphStore | None = None
-        graph_store = GraphStore(source_path)
-        graph_store = GraphStore(source_path)
-        graph_store = GraphStore(source_path)
-        from graph_store import GraphStore
-        graph_store: GraphStore | None = None,
-        graph_store = GraphStore(source_path)
-        graph_store: GraphStore | None = None,
-        graph_store = GraphStore(source_path)
-        class GraphStore
-        from graph_store import GraphStore
-        graph_store = GraphStore(self.temp_dir)
-        graph_store = GraphStore(self.temp_dir)
-        graph_store = GraphStore(self.temp_dir)
-        graph_store = GraphStore(large_temp_dir)
-        from graph_store import GraphStore
-        self.graph_store = GraphStore(self.temp_dir)
-        from graph_store import GraphStore
-        self.graph_store = GraphStore(self.temp_dir)
-        """Unit tests for GraphStore."""
-        from graph_store import GraphStore
-        class TestGraphStore(TestCase)
-        """Test cases for GraphStore functionality."""
-        self.graph_store = GraphStore(self.temp_dir)
-        """Test GraphStore initialization."""
-        # Create new GraphStore instance (should load saved graph)
-        new_graph_store = GraphStore(self.temp_dir)
-        from graph_store import GraphStore
-        graph_store = GraphStore(self.temp_dir)
-        graph_store = GraphStore(self.temp_dir)
-```
 
-### "M REFS"
-```
-=== 🔍 COMPREHENSIVE ANALYSIS: Database ===
-📍  Database defined in database.py:9
-=== 📦 DEPENDENCIES (what Database uses) ===
-=== ⬅️  REVERSE DEPENDENCIES (what uses Database) ===
-📦 IMPORTED BY:
-🟢 📦 doc_parser.py:11 [LOW] (from database import Database)
-🟢 📦 mcp_server.py:19 [LOW] (from database import Database)
-🟢 📦 tests/test_performance_benchmarks.py:9 [LOW] (from database import Database)
-🟢 📦 vector_store.py:7 [LOW] (from database import Database)
-🟢 📦 parse_helpers.py:9 [LOW] (from database import Database)
-🟢 📦 tests/test_mcp_integration.py:12 [LOW] (from database import Database)
-📞 CALLED BY:
-🟢 📞 mcp_server.py:165 [LOW] (db = Database(source_path)...)
-🟢 📞 mcp_server.py:254 [LOW] (db = Database(source_path)...)
-🟢 📞 parse_helpers.py:31 [LOW] (db = Database(source_path))
-🟢 📞 parse_helpers.py:165 [LOW] (db = Database(source_path))
-🟢 📞 parse_helpers.py:274 [LOW] (db = Database(source_path))
-🟢 📞 tests/test_performance_benchmarks.py:140 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:179 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:239 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:295 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_performance_benchmarks.py:350 [LOW] (db = Database(large_temp_dir))
-🟢 📞 tests/test_mcp_integration.py:244 [LOW] (db = Database(self.temp_dir))
-🟢 📞 tests/test_mcp_integration.py:286 [LOW] (db = Database(self.temp_dir))
-🏗️  INSTANTIATED BY:
-=== ⛓️  TRANSITIVE IMPACT (depth: 2) ===
-     No transitive dependencies found
-=== 🛠️  REFACTOR IMPACT SUMMARY ===
-📊 Files affected: 8
-📊 Total usages: 31
-=== 🔥 USAGE HOTSPOTS ===
-🔥 parse_helpers.py (10 usages)
-🔥 tests/test_performance_benchmarks.py (8 usages)
-🔥 mcp_server.py (4 usages)
-🔥 tests/test_mcp_integration.py (3 usages)
-🔥 vector_store.py (2 usages)
-```
 
 ### "M COUPLING"
 ```
@@ -252,203 +178,27 @@ also consider
 
 
 
-## consolidated dir for all tool configs/caches
-```
-● You're absolutely right! If we're controlling all tool calls from core.sh, we can hardcode the paths and
-  eliminate the compatibility issues.
 
-  Controlled Environment Benefits:
 
-  In core.sh we can hardcode:
 
-  # All ctags operations with explicit path
-  ctags -f .m/tags -R --languages=Python *.py
-  grep "Database" .m/tags
 
-  # All ast-grep operations with explicit config
-  ast-grep --config=.m/sgconfig.yml --pattern "Database($$$)"
 
-  # No user/editor dependency on standard locations
 
-  User Never Sees:
 
-  - File paths - they just run m refs Database
-  - Tool complexity - core.sh handles all path resolution
-  - Configuration details - everything is abstracted
 
-  Implementation Strategy:
 
-  # In core.sh
-  TAGS_FILE=".m/tags"
-  ASTGREP_CONFIG=".m/sgconfig.yml"
 
-  generate_tags() {
-      ctags -f "$TAGS_FILE" -R --languages=Python *.py
-  }
 
-  enhanced_refs() {
-      # Use our controlled paths
-      local symbol="$1"
-      grep "$symbol" "$TAGS_FILE"
-      ast-grep --config="$ASTGREP_CONFIG" --pattern "$symbol($$$)"
-  }
 
-  Updated Viability: ⭐⭐⭐⭐⭐
 
-  ✅ Perfect Solution:
 
-  - User simplicity: m refs Database works exactly the same
-  - Clean project root: No visible config/data files
-  - Tool integration: We control all paths internally
-  - No compatibility issues: Users never interact with tools directly
-  - Consistent behavior: All complexity hidden in core.sh
 
-  Implementation:
 
-  # Setup function in core.sh
-  setup_ast_tools() {
-      mkdir -p .m
-      ctags -f .m/tags -R --languages=Python *.py
-      mv sgconfig.yml .m/ 2>/dev/null || true
-  }
 
-  # All refs/find functions use .m/ paths internally
 
-  Verdict: ⭐⭐⭐⭐⭐ Highly Recommended
 
-  Since users only interact through m commands, we have complete control over file locations and tool arguments.
-  This is actually the ideal architecture - clean project root + hidden complexity.
 
-  Action: Move both files to .m/ and update all internal tool calls to use explicit paths.
-```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  🟢 📞 mcp_server.py:165:30 [MEDIUM] Database(source_path) → constructor call
-        ├─ Context: async function call_tool() → conditional reinitalization block
-        ├─ AST: assignment_statement → call_expression → identifier
-        ├─ Symbol: class Database defined in database.py:9
-        ├─ Constructor: __init__(self, source_path: str)
-        ├─ Available methods: add_file, add_chunk, get_file_info, close, delete_file
-        │  └─ add_code_chunk(file_id: int, chunk_data: dict[str, Any]) -> int
-        │  └─ search_ast_nodes(...) -> list[dict[str,Any]]
-        │  └─ get_all_code_chunks() -> list[dict[str,Any]]
-        └─ Type signature: Database(source_path: str) -> Database
-
-  Ctags Value Assessment:
-
-  1. Symbol Hierarchy - ⭐⭐
-
-  Real addition: Shows 23 available Database methods
-  Value: Helps understand what operations are possible on this Database instance
-  Practical use: "After creating Database(source_path), you can call .add_file(), .close(), etc."
-
-  2. Type Signatures - ⭐⭐⭐
-
-  Real addition: __init__(self, source_path: str), add_chunk() -> int
-  Value: Shows expected parameters and return types for available methods
-  Practical use: Validates parameter usage, shows return type expectations
-
-  3. Definition Source - ⭐
-
-  Real addition: class Database defined in database.py:9
-  Value: Redundant - already shown by current refs
-  Practical use: Jump to definition (but CCLSP already provides this)
-
-
-
-
-
-
-  FZF LIMITATIONS FOR SEMANTIC SEARCH
-
-  fzf's fuzzy matching is character-based, not semantic:
-  - "store" → "storage" ❌ (no shared character sequence)
-  - "store" → "stroe" ✅ (typo tolerance)
-  - "store" → "Store" ✅ (case insensitive)
-
-  fzf excels at:
-  - Typo tolerance - databse finds database
-  - Partial matches - stor finds datastore
-  - Character transposition - stroe finds store
-
-  BETTER SEMANTIC OPTIONS
-
-  For synonym/semantic discovery:
-  # Semantic layer via word embeddings
-  memory_mcp          - Vector similarity search
-  wordnet/thesaurus   - Explicit synonym lookup
-  stemming tools      - Root word matching
-
-  Hybrid approach for comprehensive find:
-  # 1. Primary discovery (exact + fuzzy)
-  rg + ctags + fzf → finds exact matches + typos
-
-  # 2. Semantic expansion (if low results)
-  memory_mcp → finds conceptually similar terms
-
-  # 3. Combine results
-  sort/uniq → deduplicated comprehensive list
-
-  fzf is perfect for interactive filtering of results, but semantic discovery needs a different engine first.
-
-
-
-
-
-
-
-  Intelligent Defaults
-
-  m find "Database"
-  # Auto-detects: likely symbol search
-  # Uses: balanced strategy, recent files prioritized
-  # Returns: top 10 results, grouped by relevance
-
-  m find "*.py"
-  # Auto-detects: file search
-  # Uses: precise strategy, fd backend
-
-  m find "error handling"
-  # Auto-detects: content search with semantic expansion
-  # Uses: broad strategy, includes comments/docs
-
-  Search Type Stacks
-
-  Precision Stack (eliminate false positives):
-  1. ctags symbol lookup
-  2. ast-grep structural patterns
-  3. ripgrep with word boundaries
-  4. Fallback to basic grep
-
-  Discovery Stack (maximize recall):
-  1. Semantic similarity (embeddings)
-  2. Fuzzy matching with typo tolerance
-  3. Regex with relaxed patterns
-  4. Full-text search
-
-  Balanced Stack (default):
-  1. ripgrep with smart patterns
-  2. Fuzzy fallback for typos
-  3. Context-aware ranking
-  4. Semantic expansion for low results
 
 
 
@@ -529,7 +279,7 @@ change histories ensure all functionalities are represented here.
 
 
 
-## FIND TOOL
+## "M FIND"
 the find tool is for discovery only. it should categorize outputs by type and give their
 exact signatures. it should not provide refs like functionality. it should search widely and
 discover each possible variant of a certain term.
@@ -541,8 +291,6 @@ Categorizes by WHERE it appears - content (in text/docs) vs structure (filesyste
 Provides exact signatures - enough detail for refs to target the precise element later
 This is a clean separation: find discovers ALL variants broadly, then refs does deep relationship analysis on
 the specific thing you select.
-
-
 
 ### **CATEGORIES:**
 
@@ -667,11 +415,269 @@ content is here
 ----------------------------------------
 ```
 
-
-
-
 s.t.
 variable config.py:61   COORDINATION_SPECS_DIR - COORDINATION_SPECS_DIR = get_coordination_specs_dir()
 becomes
 variable config.py:61   COORDINATION_SPECS_DIR = get_coordination_specs_dir()
+
+
+
+
+
+## "M TRACE" 
+* `trace` - comprehensive information about a symbol and all of its relationships.
+inherently specific & ideally 1-2 results per, verbose per result.
+
+### TOOLS
+* ctags
+* ripgrep
+* ast-grep
+
+
+### CONTENTS
+```
+***CLASSES + INTERFACES + STRUCTS***
+- 📖 DEFINED AT - definition location
+- 🔧 METHOD CATALOG - constructors, methods, signatures, parameters, returns
+- 🏷️  SYMBOL METADATA - access modifiers, decorators, annotations, docstrings
+- 📦 IMPORTED BY - files that import this symbol
+- 📞 CALLED BY - filepath:line that call/instantiate this symbol
+- 🧬 INHERITANCE HIERARCHY - parent classes, child classes, interface implementations
+- 📤📥 PARAMETER/RETURN DEPENDENCIES - shows type usage patterns
+- 🚨 EXCEPTION RELATIONSHIPS - affects error handling
+- 📦 DEPENDENCIES - what this symbol uses/depends on
+- 🔗 COMPOSITION/AGGREGATION - objects that contain this symbol as field/property
+
+***FUNCTIONS + METHODS + PROTOTYPES***
+- 📖 DEFINED AT
+- 📋 SIGNATURE - parameters, return type, exceptions
+- 🏷️ SYMBOL METADATA - decorators, access modifiers, async/static flags, docstrings
+- 📞 CALLED BY
+- 📦 DEPENDENCIES - what it calls/imports
+- 📤📥 PARAMETER/RETURN USAGE - how its types flow
+- 📦 IMPORTED BY
+- 🚨 EXCEPTION RELATIONSHIPS - throws/catches analysis
+- 🔧 PARAMETER DETAILS - defaults, type annotations, variadic args
+
+***VARIABLES + CONSTANTS + FIELDS + PROPERTIES***
+- 📖 DEFINED AT + TYPE
+- 🏷️ SYMBOL METADATA - scope (global/local/class), mutability, access modifiers
+- 📝 ASSIGNMENTS - where modified
+- 📍 REFERENCES - where used
+- 🔄 VALUE FLOW - assignment → usage chains
+- 💎 VALUE ANALYSIS - literal values, computed expressions, type inference
+
+***IMPORTS + EXPORTS***
+- 📖 DEFINED AT - import/export statements
+- 🔗 SOURCE MAPPING - which module/file provides the symbol
+- 📦 USAGE ANALYSIS - how imported symbols are used
+- 🌐 NAMESPACE RESOLUTION - aliasing, wildcard imports, conflicts
+
+***MODULES + NAMESPACES***
+- 📦 EXPORTS - public API
+- 📦 IMPORTS - dependencies
+- 📞 USAGE - who imports this
+- 🏗️  STRUCTURE - internal organization
+```
+
+### OUTPUT FORMATTING
+```
+  📖 DEFINED AT: database.py:9
+      class Database(BaseModel):
+
+  🔧 METHOD CATALOG:
+      __init__(self, source_path: str) -> None
+      add_file(self, file_path: str, content: str) -> int
+      get_file_info(self, file_id: int) -> Optional[dict]
+      close(self) -> None
+
+  🏷️  SYMBOL METADATA:
+      Access: public class
+      Inheritance: extends BaseModel
+      Decorators: @dataclass, @cache
+      Docstring: "SQLite database interface for code analysis"
+
+  📦 IMPORTED BY:
+     doc_parser.py:11
+     mcp_server.py:19 
+     vector_store.py:7
+
+  📞 CALLED BY:
+     mcp_server.py:165  db = Database(source_path)
+     ├─ Context: async function call_tool() → initialization
+     parse_helpers.py:31  Database(source_path)
+     ├─ Context: function parse_code_file() → main processing
+
+  🧬 INHERITANCE HIERARCHY:
+     Parents: BaseModel (pydantic.main:BaseModel)
+     Children: SQLiteDatabase (database/sqlite.py:15)
+               PostgresDatabase (database/postgres.py:23)
+     Implements: DatabaseInterface (interfaces.py:45)
+
+  📤📥 PARAMETER/RETURN USAGE:
+     ACCEPTS Database:
+      backup_database(db: Database) → utils.py:45
+      validate_schema(db: Database) → validation.py:23
+    RETURNS Database:
+      get_default_db() → Database → config.py:78
+
+  🚨 EXCEPTION RELATIONSHIPS:
+  THROWS:
+      DatabaseError → database.py:156 (connection failures)
+      ValidationError → database.py:203 (schema validation)
+  CATCHES:
+      SQLiteError → database.py:89 (handled internally)
+
+  📦 DEPENDENCIES:
+      sqlite3 → database.py:3
+      pathlib.Path → database.py:4
+      pydantic.BaseModel → database.py:5
+      typing.Optional, Any → database.py:6
+
+  🔗 COMPOSITION/AGGREGATION:
+      DatabaseManager.primary_db: Database → manager.py:15
+      BackupService.source_db: Database → backup.py:28
+      TestFixture.test_db: Database → conftest.py:67
+
+  📋 SIGNATURE:
+      parse_file(file_path: str, options: ParseOptions = None) -> ParseResult
+      Throws: FileNotFoundError, ParseError
+
+  📝 ASSIGNMENTS:
+      config.py:12 DATABASE_URL = "sqlite:///data.db"
+      settings.py:34 DATABASE_URL = os.getenv("DB_URL")
+      test_config.py:8 DATABASE_URL = "sqlite:///:memory:"
+
+  📍 REFERENCES:
+      database.py:45 connection = sqlite3.connect(DATABASE_URL)
+      backup.py:23 if DATABASE_URL.startswith("sqlite"):
+      utils.py:67 logger.info(f"Connecting to {DATABASE_URL}")
+
+  🔄 VALUE FLOW:
+      config.py:12 → database.py:45 → backup.py:23
+      settings.py:34 → utils.py:67 → logger output
+
+  📦 EXPORTS:
+      Database (class) → __init__.py:15
+      parse_file (function) → __init__.py:16
+      DatabaseError (exception) → __init__.py:17
+
+  🏗️  STRUCTURE:
+      database/
+      ├── __init__.py (public API)
+      ├── core.py (Database class)
+      ├── utils.py (helper functions)
+      └── exceptions.py (error types)
+```
+
+
+
+
+1. ctags provides universal symbol definitions
+2. ast-grep enhances metadata for Python/JS/TS/Go/Rust
+3. ripgrep handles all reference finding
+
+
+
+IMPLEMENTATION COMPLEXITIES
+
+  SYMBOL DISAMBIGUATION
+
+  - Multiple definitions - Database class vs database variable vs database module
+  - Overloaded methods - same name, different signatures
+  - Shadowing - local variables hiding class members
+  - Solution: Use file:line precision + signature matching
+
+
+
+
+CTAGS AS UNIVERSAL FOUNDATION
+
+- Universal Ctags already handles 40+ languages
+- Provides consistent symbol definitions across languages
+- Use as primary source, fallback to ast-grep for specifics
+
+SEMANTIC PATTERNS OVER SYNTAX
+
+# Instead of hardcoding syntax per language
+rg "class.*Database" --type py
+rg "class Database" --type js
+rg "struct Database" --type rust
+
+# Use semantic patterns
+rg "(class|struct|interface|type).*Database"
+
+CONFIGURATION-DRIVEN AST-GREP
+
+# config/languages.yml
+inheritance:
+  python: "class $NAME($PARENT)"
+  typescript: "class $NAME extends $PARENT"
+  java: "class $NAME extends $PARENT"
+
+composition:
+  python: "$NAME: $TYPE"
+  typescript: "$NAME: $TYPE"
+
+LANGUAGE DETECTION + DELEGATION
+
+case "$(file --mime-type "$file")" in
+  *python*) use_python_patterns ;;
+  *javascript*) use_js_patterns ;;
+  *) use_generic_ripgrep_fallback ;;
+esac
+
+PROGRESSIVE ANALYSIS
+
+1. Level 1: Universal (ctags + ripgrep) - works everywhere
+2. Level 2: Common patterns (ast-grep configs for mainstream languages)
+3. Level 3: Language-specific (only when needed)
+
+This keeps 80% functionality universal while allowing language-specific depth.
+
+
+
+---
+
+
+
+❯ ast-grep --lang python -p 'load_agent' .
+load_coordination.py
+19│from load_agent import create_generic_agent_node
+
+load_agent.py
+278│def load_agent(
+354│            agent = load_agent(final_agent_id)
+
+
+
+
+
+
+LEVEL 1: MINIMAL VIABLE TRACE
+
+Core functionality:
+- 📖 DEFINED AT - use ctags to find symbol definition
+- 📍 REFERENCES - use ripgrep to find all usage locations
+
+Implementation:
+# Basic trace command
+m trace <symbol_name>
+
+# Tools:
+ctags --list-tags | grep "$symbol_name"  # definition
+rg "$symbol_name" --line-number          # references
+
+LEVEL 2: ADD SYMBOL METADATA
+
+Enhanced with:
+- 🏷️  SYMBOL METADATA - parse ctags for type, signature details
+- 📋 SIGNATURE - extract function parameters, return types
+
+LEVEL 3: BASIC DEPENDENCIES
+
+Add:
+- 📦 DEPENDENCIES - what the symbol imports/uses (ripgrep for import statements)
+- 📦 IMPORTED BY - files that import this symbol
+
 

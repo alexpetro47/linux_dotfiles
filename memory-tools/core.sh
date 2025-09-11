@@ -6,8 +6,8 @@ find2() {
     local query="$1"
     
     if [[ -z "$query" ]]; then
-        echo "Usage: find2 <query>"
-        echo "Example: find2 database"
+        echo "Usage: find <query>"
+        echo "Example: find database"
         return 1
     fi
     
@@ -15,7 +15,7 @@ find2() {
     echo ""
     
     # Create temporary files for parallel execution
-    local tmp_dir="/tmp/find2_$$"
+    local tmp_dir="/tmp/find$$"
     mkdir -p "$tmp_dir"
     
     # Execute all tools in parallel
@@ -360,176 +360,6 @@ format_output() {
 
 
 
-mtrace() {
-    local symbol="${1:-}"
-    local depth="${2:-2}"
-    
-    if [[ -z "$symbol" ]]; then
-        echo "Usage: m trace <symbol> [depth]"
-        echo "Example: m trace UserManager 2"
-        return 1
-    fi
-            
-            echo "=== 🔍 COMPREHENSIVE ANALYSIS: $symbol ==="
-            
-            # Find definition first
-            local definition=$(rg "^\s*(def|class)\s+$symbol\b" --type py -n | head -1)
-            if [[ -n "$definition" ]]; then
-                local def_file=$(echo "$definition" | cut -d: -f1)
-                local def_line=$(echo "$definition" | cut -d: -f2)
-                local def_type=$(echo "$definition" | grep -o "^\s*\(def\|class\)" | sed 's/^\s*//')
-                printf "📍 %s %s defined in %s:%s\n\n" "$def_type" "$symbol" "$def_file" "$def_line"
-            fi
-            
-            # DEPENDENCIES (what this symbol uses)
-            echo "=== 📦 DEPENDENCIES (what $symbol uses) ==="
-            if [[ -n "$definition" ]]; then
-                local def_file=$(echo "$definition" | cut -d: -f1)
-                local def_line=$(echo "$definition" | cut -d: -f2)
-                local next_def=$(rg -n "^\s*(def|class)\s+" "$def_file" | awk -F: -v start="$def_line" '$1 > start {print $1; exit}')
-                local end_line=${next_def:-$(wc -l < "$def_file")}
-                
-                # Extract function/class body and find its dependencies
-                sed -n "${def_line},${end_line}p" "$def_file" | \
-                rg '[a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*\(' -o | \
-                sed 's/\..*$//' | sort -u | head -10 | \
-                while read dep; do
-                    printf "├── 🔗 uses %s\n" "$dep"
-                done
-                
-                # Also check imports within the function
-                sed -n "${def_line},${end_line}p" "$def_file" | \
-                rg '(from .* import|import )([a-zA-Z_][a-zA-Z0-9_.]*)' -o | \
-                while read import_line; do
-                    printf "├── 📦 imports %s\n" "$import_line"
-                done
-            fi
-            
-            echo ""
-            # REVERSE DEPENDENCIES (what uses this symbol)
-            echo "=== ⬅️ REVERSE DEPENDENCIES (what uses $symbol) ==="
-            
-            # IMPORTS
-            echo "📦 IMPORTED BY:"
-            (rg "from .* import.*$symbol" --type py -n; rg "import.*$symbol" --type py -n | grep -v "from") | \
-            while IFS=':' read -r file line content; do
-                local risk="LOW"
-                local risk_icon="🟢"
-                
-                if echo "$content" | grep -q "from.*\..*\..*import"; then
-                    risk="MEDIUM"
-                    risk_icon="🟡"
-                fi
-                if echo "$content" | grep -qE "(test|mock|debug)" && ! echo "$file" | grep -qE "(test|spec)"; then
-                    risk="HIGH"
-                    risk_icon="🔴"
-                fi
-                
-                printf "%s 📦 %s:%s [%s] (%s)\n" "$risk_icon" "$file" "$line" "$risk" "$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-50)$([ ${#content} -gt 50 ] && echo '...')"
-            done
-            
-            echo ""
-            echo "📞 CALLED BY:"
-            rg "$symbol\(" --type py -n -C 1 | \
-            sed -n '/^[^:]*:[0-9]*:/p' | \
-            while IFS=':' read -r file line content; do
-                local risk="LOW"
-                local risk_icon="🟢"
-                
-                if echo "$content" | grep -qE "(try|except|catch|if.*and.*$symbol|while.*$symbol|for.*$symbol)"; then
-                    risk="MEDIUM"
-                    risk_icon="🟡"
-                fi
-                if echo "$content" | grep -qE "(except.*$symbol|raise.*$symbol|$symbol.*$symbol)"; then
-                    risk="HIGH"
-                    risk_icon="🔴"
-                fi
-                
-                printf "%s 📞 %s:%s [%s] (%s)\n" "$risk_icon" "$file" "$line" "$risk" "$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-45)$([ ${#content} -gt 45 ] && echo '...')"
-            done
-            
-            echo ""
-            echo "🏗️ INSTANTIATED BY:"
-            rg "$symbol\(\)" --type py -n | \
-            while IFS=':' read -r file line content; do
-                local risk="LOW"
-                local risk_icon="🟢"
-                
-                if echo "$content" | grep -qE "(for|while|global|^[[:space:]]*$symbol\(\))"; then
-                    risk="MEDIUM"
-                    risk_icon="🟡"
-                fi
-                if echo "$content" | grep -o "$symbol()" | wc -l | grep -q "[2-9]"; then
-                    risk="HIGH"
-                    risk_icon="🔴"
-                fi
-                
-                printf "%s 🏗️ %s:%s [%s] (%s)\n" "$risk_icon" "$file" "$line" "$risk" "$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-45)$([ ${#content} -gt 45 ] && echo '...')"
-            done
-            
-            # TRANSITIVE IMPACT ANALYSIS
-            if [[ $depth -ge 2 ]]; then
-                echo ""
-                echo "=== ⛓️ TRANSITIVE IMPACT (depth: $depth) ==="
-                
-                local temp_file="/tmp/transitive_deps_$$"
-                local level1_files=$(rg "\b$symbol\b" --type py -l | head -10)
-                
-                if [[ -n "$level1_files" ]]; then
-                    echo "$level1_files" | while read file; do
-                        local funcs_with_symbol=$(rg -n "^\s*def\s+[a-zA-Z_][a-zA-Z0-9_]*\(" "$file" | \
-                            while IFS=':' read -r line_num line_content; do
-                                local func_name=$(echo "$line_content" | sed 's/.*def\s*\([a-zA-Z_][a-zA-Z0-9_]*\).*/\1/')
-                                local func_end=$((line_num + 30))
-                                local next_def=$(rg -n "^\s*(def|class)\s+" "$file" | awk -F: -v start="$line_num" '$1 > start {print $1; exit}')
-                                if [[ -n "$next_def" ]]; then
-                                    func_end=$((next_def - 1))
-                                fi
-                                
-                                local func_body=$(sed -n "${line_num},${func_end}p" "$file")
-                                if echo "$func_body" | grep -q "\b$symbol\b"; then
-                                    echo "$func_name"
-                                fi
-                            done)
-                        
-                        if [[ -n "$funcs_with_symbol" ]]; then
-                            echo "$funcs_with_symbol" | while read intermediate_func; do
-                                rg "\b$intermediate_func\(" --type py -n | grep -v "def $intermediate_func" | head -3 | \
-                                while IFS=':' read -r caller_file caller_line caller_content; do
-                                    printf "└── ⛓️ %s:%s → %s() → %s (chain)\n" "$caller_file" "$caller_line" "$intermediate_func" "$symbol"
-                                done
-                            done
-                        fi
-                    done > "$temp_file"
-                    
-                    if [[ -s "$temp_file" ]]; then
-                        cat "$temp_file"
-                        local blast_radius=$(wc -l < "$temp_file")
-                        echo ""
-                        printf "📊 BLAST RADIUS: %d transitive dependencies found\n" "$blast_radius"
-                    else
-                        echo "     No transitive dependencies found"
-                    fi
-                    rm -f "$temp_file"
-                fi
-            fi
-            
-            # REFACTOR IMPACT SUMMARY
-            echo ""
-            echo "=== 🛠️ REFACTOR IMPACT SUMMARY ==="
-            local files_affected=$(rg "\b$symbol\b" --type py -l | wc -l)
-            local total_usages=$(rg "\b$symbol\b" --type py | wc -l)
-            
-            printf "📊 Files affected: %d\n" "$files_affected"
-            printf "📊 Total usages: %d\n" "$total_usages"
-            
-            echo ""
-            echo "=== 🔥 USAGE HOTSPOTS ==="
-            rg "\b$symbol\b" --type py -c | sort -t: -k2 -nr | head -5 | \
-            while IFS=':' read -r file count; do
-                printf "🔥 %s (%d usages)\n" "$file" "$count"
-            done
-}
 
 
 
