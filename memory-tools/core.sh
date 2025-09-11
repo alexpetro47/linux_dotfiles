@@ -278,7 +278,6 @@ search_symbols() {
         -t code \
         --line-number \
         --no-heading \
-        --max-count=5 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
         # Skip if this looks like a function definition or comment
@@ -300,7 +299,6 @@ search_symbols() {
         --type js --type ts \
         --line-number \
         --no-heading \
-        --max-count=3 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
         local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-100)
@@ -325,7 +323,6 @@ search_content() {
         --smart-case \
         --line-number \
         --no-heading \
-        --max-count=3 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
         # Clean up content for display  
@@ -348,7 +345,6 @@ search_structure() {
         --exclude .venv \
         --exclude node_modules \
         --exclude __pycache__ \
-        --max-results 20 \
         2>/dev/null | \
     while read -r path; do
         if [[ -d "$path" ]]; then
@@ -505,7 +501,7 @@ format_output() {
         
         # Always use single line with proper wrapping
         printf "$prefix_format%s\n" "$category" "$file_line_info" "$signature"
-    done | head -20
+    done
     
     echo ""
     
@@ -514,7 +510,7 @@ format_output() {
     grep "^CONTENT" "$dedup_results" | \
     while IFS='|' read -r source category file line content; do
         printf "%s:%-4s %s\n" "$file" "$line" "$content"
-    done | head -10
+    done
     
     echo ""
     
@@ -523,7 +519,7 @@ format_output() {
     grep "^STRUCTURE\|^SEMANTIC.*file" "$dedup_results" | \
     while IFS='|' read -r source category file line path; do
         echo "$path"
-    done | sort -u | head -10
+    done | sort -u
 }
 
 
