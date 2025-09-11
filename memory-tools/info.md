@@ -2,21 +2,221 @@
 # INFO
 
 
-
+## DEPENDENCIES
 * must run `sem-index` in cli before `m find` s.t. db is available.
+  * depends on project `/home/alexpetro/Documents/code/memory_mcp/`
 
-### TODOS
+* tree-sitter-cli installed (via cargo-binstall) and grammars installed in
+`~.config/tree-sitter/ <python, js, etc>`
+
+## CLI-ONLY TOOLKIT
+- ast-grep (sg) - AST-based code search/rewrite tool
+- fzf - Fuzzy finder for interactive selection
+- ripgrep (rg) - Fast text search tool
+- jq - JSON processor
+* yq - yaml/xml parsing
+- bat - Syntax-highlighted file viewer
+- miller - Text/CSV data processing tool with SQL-like queries
+- fd-find (fd) - Fast alternative to find with intuitive syntax
+- sd (better "sed") - Intuitive find-and-replace with regex support
+* universal-ctags (ctags) - pseudo lsp information for types, methods, etc
+* git (--no-pager diff HEAD, log)
+* tree-sitter-cli
+* standard unix tools
+  * xargs - 9/10 - Essential pipeline bridge
+  * head/tail - 9/10 - Data sampling/log monitoring
+  * sort - 8/10 - Pipeline data ordering
+  * uniq - 8/10 - Deduplicate (with sort)
+  * wc - 7/10 - Quick counts
+* cli semantic search tools `sem-index` to create `.m/memory.db` and `sem-search
+"query contents"` to search the db
+
+
+## "M FIND"
+* `find` - find all possible semantically/fuzzily similar things, identify which one(s) are
+relevant. include context of what each thing is to select intelligently, include enough of a
+signature to inform `refs` precisely. deduplicated always. inherently broad, non-verbose per
+result.
+the find tool is for discovery only. it should categorize outputs by type and give their
+exact signatures. it should not provide refs like functionality. it should search widely and
+discover each possible variant of a certain term.
+deduplicated always. inherently broad, non-verbose per result.
+
+Categorizes by WHAT TYPE of code element - your symbol categories cover all possible code constructs across
+languages (class, function, variable, etc.)
+Categorizes by WHERE it appears - content (in text/docs) vs structure (filesystem)
+Provides exact signatures - enough detail for refs to target the precise element later
+This is a clean separation: find discovers ALL variants broadly, then refs does deep relationship analysis on
+the specific thing you select.
+
+### **CATEGORIES:**
+```
+1. symbols [return identifying signature, filepath+line to definition/instantiation]
+* class - Class definitions
+* function - Function/method definitions
+* variable - Variable declarations
+* interface - Interface definitions
+* struct - Structure definitions
+* enum - Enumeration definitions
+* typedef - Type definitions
+* macro - Preprocessor macros
+* namespace - Namespace definitions
+* member - Class/struct members
+* field - Data fields
+* method - Class methods
+* property - Object properties
+* constant - Constants
+* label - Code labels
+* prototype - Function prototypes
+* module
+* decorator
+
+2. content [return contents of line]
+* line of content it appears in, documentation-based
+
+3. structure [return filepath]
+* dir/subdir/file names
+```
+
+### **TOOL SELECTIONS**
+```
+ripgrep (rg)              - Primary content/symbol search engine
+ctags                     - Symbol definitions across languages
+fd-find (fd)              - Fast filesystem structure search
+sem-index -> sem-search   - semantic search across cwd
+
+  PROCESSING PIPELINE
+
+sort/uniq        - Deduplication of results
+head/tail        - Result limiting/sampling
+sd               - Text formatting/cleanup
+```
+
+### TOOLING RESPONSIBILITIES
+```
+
+  symbols: ~85-90% coverage
+  - ctags handles well: class, function, variable, interface, struct, enum, typedef, macro, namespace, member,
+  field, method, property, constant, label, prototype
+
+  content: ~95% coverage
+  - rg handles comprehensively: all text content, comments, documentation, strings, regex patterns
+  - minimal gaps: binary files (usually irrelevant), unusual encodings
+
+  structure: ~95% coverage
+  - fd handles comprehensively: directories, files, name patterns, extensions, path matching
+  - minimal gaps: permission-restricted areas, hidden files (configurable)
+```
+
+### FULL LOGIC
+```
+
+  Parallel execution strategy:
+  # All tools run simultaneously on full codebase
+  ctags + rg + fd  →  traditional_results
+  sem-search                  →  semantic_results
+
+  # Merge + deduplicate by file:line location
+  sort/uniq → comprehensive_deduplicated_results
+
+  Key advantages:
+  - no semantic blind spots - traditional tools catch exact matches semantic search might miss
+  - no traditional blind spots - semantic search finds conceptual matches traditional tools miss
+  - redundancy validation - when both find the same result, higher confidence
+  - performance optimization - all tools run concurrently rather than sequentially
+
+  Deduplication logic:
+  - by definition location for the same symbols 
+  - primary key: file_path:line_number
+```
+
+### **OUTPUTS**
+```
+  📍 SYMBOLS
+  class    database.py:9     class Database(BaseModel)
+  function helpers.py:45     def get_database() -> Database
+  variable config.py:12      DATABASE_URL: str = "sqlite:///"
+  constant models.py:8       MAX_DATABASE_CONNECTIONS = 100
+  method   database.py:34    def connect(self, url: str)
+  property user.py:67        @property def database(self)
+  module   __init__.py:1     database
+  decorator auth.py:23       @database_transaction
+
+  📝 CONTENT
+  README.md:34        "Configure your database connection string"
+  parser.py:67        # Database cleanup happens automatically
+  errors.py:23        raise DatabaseError("Connection failed")
+
+  🏗️  STRUCTURE
+  ./database/
+  ./src/database_models.py
+  ./tests/test_database.py
+  ./config/database.yml
+```
+
+Each result shows:
+  - Category type (class, function, etc.)
+  - Location (file:line) [Definition location only for symbols]
+  - Exact signature (enough for refs to target precisely)
+Non-verbose, deduplicated, broadly discovers all variants.
+
+#### SEM-SEARCH OUTPUT FOR REFERENCE
+```
+Result 10 (similarity: 0.139)
+File: /home/alexpetro/.config/memory-tools/core.sh:1-50
+----------------------------------------
+
+content is here
+
+----------------------------------------
+```
+
+
+
+
+
+
+
+
+
+
+## TODOS
 * integrate semantic search into "find" from memory_mcp project
 * how to make this functional cross language? (python and js/ts/tsx/html/css primarily)
 * add quick-transformation patterns as well? utilizing 
 * for ./m or ./m/memory.db placement always check all parent dirs otherwise put in cwd.
 
 
+
+`m trace create_agent /home/alexpetro/Documents/code/adaas-poc/load_agent.py 159`
+
+
+improvements 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## IDEOLOGY
-* `find` - find all possible semantically/fuzzily similar things, identify which one(s) are
-relevant. include context of what each thing is to select intelligently, include enough of a
-signature to inform `refs` precisely. deduplicated always. inherently broad, non-verbose per
-result.
 
 * `trace` (was "refs")- find all relations of that thing around codebase. dependencies,
 reverse-dependencies, recursive/transitive deps, etc. returns precise locations,
@@ -71,26 +271,6 @@ black-box style architecture ideals.
 * `transform` - make changes via ast-grep, sd, jq, yq, miller (utilize pre-validated
 filepath+line results)
 
-## CLI-ONLY TOOLKIT
-- ast-grep (sg) - AST-based code search/rewrite tool
-- fzf - Fuzzy finder for interactive selection
-- ripgrep (rg) - Fast text search tool
-- jq - JSON processor
-* yq - yaml/xml parsing
-- bat - Syntax-highlighted file viewer
-- miller - Text/CSV data processing tool with SQL-like queries
-- fd-find (fd) - Fast alternative to find with intuitive syntax
-- sd (better "sed") - Intuitive find-and-replace with regex support
-* universal-ctags (ctags) - pseudo lsp information for types, methods, etc
-* git (--no-pager diff HEAD, log)
-* standard unix tools
-  * xargs - 9/10 - Essential pipeline bridge
-  * head/tail - 9/10 - Data sampling/log monitoring
-  * sort - 8/10 - Pipeline data ordering
-  * uniq - 8/10 - Deduplicate (with sort)
-  * wc - 7/10 - Quick counts
-* cli semantic search tools `sem-index` to create `.m/memory.db` and `sem-search
-"query contents"` to search the db
 
  
 
@@ -277,148 +457,6 @@ change histories ensure all functionalities are represented here.
 
 
 
-
-
-## "M FIND"
-the find tool is for discovery only. it should categorize outputs by type and give their
-exact signatures. it should not provide refs like functionality. it should search widely and
-discover each possible variant of a certain term.
-deduplicated always. inherently broad, non-verbose per result.
-
-Categorizes by WHAT TYPE of code element - your symbol categories cover all possible code constructs across
-languages (class, function, variable, etc.)
-Categorizes by WHERE it appears - content (in text/docs) vs structure (filesystem)
-Provides exact signatures - enough detail for refs to target the precise element later
-This is a clean separation: find discovers ALL variants broadly, then refs does deep relationship analysis on
-the specific thing you select.
-
-### **CATEGORIES:**
-
-```
-1. symbols [return identifying signature, filepath+line to definition/instantiation]
-* class - Class definitions
-* function - Function/method definitions
-* variable - Variable declarations
-* interface - Interface definitions
-* struct - Structure definitions
-* enum - Enumeration definitions
-* typedef - Type definitions
-* macro - Preprocessor macros
-* namespace - Namespace definitions
-* member - Class/struct members
-* field - Data fields
-* method - Class methods
-* property - Object properties
-* constant - Constants
-* label - Code labels
-* prototype - Function prototypes
-* module
-* decorator
-
-2. content [return contents of line]
-* line of content it appears in, documentation-based
-
-3. structure [return filepath]
-* dir/subdir/file names
-```
-
-### **TOOL SELECTIONS**
-```
-ripgrep (rg)              - Primary content/symbol search engine
-ctags                     - Symbol definitions across languages
-fd-find (fd)              - Fast filesystem structure search
-sem-index -> sem-search   - semantic search across cwd
-
-  PROCESSING PIPELINE
-
-sort/uniq        - Deduplication of results
-head/tail        - Result limiting/sampling
-sd               - Text formatting/cleanup
-```
-
-### TOOLING RESPONSIBILITIES
-```
-
-  symbols: ~85-90% coverage
-  - ctags handles well: class, function, variable, interface, struct, enum, typedef, macro, namespace, member,
-  field, method, property, constant, label, prototype
-
-  content: ~95% coverage
-  - rg handles comprehensively: all text content, comments, documentation, strings, regex patterns
-  - minimal gaps: binary files (usually irrelevant), unusual encodings
-
-  structure: ~95% coverage
-  - fd handles comprehensively: directories, files, name patterns, extensions, path matching
-  - minimal gaps: permission-restricted areas, hidden files (configurable)
-```
-
-### FULL LOGIC
-```
-
-  Parallel execution strategy:
-  # All tools run simultaneously on full codebase
-  ctags + rg + fd  →  traditional_results
-  sem-search                  →  semantic_results
-
-  # Merge + deduplicate by file:line location
-  sort/uniq → comprehensive_deduplicated_results
-
-  Key advantages:
-  - no semantic blind spots - traditional tools catch exact matches semantic search might miss
-  - no traditional blind spots - semantic search finds conceptual matches traditional tools miss
-  - redundancy validation - when both find the same result, higher confidence
-  - performance optimization - all tools run concurrently rather than sequentially
-
-  Deduplication logic:
-  - by definition location for the same symbols 
-  - primary key: file_path:line_number
-```
-
-### **OUTPUTS**
-```
-  📍 SYMBOLS
-  class    database.py:9     class Database(BaseModel)
-  function helpers.py:45     def get_database() -> Database
-  variable config.py:12      DATABASE_URL: str = "sqlite:///"
-  constant models.py:8       MAX_DATABASE_CONNECTIONS = 100
-  method   database.py:34    def connect(self, url: str)
-  property user.py:67        @property def database(self)
-  module   __init__.py:1     database
-  decorator auth.py:23       @database_transaction
-
-  📝 CONTENT
-  README.md:34        "Configure your database connection string"
-  parser.py:67        # Database cleanup happens automatically
-  errors.py:23        raise DatabaseError("Connection failed")
-
-  🏗️  STRUCTURE
-  ./database/
-  ./src/database_models.py
-  ./tests/test_database.py
-  ./config/database.yml
-```
-
-Each result shows:
-  - Category type (class, function, etc.)
-  - Location (file:line) [Definition location only for symbols]
-  - Exact signature (enough for refs to target precisely)
-Non-verbose, deduplicated, broadly discovers all variants.
-
-#### SEM-SEARCH OUTPUT FOR REFERENCE
-```
-Result 10 (similarity: 0.139)
-File: /home/alexpetro/.config/memory-tools/core.sh:1-50
-----------------------------------------
-
-content is here
-
-----------------------------------------
-```
-
-s.t.
-variable config.py:61   COORDINATION_SPECS_DIR - COORDINATION_SPECS_DIR = get_coordination_specs_dir()
-becomes
-variable config.py:61   COORDINATION_SPECS_DIR = get_coordination_specs_dir()
 
 
 
@@ -970,3 +1008,73 @@ Install: bun add -g tree-sitter @typescript-eslint/parser vscode-languageserver 
 
   Recommendation: Start with tree-sitter + ripgrep hybrid for global usage, add LSP as optional enhancement when
   in properly configured projects.
+
+
+---
+
+
+  MISSING INFORMATION:
+
+  1. Internal Function Calls
+
+  - Missing: Calls between functions within the same file
+  - Example: create_agent() calls load_agent_spec(), _create_llm(), _create_react_prompt() - none shown
+  - Expected: Show internal method/function call relationships
+
+  2. Class Method Relationships
+
+  - Missing: Which methods belong to which classes
+  - Example: create_agent is a method of AgentLoader class - not indicated
+  - Expected: Show class membership and inheritance relationships
+
+  3. Variable/Attribute Usage
+
+  - Missing: Instance variables used within methods
+  - Example: self.specs_dir, self.anthropic_api_key in AgentLoader methods
+  - Expected: Track attribute access patterns and state usage
+
+  4. Return Type Relationships
+
+  - Missing: What types functions return and how they're used
+  - Example: create_agent() returns ConfigurableAgent - relationship not tracked
+  - Expected: Type flow analysis showing object creation and usage
+
+  5. Nested Function Analysis
+
+  - Missing: Functions defined inside other functions
+  - Example: agent_node() function inside create_generic_agent_node() - not detected
+  - Expected: Nested scope analysis and closure relationships
+
+  6. Exception Handling Relationships
+
+  - Missing: What exceptions are raised/caught and where
+  - Example: FileNotFoundError, ValueError raised in multiple functions
+  - Expected: Error flow analysis across call stack
+
+  7. Control Flow Context
+
+  - Missing: Conditional usage and branching logic
+  - Example: When invoke() uses structured output vs fallback behavior
+  - Expected: Usage context and conditional call patterns
+
+  8. Data Flow Tracking
+
+  - Missing: How data transforms through function calls
+  - Example: agent_spec → extract_inputs_from_state → agent.invoke chain
+  - Expected: Parameter/return value flow analysis
+
+  9. External API Usage
+
+  - Missing: Third-party library method calls
+  - Example: create_react_agent(), ChatAnthropic(), AgentExecutor() usage
+  - Expected: External dependency call patterns
+
+  10. Scope and Lifetime Analysis
+
+  - Missing: Variable scope boundaries and object lifetimes
+  - Example: When variables are created, modified, and go out of scope
+  - Expected: Memory and scope management analysis
+
+  The current tool provides good module-level import/export relationships but lacks detailed intra-file analysis
+  and semantic code relationships.
+

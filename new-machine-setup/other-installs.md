@@ -216,6 +216,15 @@ which dbgate && dbgate &
 (installed via cargo)
 ln -s ~/.config/ast-grep/sgconfig.yml ~/.sgconfig.yml
 
+### TREE-SITTER GRAMMARS
+`for python`
+cd ~/.config/tree-sitter
+git clone https://github.com/tree-sitter/tree-sitter-python
+cd tree-sitter-python
+tree-sitter generate
+tree-sitter dump-languages
+
+
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
 *redis config at: `/etc/redis/redis.conf`*

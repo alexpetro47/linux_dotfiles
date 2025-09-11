@@ -128,5 +128,8 @@ memory-tools/queries/*
 !memory-tools/queries/python-imports.scm
 !memory-tools/queries/python-variables.scm
 
+!tree-sitter
+tree-sitter/*
+!tree-sitter/config.json
 
 .env

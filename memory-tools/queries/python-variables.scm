@@ -40,3 +40,51 @@
   left: (identifier) @constant.name
   right: (_) @constant.value) @constant_assignment
   (#match? @constant.name "^[A-Z_][A-Z0-9_]*$")
+
+; === ENHANCED VARIABLE ANALYSIS ===
+
+; 1. Variable usage/references (not assignments)
+(identifier) @variable_usage
+  (#not-has-parent? assignment left)
+  (#not-has-parent? function_definition name)
+  (#not-has-parent? class_definition name)
+
+; 2. Function parameter usage within function body
+(function_definition
+  parameters: (parameters
+    (identifier) @param.name)
+  body: (block
+    (identifier) @param_usage.name))
+  (#eq? @param.name @param_usage.name)
+
+; 3. Variable scope analysis - local vs global
+(function_definition
+  body: (block
+    (assignment
+      left: (identifier) @local_var.name
+      right: (_) @local_var.value) @local_assignment))
+
+; 4. Attribute access patterns
+(attribute
+  object: (identifier) @attr_object.name
+  attribute: (identifier) @attr_name.name) @attribute_access
+
+; 5. Variable modifications (augmented assignments)
+(augmented_assignment
+  left: (identifier) @modified_var.name
+  operator: (_) @modified_var.operator
+  right: (_) @modified_var.value) @variable_modification
+
+; 6. List/dict subscript access
+(subscript
+  value: (identifier) @subscript_var.name
+  slice: (_) @subscript_key.value) @subscript_access
+
+; 7. Variable in conditional expressions
+(if_statement
+  condition: (identifier) @condition_var.name) @conditional_usage
+
+; 8. Variable in for loops
+(for_statement
+  left: (identifier) @loop_var.name
+  right: (identifier) @iterable_var.name) @loop_usage

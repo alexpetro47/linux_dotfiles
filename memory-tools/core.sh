@@ -34,6 +34,170 @@ find2() {
     rm -rf "$tmp_dir"
 }
 
+# Extract multi-line signatures based on symbol type and language
+extract_multiline_signature() {
+    local file="$1"
+    local line_num="$2"
+    local category="$3"
+    local symbol="$4"
+    local file_ext="${file##*.}"
+    
+    case "$category" in
+        function|method)
+            case "$file_ext" in
+                py)
+                    extract_python_function_signature "$file" "$line_num"
+                    ;;
+                js|ts|jsx|tsx)
+                    extract_js_function_signature "$file" "$line_num"
+                    ;;
+                *)
+                    # Fallback to single line with extended length
+                    sed -n "${line_num}p" "$file" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-120
+                    ;;
+            esac
+            ;;
+        class)
+            case "$file_ext" in
+                py)
+                    extract_python_class_signature "$file" "$line_num"
+                    ;;
+                *)
+                    # Fallback to single line
+                    sed -n "${line_num}p" "$file" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-120
+                    ;;
+            esac
+            ;;
+        *)
+            # Variables and other symbols - keep single line
+            local signature=$(sed -n "${line_num}p" "$file" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-100)
+            [[ ${#signature} -gt 97 ]] && signature="${signature:0:97}..."
+            echo "$signature"
+            ;;
+    esac
+}
+
+# Extract complete Python function signature
+extract_python_function_signature() {
+    local file="$1"
+    local line_num="$2"
+    
+    # Find the end of the function signature (look for closing parenthesis + colon)
+    local sig_start=$line_num
+    local sig_end=$line_num
+    local max_lines=10
+    
+    # Look ahead to find the complete signature
+    local temp_line=$sig_start
+    while [[ $temp_line -le $((sig_start + max_lines)) ]]; do
+        local line_content=$(sed -n "${temp_line}p" "$file" 2>/dev/null)
+        if [[ "$line_content" =~ .*\).*:[[:space:]]*$ ]]; then
+            sig_end=$temp_line
+            break
+        fi
+        temp_line=$((temp_line + 1))
+    done
+    
+    # Extract and format the complete signature
+    local full_signature=$(sed -n "${sig_start},${sig_end}p" "$file" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g')
+    
+    # Trim and limit length with smart truncation
+    full_signature=$(echo "$full_signature" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+    
+    if [[ ${#full_signature} -gt 150 ]]; then
+        # Try to truncate at a reasonable point (after a parameter)
+        local truncated=$(echo "$full_signature" | cut -c1-147)
+        if [[ "$truncated" =~ .*,[[:space:]]*[^,]*$ ]]; then
+            # Cut at the last complete parameter
+            truncated=$(echo "$truncated" | sed 's/,[[:space:]]*[^,]*$//')
+            echo "${truncated}, ...)"
+        else
+            echo "${truncated}..."
+        fi
+    else
+        echo "$full_signature"
+    fi
+}
+
+# Extract complete Python class signature
+extract_python_class_signature() {
+    local file="$1"
+    local line_num="$2"
+    
+    local class_line=$(sed -n "${line_num}p" "$file" 2>/dev/null)
+    
+    # Check if class definition spans multiple lines (has opening parenthesis but no closing)
+    if [[ "$class_line" =~ class.*\([^\)]*$ ]]; then
+        local sig_start=$line_num
+        local sig_end=$line_num
+        local max_lines=5
+        
+        # Look ahead to find the complete class signature
+        local temp_line=$sig_start
+        while [[ $temp_line -le $((sig_start + max_lines)) ]]; do
+            local line_content=$(sed -n "${temp_line}p" "$file" 2>/dev/null)
+            if [[ "$line_content" =~ .*\).*:[[:space:]]*$ ]]; then
+                sig_end=$temp_line
+                break
+            fi
+            temp_line=$((temp_line + 1))
+        done
+        
+        # Extract and format the complete signature
+        local full_signature=$(sed -n "${sig_start},${sig_end}p" "$file" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g')
+        full_signature=$(echo "$full_signature" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+    else
+        # Single line class definition
+        local full_signature=$(echo "$class_line" | sed 's/^[[:space:]]*//')
+    fi
+    
+    # Limit length
+    if [[ ${#full_signature} -gt 120 ]]; then
+        echo "${full_signature:0:117}..."
+    else
+        echo "$full_signature"
+    fi
+}
+
+# Extract JavaScript/TypeScript function signature
+extract_js_function_signature() {
+    local file="$1"
+    local line_num="$2"
+    
+    # Check for arrow functions, regular functions, method definitions
+    local func_line=$(sed -n "${line_num}p" "$file" 2>/dev/null)
+    
+    if [[ "$func_line" =~ =\>[[:space:]]*\{ ]] || [[ "$func_line" =~ function.*\{$ ]]; then
+        # Single line function
+        echo "$func_line" | sed 's/^[[:space:]]*//' | cut -c1-120
+    else
+        # Multi-line function - look for opening brace
+        local sig_start=$line_num
+        local sig_end=$line_num
+        local max_lines=8
+        
+        local temp_line=$sig_start
+        while [[ $temp_line -le $((sig_start + max_lines)) ]]; do
+            local line_content=$(sed -n "${temp_line}p" "$file" 2>/dev/null)
+            if [[ "$line_content" =~ .*\{[[:space:]]*$ ]]; then
+                sig_end=$temp_line
+                break
+            fi
+            temp_line=$((temp_line + 1))
+        done
+        
+        # Extract and format
+        local full_signature=$(sed -n "${sig_start},${sig_end}p" "$file" 2>/dev/null | tr '\n' ' ' | sed 's/[[:space:]]\+/ /g')
+        full_signature=$(echo "$full_signature" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+        
+        if [[ ${#full_signature} -gt 120 ]]; then
+            echo "${full_signature:0:117}..."
+        else
+            echo "$full_signature"
+        fi
+    fi
+}
+
 # Symbol search with ctags - extracts symbols and maps to categories
 search_symbols() {
     local query="$1"
@@ -100,10 +264,9 @@ search_symbols() {
                 *) category="symbol" ;;
             esac
             
-            # Get the actual line content for signature
+            # Get the actual line content for signature with multi-line support
             if [[ -f "$file" ]]; then
-                local signature=$(sed -n "${line_num}p" "$file" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-80)
-                [[ ${#signature} -gt 77 ]] && signature="${signature:0:77}..."
+                local signature=$(extract_multiline_signature "$file" "$line_num" "$category" "$symbol")
                 echo "SYMBOL|$category|$file|$line_num|$signature"
             fi
         done
@@ -122,9 +285,9 @@ search_symbols() {
         [[ "$content" =~ ^[[:space:]]*# ]] && continue
         [[ "$content" =~ \(\) ]] && continue
         
-        # Clean up content for display
-        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-80)
-        [[ ${#content} -gt 77 ]] && clean_content="${clean_content:0:77}..."
+        # Clean up content for display with improved length handling
+        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-100)
+        [[ ${#content} -gt 97 ]] && clean_content="${clean_content:0:97}..."
         
         # Extract variable name from the line more accurately
         local var_name=$(echo "$content" | sed 's/^[[:space:]]*\(local\|readonly\|declare\|export\)*[[:space:]]*//' | sed 's/[[:space:]]*=.*//' | sed 's/[[:space:]]*$//')
@@ -140,8 +303,8 @@ search_symbols() {
         --max-count=3 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
-        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-80)
-        [[ ${#content} -gt 77 ]] && clean_content="${clean_content:0:77}..."
+        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-100)
+        [[ ${#content} -gt 97 ]] && clean_content="${clean_content:0:97}..."
         
         local var_name=$(echo "$content" | sed 's/^[[:space:]]*\(const\|let\|var\)[[:space:]]*//' | sed 's/[[:space:]]*=.*//' | sed 's/[[:space:]]*:.*//')
         
@@ -165,9 +328,9 @@ search_content() {
         --max-count=3 \
         . 2>/dev/null | \
     while IFS=':' read -r file line content; do
-        # Clean up content for display
-        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-80)
-        [[ ${#content} -gt 77 ]] && clean_content="${clean_content:0:77}..."
+        # Clean up content for display  
+        local clean_content=$(echo "$content" | sed 's/^[[:space:]]*//' | cut -c1-100)
+        [[ ${#content} -gt 97 ]] && clean_content="${clean_content:0:97}..."
         
         echo "CONTENT|content|$file|$line|$clean_content"
     done
@@ -336,8 +499,13 @@ format_output() {
     echo "📍 SYMBOLS"
     grep "^SYMBOL\|^SEMANTIC" "$dedup_results" | grep -v "content\|file\|directory" | \
     while IFS='|' read -r source category file line signature; do
-        printf "%-8s %s:%-4s %s\n" "$category" "$file" "$line" "$signature"
-    done | head -15
+        # Calculate prefix for consistent formatting
+        local file_line_info="$file:$line"
+        local prefix_format="%-8s %s "
+        
+        # Always use single line with proper wrapping
+        printf "$prefix_format%s\n" "$category" "$file_line_info" "$signature"
+    done | head -20
     
     echo ""
     
@@ -520,11 +688,113 @@ trace2() {
         echo "📖 DEFINED AT: $FILE_PATH"
         
         # Query tree-sitter for symbol definition
-        if tree-sitter query --query-path "$query_file" "$FILE_PATH" 2>/dev/null | grep -q "$SYMBOL_NAME"; then
+        local ts_output=$(tree-sitter query "$query_file" "$FILE_PATH" 2>/dev/null)
+        if echo "$ts_output" | grep -q "text: \`$SYMBOL_NAME\`"; then
             echo "✅ Found symbol definition via tree-sitter"
-            tree-sitter query --query-path "$query_file" "$FILE_PATH" 2>/dev/null | grep "$SYMBOL_NAME" | head -5
+            
+            # Extract definition details
+            local def_line=$(echo "$ts_output" | grep "function\.name.*text: \`$SYMBOL_NAME\`" | head -1)
+            if [[ -n "$def_line" ]]; then
+                if [[ "$def_line" =~ start:\ \(([0-9]+),\ ([0-9]+)\) ]]; then
+                    local line_num=$((${BASH_REMATCH[1]} + 1))  # tree-sitter is 0-indexed
+                    local col_num=$((${BASH_REMATCH[2]} + 1))
+                    
+                    echo "  📍 Function definition at line $line_num, column $col_num"
+                    
+                    # Get full function signature with context
+                    local start_context=$((line_num - 2))
+                    local end_context=$((line_num + 5))
+                    [[ $start_context -lt 1 ]] && start_context=1
+                    
+                    echo "  📜 Full signature with context:"
+                    sed -n "${start_context},${end_context}p" "$FILE_PATH" | nl -v$start_context | while read num content; do
+                        if [[ $num -eq $line_num ]]; then
+                            echo "  → $num: $content"  # Highlight the definition line
+                        else
+                            echo "    $num: $content"
+                        fi
+                    done
+                fi
+            fi
         else
             echo "⚠️  Symbol not found in tree-sitter analysis, falling back to basic parsing"
+        fi
+    }
+
+    # Enhanced tree-sitter analysis functions
+    analyze_internal_calls() {
+        echo "🔗 INTERNAL CALLS:"
+        
+        local query_file="$QUERIES_DIR/$LANGUAGE-functions.scm"
+        if [[ -f "$query_file" ]]; then
+            local ts_output=$(tree-sitter query "$query_file" "$FILE_PATH" 2>/dev/null)
+            local internal_calls=$(echo "$ts_output" | grep -E "internal_call.*text: \`.*\`")
+            
+            if [[ -n "$internal_calls" ]]; then
+                echo "$internal_calls" | while read line; do
+                    if [[ "$line" =~ text:.*\`([^\`]+)\` ]]; then
+                        local call_name="${BASH_REMATCH[1]}"
+                        echo "  🔄 Calls: $call_name"
+                    fi
+                done
+            else
+                echo "  No internal calls found"
+            fi
+        fi
+    }
+
+    analyze_class_relationships() {
+        echo "🏗️ CLASS RELATIONSHIPS:"
+        
+        local class_query="$QUERIES_DIR/$LANGUAGE-classes.scm"
+        if [[ -f "$class_query" ]]; then
+            local ts_output=$(tree-sitter query "$class_query" "$FILE_PATH" 2>/dev/null)
+            local class_info=$(echo "$ts_output" | grep -E "(class_method_rel|method_to_method).*text: \`.*\`")
+            
+            if [[ -n "$class_info" ]]; then
+                echo "$class_info" | while read line; do
+                    if [[ "$line" =~ text:.*\`([^\`]+)\` ]]; then
+                        local element="${BASH_REMATCH[1]}"
+                        if [[ "$line" =~ class_method_rel ]]; then
+                            echo "  🏛️  Class method: $element"
+                        elif [[ "$line" =~ method_to_method ]]; then
+                            echo "  🔗 Method calls: $element"
+                        fi
+                    fi
+                done
+            else
+                echo "  No class relationships found"
+            fi
+        fi
+    }
+
+    analyze_variable_usage() {
+        echo "🔄 VARIABLE USAGE:"
+        
+        local var_query="$QUERIES_DIR/$LANGUAGE-variables.scm"
+        if [[ -f "$var_query" ]]; then
+            tree-sitter query --query-path "$var_query" "$FILE_PATH" 2>/dev/null | \
+            grep -E "(variable_usage|attribute_access|param_usage)" | grep "$SYMBOL_NAME" | head -5 || echo "  No variable usage found"
+        fi
+    }
+
+    analyze_nested_functions() {
+        echo "📦 NESTED FUNCTIONS:"
+        
+        local nested_query="$QUERIES_DIR/$LANGUAGE-nested.scm"
+        if [[ -f "$nested_query" ]]; then
+            tree-sitter query --query-path "$nested_query" "$FILE_PATH" 2>/dev/null | \
+            grep -E "(nested_function|closure)" | grep "$SYMBOL_NAME" | head -5 || echo "  No nested functions found"
+        fi
+    }
+
+    analyze_exceptions() {
+        echo "🚨 EXCEPTION HANDLING:"
+        
+        local exception_query="$QUERIES_DIR/$LANGUAGE-exceptions.scm"
+        if [[ -f "$exception_query" ]]; then
+            tree-sitter query --query-path "$exception_query" "$FILE_PATH" 2>/dev/null | \
+            grep -E "(raise|except|try)" | grep -i "$SYMBOL_NAME" | head -5 || echo "  No exception handling found"
         fi
     }
 
@@ -532,19 +802,79 @@ trace2() {
     extract_signature() {
         echo "📋 SIGNATURE:"
         
-        # Find the symbol definition line
-        if [[ -n "$LINE_NUMBER" ]]; then
-            sed -n "${LINE_NUMBER}p" "$FILE_PATH" | sed 's/^[[:space:]]*//'
-        else
-            # Search for function/class definition
+        # Get line number from tree-sitter if not provided
+        local symbol_line_num="$LINE_NUMBER"
+        if [[ -z "$symbol_line_num" ]]; then
+            local ts_output=$(tree-sitter query "$QUERIES_DIR/$LANGUAGE-functions.scm" "$FILE_PATH" 2>/dev/null)
+            local def_line=$(echo "$ts_output" | grep "function\.name.*text: \`$SYMBOL_NAME\`" | head -1)
+            if [[ "$def_line" =~ start:\ \(([0-9]+),\ ([0-9]+)\) ]]; then
+                symbol_line_num=$((${BASH_REMATCH[1]} + 1))  # tree-sitter is 0-indexed
+            fi
+        fi
+        
+        if [[ -n "$symbol_line_num" ]]; then
             case "$LANGUAGE" in
                 python)
-                    rg "^(def|class|async def)\s+$SYMBOL_NAME" "$FILE_PATH" --line-number --max-count=1 | head -1
+                    # Extract multi-line function signature
+                    local sig_start=$symbol_line_num
+                    local sig_end=$symbol_line_num
+                    
+                    # Find the end of the signature (look for the closing parenthesis + colon)
+                    local temp_line=$sig_start
+                    while [[ $temp_line -le $((sig_start + 10)) ]]; do
+                        local line_content=$(sed -n "${temp_line}p" "$FILE_PATH")
+                        if [[ "$line_content" =~ .*\).*: ]]; then
+                            sig_end=$temp_line
+                            break
+                        fi
+                        temp_line=$((temp_line + 1))
+                    done
+                    
+                    # Extract and format the complete signature
+                    local full_signature=$(sed -n "${sig_start},${sig_end}p" "$FILE_PATH" | tr '\n' ' ' | sed 's/  */ /g')
+                    echo "  $full_signature"
+                    
+                    # Parse parameters individually
+                    if [[ "$full_signature" =~ \((.*)\) ]]; then
+                        local params="${BASH_REMATCH[1]}"
+                        if [[ -n "$params" && "$params" != " " ]]; then
+                            echo "  📊 Parameters breakdown:"
+                            # Split parameters by comma (basic split - doesn't handle complex nested structures)
+                            echo "$params" | sed 's/,/\n/g' | while read -r param; do
+                                param=$(echo "$param" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+                                if [[ -n "$param" ]]; then
+                                    if [[ "$param" =~ ^([^:=]+):([^=]+)(=(.*))?$ ]]; then
+                                        local param_name="${BASH_REMATCH[1]// /}"
+                                        local param_type="${BASH_REMATCH[2]// /}"
+                                        local default_value="${BASH_REMATCH[4]}"
+                                        
+                                        echo -n "    • $param_name: $param_type"
+                                        if [[ -n "$default_value" ]]; then
+                                            echo " = $default_value"
+                                        else
+                                            echo ""
+                                        fi
+                                    elif [[ "$param" =~ ^([^=]+)=(.*)$ ]]; then
+                                        local param_name="${BASH_REMATCH[1]// /}"
+                                        local default_value="${BASH_REMATCH[2]}"
+                                        echo "    • $param_name = $default_value"
+                                    else
+                                        echo "    • $param"
+                                    fi
+                                fi
+                            done
+                        else
+                            echo "  📊 Parameters: None"
+                        fi
+                    fi
                     ;;
                 *)
-                    rg "^(function|class|const|let|var)\s+.*$SYMBOL_NAME" "$FILE_PATH" --line-number --max-count=1 | head -1
+                    # Fallback for other languages
+                    sed -n "${symbol_line_num}p" "$FILE_PATH" | sed 's/^[[:space:]]*//'
                     ;;
             esac
+        else
+            echo "  ⚠️  Could not extract signature"
         fi
     }
 
@@ -552,17 +882,88 @@ trace2() {
     extract_metadata() {
         echo "🏷️  SYMBOL METADATA:"
         
-        # Look for decorators, docstrings, etc.
-        case "$LANGUAGE" in
-            python)
-                # Check for decorators above the symbol
-                if [[ -n "$LINE_NUMBER" ]]; then
-                    local start_line=$((LINE_NUMBER - 5))
+        # Get line number from tree-sitter if not provided
+        local symbol_line_num="$LINE_NUMBER"
+        if [[ -z "$symbol_line_num" ]]; then
+            local ts_output=$(tree-sitter query "$QUERIES_DIR/$LANGUAGE-functions.scm" "$FILE_PATH" 2>/dev/null)
+            local def_line=$(echo "$ts_output" | grep "function\.name.*text: \`$SYMBOL_NAME\`" | head -1)
+            if [[ "$def_line" =~ start:\ \(([0-9]+),\ ([0-9]+)\) ]]; then
+                symbol_line_num=$((${BASH_REMATCH[1]} + 1))  # tree-sitter is 0-indexed
+            fi
+        fi
+        
+        if [[ -n "$symbol_line_num" ]]; then
+            case "$LANGUAGE" in
+                python)
+                    echo "  📍 Location: Line $symbol_line_num"
+                    
+                    # Check for decorators (look up to 10 lines above)
+                    local start_line=$((symbol_line_num - 10))
                     [[ $start_line -lt 1 ]] && start_line=1
-                    sed -n "${start_line},${LINE_NUMBER}p" "$FILE_PATH" | rg "^\s*@\w+" || echo "  No decorators found"
-                fi
-                ;;
-        esac
+                    local decorators=$(sed -n "${start_line},$((symbol_line_num-1))p" "$FILE_PATH" | rg "^\s*@\w+.*$" | tail -5)
+                    
+                    if [[ -n "$decorators" ]]; then
+                        echo "  🎯 Decorators found:"
+                        echo "$decorators" | while read decorator; do
+                            echo "    $decorator"
+                        done
+                    else
+                        echo "  🎯 Decorators: None"
+                    fi
+                    
+                    # Look for docstring (next non-empty line after function def)
+                    local docstring_line=$((symbol_line_num + 1))
+                    local docstring=$(sed -n "${docstring_line},$((docstring_line + 5))p" "$FILE_PATH" | grep -E '^\s*""".*"""$|^\s*""".*' | head -1)
+                    
+                    if [[ -n "$docstring" ]]; then
+                        echo "  📝 Docstring: ${docstring//\"/\\\"}"
+                    else
+                        echo "  📝 Docstring: None"
+                    fi
+                    
+                    # Extract function signature details
+                    local sig_line=$(sed -n "${symbol_line_num}p" "$FILE_PATH")
+                    if [[ "$sig_line" =~ ^[[:space:]]*def[[:space:]]+$SYMBOL_NAME[[:space:]]*\((.*)\)[[:space:]]*(->[[:space:]]*[^:]+)?:[[:space:]]*$ ]]; then
+                        local params="${BASH_REMATCH[1]}"
+                        local return_type="${BASH_REMATCH[2]}"
+                        
+                        echo "  📊 Parameters: $params"
+                        if [[ -n "$return_type" ]]; then
+                            echo "  📤 Return type: $return_type"
+                        else
+                            echo "  📤 Return type: Not annotated"
+                        fi
+                        
+                        # Check for async
+                        if [[ "$sig_line" =~ ^[[:space:]]*async[[:space:]]+def ]]; then
+                            echo "  ⚡ Function type: Async"
+                        else
+                            echo "  ⚡ Function type: Sync"
+                        fi
+                    fi
+                    
+                    # Check if it's a method (inside a class)
+                    local class_context=$(sed -n "1,${symbol_line_num}p" "$FILE_PATH" | tac | rg "^class\s+\w+" | head -1)
+                    if [[ -n "$class_context" ]]; then
+                        local class_name=$(echo "$class_context" | sed 's/^class\s\+\([^(:]*\).*/\1/')
+                        echo "  🏛️  Class context: $class_name"
+                        
+                        # Check method type
+                        if [[ "$sig_line" =~ \(self, ]]; then
+                            echo "  🔧 Method type: Instance method"
+                        elif [[ "$sig_line" =~ \(cls, ]]; then
+                            echo "  🔧 Method type: Class method"
+                        else
+                            echo "  🔧 Method type: Static method"
+                        fi
+                    else
+                        echo "  🏛️  Scope: Module level"
+                    fi
+                    ;;
+            esac
+        else
+            echo "  ⚠️  Could not determine symbol location"
+        fi
     }
 
     # Cross-file references with ripgrep
@@ -623,6 +1024,22 @@ trace2() {
     echo ""
     
     extract_metadata
+    echo ""
+    
+    # Enhanced analysis sections
+    analyze_internal_calls
+    echo ""
+    
+    analyze_class_relationships
+    echo ""
+    
+    analyze_variable_usage
+    echo ""
+    
+    analyze_nested_functions
+    echo ""
+    
+    analyze_exceptions
     echo ""
     
     find_references
