@@ -73,6 +73,10 @@ uv tool install jupyterlab
 uv tool install ruff
 uv tool install pandoc-mermaid-filter
 uv tool install pytest
+uv tool install vulture
+uv tool install pydeps
+uv tool install import-linter
+uv tool install pyright
 
 ## BUN (NPM/NPX ALTERNATIVE)
 curl -fsSL https://bun.sh/install | bash
@@ -237,6 +241,20 @@ tree-sitter dump-languages
 * Test connection: `redis-cli ping` (should return PONG)
 
 #### DISABLE SLEEP/LOCK (PC)
+* linux mint GUI application "Power Manager" [SET]
+  * sleep mode inactive for: Never
+  * Display power management: off
+  * blank after: Never
+  * automatically lock the session: never
+* systemd logind - /etc/systemd/logind.conf [SET]
+  - IdleAction=ignore - action after idle timeout
+  - IdleActionSec=30min - idle timeout duration
+* systemd sleep configuration - /etc/systemd/sleep.conf [SET]
+  - AllowSuspend=no - disable suspend entirely
+  - AllowHibernation=no - disable hibernation
+  - AllowHybridSleep=no - disable hybrid sleep
+  - AllowSuspendThenHibernate=no - disable suspend-then-hibernate
+
 ~sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target~
 
 

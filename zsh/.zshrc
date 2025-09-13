@@ -94,13 +94,21 @@ alias gdp='git --no-pager diff HEAD'
 alias gi='git init && touch temp && git add . && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && rm temp && git status'
 alias cl="claude"
 alias clm="claude mcp list"
-alias clr="claude -r"
+alias clc="claude -c"
 # alias vid="openshot-qt"
 # alias sql="sqlitebrowser &"
 # alias db="dbgate &"
 
 alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.jar" 
-alias j1="clear; cbonsai -l -i -S" 
+
+
+
+
+alias j1="clear; cbonsai -l -i -t .045 -M 20 -L 115" 
+
+
+
+
 
 alias br='bun dev '
 alias bc='rm -rf .next && echo "nextjs cache and error log cleared"'
@@ -168,3 +176,5 @@ zinit light-mode for \
 [ -s ~/.luaver/luaver ] && . ~/.luaver/luaver >/dev/null 2>&1
 
 
+
+alias claude="/home/alexpetro/.claude/local/claude"

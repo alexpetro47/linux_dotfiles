@@ -56,10 +56,12 @@ vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true}) --unmaps
 vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true}) --unmaps
+vim.keymap.set({'n' }, 's', '<Nop>', {silent = true}) --unmaps
 
 -- Pre-Keybind Remaps
 vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true}) -- remap for jumplist forward before any tab remaps, tab == C-i
-vim.keymap.set({'n'}, 'S', 'J_', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
+vim.keymap.set({'n'}, 's', 'J_', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
+vim.keymap.set({'n'}, 'S', 'kJ_j', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
 
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
@@ -180,6 +182,7 @@ vim.keymap.set('n', '<leader>dT', ":! open ~/.local/share/Trash/files<CR>", {des
 vim.keymap.set('n', '<leader>dP', ":! open ~/Documents/prod<CR>", {desc = 'prod'})
 vim.keymap.set('n', '<leader>dm', ':cd ~/Documents/notes/ingestion/phone<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'mobile notes'})
 vim.keymap.set('n', '<leader>dc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'global CLAUDE.md'})
+vim.keymap.set('n', '<leader>dC', ':e ~/.claude.json<CR>', {desc = 'global claude.json settings'})
 vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>', {desc = 'notes index'})
 vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:pwd<CR>', {desc = 'workspace'})
 vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/ingestion/processing.md<CR>:pwd<CR>', {desc = 'processing'})
@@ -651,6 +654,8 @@ require('lazy').setup({
   --     { "<leader>af", "<cmd>ClaudeCodeAdd %:p<cr>", desc = "Add file" }
   --   },
   -- },
+
+  -- { "3rd/image.nvim", opts = {} },
 
   --DEFAULTS-----------------------------------
 

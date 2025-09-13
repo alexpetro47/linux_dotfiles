@@ -47,6 +47,7 @@ black-box style architecture ideals.
 * `diffs` - parsing of git diffs to validate implementations
 * `transform` - make changes via ast-grep, sd, jq, yq, miller (utilize pre-validated
 filepath+line results)
+* `trace` - for finding comprehensive references to a given symbol
 * also consider
   * duplo
   * hash based matching
@@ -202,21 +203,5 @@ File: /home/alexpetro/.config/memory-tools/core.sh:1-50
 content is here
 ----------------------------------------
 ```
-
-
-## "M TRACE" 
-just use cclsp find_references
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -2,15 +2,13 @@
 # Memory MCP replacement CLI tool
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/core.sh"
 source "$SCRIPT_DIR/find.sh"
-source "$SCRIPT_DIR/trace.sh"
 
 main() {
     case ${1:-help} in
         find)         shift; find2 "$@" ;;
-        arch)            shift; arch "$@" ;;
-        init)          shift; minit "$@" ;;
+        # arch)            shift; arch "$@" ;;
+        # init)          shift; minit "$@" ;;
         help|*)              show_help ;;
     esac
 }
@@ -21,9 +19,6 @@ m - Code Analysis and Architecture Tool
 
 COMMANDS:
   find <query> [filter]             Code search with context patterns
-  arch [threshold]              Analyze arch with specific problem locations
-  trace <symbol> [depth]             Comprehensive reference analysis for symbols
-  init                       Initialize project configuration
   help                              Show this help
 
 EXAMPLES:
@@ -33,32 +28,6 @@ EXAMPLES:
     m find "database connection"          # Locate database code
     m find "authentication" auth          # Find auth code, filter by 'auth'
 
-  📊 Architecture Analysis:
-    m arch 5                          # Files with 5+ dependencies
-    m arch 10                         # High arch analysis with suggestions
-
-  🔍 Reference Analysis:
-    m trace UserManager                    # Complete analysis: dependencies, reverse-deps, impact
-    m trace parse_file 3                   # 3-level transitive analysis with blast radius
-
-  ⚙️ Project Setup:
-    m init                               # Initialize ast-grep rules and configuration
-
-TRACE ANALYSIS INCLUDES:
-  📍 Symbol definition location
-  📦 Dependencies (what the symbol uses)
-  ⬅️ Reverse dependencies (what uses the symbol)
-  ⛓️ Transitive impact analysis with configurable depth
-  🛠️ Refactor impact summary with usage hotspots
-  🚨 Risk-based color coding for all relationships
-
-FEATURES:
-  - Interactive fzf filtering and selection
-  - File:line references for easy navigation
-  - Context-aware search with pattern expansion
-  - Risk-based color coding for relationships
-  - Comprehensive dependency and reverse-dependency analysis
-  - Transitive impact analysis for blast radius assessment
 EOF
 }
 

@@ -92,7 +92,6 @@ bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuo
 # bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
 
 exec --no-startup-id ~/.xsessionrc
-# exec_always --no-startup-id xset r rate 225 50
 # exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec --no-startup-id picom -b
