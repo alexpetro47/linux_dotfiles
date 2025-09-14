@@ -12,6 +12,4 @@ cmd trash ${{
 map <enter> open
 map x trash
 
-map a $touch
-
-# map a push :!touch<space>
+map a push :!touch<space>

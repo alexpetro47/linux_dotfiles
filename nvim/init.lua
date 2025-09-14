@@ -189,21 +189,21 @@ vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current dire
 -- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
 
 
-vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes/index.md<CR>', {desc = 'index.md'})
-vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes/workspace.md<CR>', {desc = 'workspace.md'})
-vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes/todo.md<CR>', {desc = 'todos.md'})
-vim.keymap.set('n', '<leader>f;', ':e ~/Documents/notes/phone.md<CR>', {desc = 'phone.md'})
+vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>', {desc = 'index.md'})
+vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>', {desc = 'workspace.md'})
+vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
+vim.keymap.set('n', '<leader>f;', ':e ~/Documents/notes2/processing.md<CR>', {desc = 'phone.md'})
 
-vim.keymap.set('n', '<leader>fF', ":cd ~/Documents/notes/reference/<CR>:enew | set local buftype=nofile<CR>", {desc = "new reference file"})
-vim.keymap.set('n', '<leader>fs', ":lua require'telescope.builtin'.live_grep({cwd = '~/Documents/notes2'})<CR>", {desc = "search files"})
+vim.keymap.set('n', '<leader>fn', ":cd ~/Documents/notes2/<CR>:e tmp.md | set local buftype=nofile<CR>", {desc = "new note"})
+vim.keymap.set('n', '<leader>ff', ":cd ~/Documents/notes2/<CR>:lua require'telescope.builtin'.fd()<CR>", {desc = 'searches notes/'})
 
--- vim.keymap.set('n', '<leader>fc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'CLAUDE.md'})
--- vim.keymap.set('n', '<leader>fC', ':e ~/.claude.json<CR>', {desc = 'claude.json '})
--- vim.keymap.set('n', '<leader>fn', ":e ~/.config/nvim/init.lua<CR>", {desc = 'nvim init.lua'})
--- vim.keymap.set('n', '<leader>fI', ":e ~/.config/i3/config<CR>", {desc = 'i3 config'})
--- vim.keymap.set('n', '<leader>fz', ":e ~/.config/zsh/.zshrc<CR>", {desc = '.zshrc'})
--- vim.keymap.set('n', '<leader>fi', ":e ~/.config/new-machine-setup/installs.md<CR>", {desc = 'installs.md'})
--- vim.keymap.set('n', '<leader>fs', ":cd ~/Documents/notes/reference/<CR>:lua require'telescope.builtin'.fd()<CR>", {desc = 'searches references/ dir '})
+vim.keymap.set('n', '<leader>fc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'CLAUDE.md'})
+vim.keymap.set('n', '<leader>fC', ':e ~/.claude.json<CR>', {desc = 'claude.json '})
+vim.keymap.set('n', '<leader>fv', ":e ~/.config/nvim/init.lua<CR>", {desc = 'nvim init.lua'})
+vim.keymap.set('n', '<leader>fI', ":e ~/.config/i3/config<CR>", {desc = 'i3 config'})
+vim.keymap.set('n', '<leader>fz', ":e ~/.config/zsh/.zshrc<CR>", {desc = '.zshrc'})
+vim.keymap.set('n', '<leader>fi', ":e ~/.config/new-machine-setup/installs.md<CR>", {desc = 'installs.md'})
+
 
 
 -- nvim command to 
