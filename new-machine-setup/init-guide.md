@@ -1,6 +1,48 @@
 
 # INIT GUIDE
 
+
+## PC
+* [PC] MINISFORUM UM890 Pro Barebone with Mini PC, AMD Ryzen 9 8945HS Mini Computers,8K Quad Display HDMI/DP1.4/USB4 х 2, AMD Radeon 780M/Dual LAN 2.5G 
+* [RAM/MEM] Crucial 96GB DDR5 RAM, 5600MHz (or 5200MHz or 4800MHz) Laptop Memory Kit, SODIMM 262-Pin, Compatible with 13th Gen Intel Core and AMD Ryzen 6000 - CT2K48G56C46S5
+* [SSD] Crucial P3 Plus 4TB PCIe Gen4 3D NAND NVMe M.2 SSD, up to 5000MB/s - CT4000P3PSSD8
+https://www.youtube.com/watch?v=wyF0I64j_1M
+1. remove top
+2. unscrew second layer
+3. insert ram at 45 degrees, push down upper end until clicks in
+4. unscrew the screw on rhs for ssd
+5. insert ssd at 45 degrees, push down gently, secure by rescrewing
+6. power on, wait 2-3 min
+7. power off
+8. connect hdmi cable to monitor
+9. power on - shoudl show boot menu on screen
+
+
+## BOOTING OS (LINUX MINT)
+https://www.youtube.com/watch?v=vFn6EHAilNs
+1. download linux mint iso [linuxmint.com]
+   * from berkeley since its close
+2. insert usb into device
+3. `sudo fdisk -l` then find the usb name (e.g. `/dev/sdb`)
+4. `sudo dd if=/path/to/your.iso of=path/to/usb bs=4M status=progress && sync`
+   e.g. `sudo dd if=/home/alexpetro/Downloads/linuxmint-22.1-xfce-64bit.iso of=/dev/sdb bs=4M status=progress && sync`
+5. check its downloaded e.g. `sudo file -s /dev/sdb`
+6. eject from laptop
+    * `sudo umount /dev/sdb*`
+    * `sudo eject /dev/sdb`
+    * `sudo file -s /dev/sdb` should be empty
+7. insert into PC
+8. boot (with mine its just a boot gui button) - other devices may have some
+   F7 F11 etc keypress combos
+9. select linux mint in boot option
+10. double click install on linux mint preview to download to SSD
+11. at some point you'll have wifi menu - plug in LAN ethernet, back to last
+menu, then it should skip this with a ethernet connected message on
+screen
+
+
+---
+
 sudo apt update + upgrade
 
 ## INSTALL CHROME
@@ -94,7 +136,7 @@ git clone https://www.github.com/justatoaster47/notes
 git clone https://www.github.com/justatoaster47/images
 mkdir code
 clone any current code projects into Documents/code/
-git clone https://www.github.com/justatoaster47/
+e.g. git clone https://www.github.com/justatoaster47/
 
 ## OTHER INSTALLS
 see [./other-installs.sh]

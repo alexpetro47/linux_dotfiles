@@ -61,7 +61,7 @@ bindkey '^D' kill-word
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
-alias s="source ~/.zshrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship'"
+alias s="source ~/.zshrc ~/.config/lf/lfrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship, lfrc'"
 alias v="nvim"
 alias c="clear"
 alias x="exit"
@@ -91,7 +91,7 @@ alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_
 
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff HEAD'
-alias gi='git init && touch temp && git add . && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && rm temp && git status'
+alias gi='git init && touch .gitignore && git add .gitignore && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && git status'
 alias cl="claude"
 alias clm="claude mcp list"
 alias clc="claude -c"
@@ -104,7 +104,7 @@ alias puml="/usr/bin/java -jar /home/alexpetro/Documents/code/plantuml/plantuml.
 
 
 
-alias j1="clear; cbonsai -l -i -t .045 -M 20 -L 115" 
+alias j1="clear; cbonsai -l -i -t .045 -M 15 -L 75" 
 
 
 

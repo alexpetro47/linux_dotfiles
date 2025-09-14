@@ -1,5 +1,5 @@
 
-# OTHER INSTALLS
+# INSTALLS
 
 
 ## APT

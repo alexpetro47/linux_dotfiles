@@ -82,6 +82,7 @@ bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
 # bindsym $mod+shift+d exec --no-startup-id google-chrome --app=https://excalidraw.com
 bindsym $mod+shift+e exec --no-startup-id openshot-qt
 bindsym $mod+b exec --no-startup-id dbgate
+bindsym $mod+p exec --no-startup-id keepassxc
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
@@ -96,7 +97,7 @@ exec --no-startup-id ~/.xsessionrc
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec --no-startup-id "sleep 3 && xset r rate 225 50"
+exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec --no-startup-id alacritty
 exec --no-startup-id google-chrome
 
@@ -107,6 +108,7 @@ exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/
 # assign [class="alacritty"] 1
 assign [class="Google-chrome"] 2
 assign [class="REAPER"] 4
+assign [class="Spotify"] 4
 assign [class="dbgate"] 3
 assign [class="QjackCtl"] 5
 

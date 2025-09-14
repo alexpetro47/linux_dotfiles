@@ -66,7 +66,7 @@ vim.keymap.set({'n'}, 'S', 'kJ_j', {noremap = true, silent = true}) --remap S to
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:q!<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
-vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
+-- vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
@@ -84,14 +84,14 @@ vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent 
 vim.keymap.set("n", "vc", [[:?```<CR>jV/```<CR>k"]], { noremap = true, silent = true, desc = 'viz code block'})
 vim.keymap.set("n", "yC", [[:?```<CR>kVj/```<CR>"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard w. ticks'})
 vim.keymap.set("n", "dc", [[:?```<CR>V/```<CR>d]], { noremap = true, silent = true, desc = 'delete codeblock'})
-vim.keymap.set("n", "P", '"+p')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
 vim.keymap.set('v', '<leader>.', 's/^/ /<CR>', {noremap=true, silent=true, desc="add space to start of line in visual selection"})
 vim.keymap.set('v', '`', 'c``<Esc>hp0', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
 vim.keymap.set('v', '<leader>`', '<Esc>o```<Esc>gvo<Esc>O```<Esc>gvo<Esc>k', {noremap=true, silent=true, desc="wrap visual selection in ``` "})
-vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
+-- vim.keymap.set('n', '<leader>p', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
+vim.keymap.set('n', 'P', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
@@ -150,7 +150,7 @@ vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
 vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
 vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
-vim.keymap.set('n', '<leader>n', ':enew | setlocal buftype=nofile<CR>', {desc = 'new buffer'})
+
 
 --Navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
@@ -173,23 +173,45 @@ vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wal
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
 vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore current directory'})
+
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
--- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get path to current file from cwd'})
+
+vim.keymap.set('n', '<leader>p', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
-vim.keymap.set('n', '<leader>dT', ":! open ~/.local/share/Trash/files<CR>", {desc = 'trash'})
-vim.keymap.set('n', '<leader>dP', ":! open ~/Documents/prod<CR>", {desc = 'prod'})
-vim.keymap.set('n', '<leader>dm', ':cd ~/Documents/notes/ingestion/phone<CR>:NvimTreeOpen<CR>:pwd<CR>', {desc = 'mobile notes'})
-vim.keymap.set('n', '<leader>dc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'global CLAUDE.md'})
-vim.keymap.set('n', '<leader>dC', ':e ~/.claude.json<CR>', {desc = 'global claude.json settings'})
-vim.keymap.set('n', '<leader>dn', ':e ~/Documents/notes/index.md<CR>', {desc = 'notes index'})
-vim.keymap.set('n', '<leader>dw', ':e ~/Documents/notes/workspace.md<CR>:pwd<CR>', {desc = 'workspace'})
-vim.keymap.set('n', '<leader>dp', ':e ~/Documents/notes/ingestion/processing.md<CR>:pwd<CR>', {desc = 'processing'})
-vim.keymap.set('n', '<leader>ds', ':e ~/Documents/notes/school/school.md<CR>:cd %:p:h<CR>:pwd<CR>', {desc = 'school'})
-vim.keymap.set('n', '<leader>dt', ':e ~/Documents/notes/reminders-todos.md<CR>:lcd %:p:h<CR>:pwd<CR>', {desc = 'reminders-todos'})
-vim.keymap.set('n', '<leader>dj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
-vim.keymap.set('n', '<leader>di', ":e ~/.config/nvim/init.lua<CR>:lcd %:p:h<CR>:cd ..<CR>:pwd<CR>", {desc = 'init.lua'})
+-- vim.keymap.set('n', '<leader>dT', ":! open ~/.local/share/Trash/files<CR>", {desc = 'trash'})
+-- vim.keymap.set('n', '<leader>dp', ":! open ~/Documents/prod<CR>", {desc = 'prod'})
+
+-- vim.keymap.set('n', '<leader>dn', ":cd ~/Documents/notes<CR>", {desc = 'notes/'})
+-- vim.keymap.set('n', '<leader>, ":Ex ~/Documents/code<CR>", {desc = 'code/'})
+-- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
+
+
+vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes/index.md<CR>', {desc = 'index.md'})
+vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes/workspace.md<CR>', {desc = 'workspace.md'})
+vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes/todo.md<CR>', {desc = 'todos.md'})
+vim.keymap.set('n', '<leader>f;', ':e ~/Documents/notes/phone.md<CR>', {desc = 'phone.md'})
+
+vim.keymap.set('n', '<leader>fF', ":cd ~/Documents/notes/reference/<CR>:enew | set local buftype=nofile<CR>", {desc = "new reference file"})
+vim.keymap.set('n', '<leader>fs', ":lua require'telescope.builtin'.live_grep({cwd = '~/Documents/notes2'})<CR>", {desc = "search files"})
+
+-- vim.keymap.set('n', '<leader>fc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'CLAUDE.md'})
+-- vim.keymap.set('n', '<leader>fC', ':e ~/.claude.json<CR>', {desc = 'claude.json '})
+-- vim.keymap.set('n', '<leader>fn', ":e ~/.config/nvim/init.lua<CR>", {desc = 'nvim init.lua'})
+-- vim.keymap.set('n', '<leader>fI', ":e ~/.config/i3/config<CR>", {desc = 'i3 config'})
+-- vim.keymap.set('n', '<leader>fz', ":e ~/.config/zsh/.zshrc<CR>", {desc = '.zshrc'})
+-- vim.keymap.set('n', '<leader>fi', ":e ~/.config/new-machine-setup/installs.md<CR>", {desc = 'installs.md'})
+-- vim.keymap.set('n', '<leader>fs', ":cd ~/Documents/notes/reference/<CR>:lua require'telescope.builtin'.fd()<CR>", {desc = 'searches references/ dir '})
+
+
+-- nvim command to 
+-- get better with sneak in visual mode
+-- lots of cognitive overload iwth your current system. personal system. should be no cognitive overload. wtf
+
+-- vim.keymap.set('n', '<leader>fj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
+
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
 vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc = 'harpoon mark' })
 vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
@@ -211,12 +233,12 @@ vim.keymap.set('n', '<leader>St', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 --file conversions
 vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
 vim.keymap.set('n', '<leader>c9', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
-vim.keymap.set('n', '<leader>c2', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
+vim.keymap.set('n', '<leader>c8', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
 vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
 -- vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
-vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
+-- vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
 vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent -t neutral && xdg-open %:r.png &<CR>', {desc = 'mermaid -> png'})
-vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
+-- vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
 
 
 -- vim.keymap.set('n', '<leader>Dv', ':!svg<CR>' , { desc = 'svg editor' })
@@ -262,7 +284,7 @@ vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
 vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'diff <hash/branch needed> (current on right)'})
 vim.keymap.set('n', '<leader>gv', ':Gvdiffsplit HEAD<CR><C-w>L<C-w>h ', { desc = 'vertical diff split with HEAD' })
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
-vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>:e!<CR>', { desc = 'stage file changes' })
+vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
 vim.keymap.set('n', '<leader>gF', ':Git push --force<CR>', { desc = 'force push' })
@@ -328,25 +350,26 @@ end)
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
+vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
 vim.keymap.set('n', '<leader>sD', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
-vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
-vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
-vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
 vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
-vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
-vim.keymap.set('n', '<leader>sC', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search Commits' })
-vim.keymap.set('n', '<leader>sk', ":lua require'telescope.builtin'.keymaps()<CR>", { desc = 'search keymaps' })
+vim.keymap.set('n', '<leader>sH', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search Commits' })
 vim.keymap.set('n', 'gd', ":lua require'telescope.builtin'.lsp_definitions()<CR>", { desc = 'go to definition'})
 vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'go to definition'})
 vim.keymap.set('n', 'gi', ":lua require'telescope.builtin'.lsp_implementations()<CR>", { desc = 'go to definition'})
 vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>", { desc = 'search symbols'})
-vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>", { desc = 'search marks'})
-vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
-vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
 vim.keymap.set('n', '<leader>st', ":lua require'telescope.builtin'.treesitter()<CR>", { desc = 'search treesitter'})
-vim.keymap.set('n', '<leader>sH', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search current file git history'})
+vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
+
+-- vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
+-- vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
+-- vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
+-- vim.keymap.set('n', '<leader>sk', ":lua require'telescope.builtin'.keymaps()<CR>", { desc = 'search keymaps' })
+-- vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>", { desc = 'search marks'})
+-- vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
+
 
 --Lsp
 vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})
@@ -542,41 +565,41 @@ require('lazy').setup({
   -- },
 
   --DAP / DEBUGGING
-  'tpope/vim-dadbod',
-  'kristijanhusak/vim-dadbod-ui',
-  'kristijanhusak/vim-dadbod-completion',
-  {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      'rcarriga/nvim-dap-ui',
-      'theHamsta/nvim-dap-virtual-text',
-      'nvim-neotest/nvim-nio',
-      'williamboman/mason.nvim',
-      'jay-babu/mason-nvim-dap.nvim',
-      'leoluz/nvim-dap-go',
-      'mfussenegger/nvim-dap-python',
-    },
-  },
+  -- 'tpope/vim-dadbod',
+  -- 'kristijanhusak/vim-dadbod-ui',
+  -- 'kristijanhusak/vim-dadbod-completion',
+  -- {
+  --   "mfussenegger/nvim-dap",
+  --   dependencies = {
+  --     'rcarriga/nvim-dap-ui',
+  --     'theHamsta/nvim-dap-virtual-text',
+  --     'nvim-neotest/nvim-nio',
+  --     'williamboman/mason.nvim',
+  --     'jay-babu/mason-nvim-dap.nvim',
+  --     'leoluz/nvim-dap-go',
+  --     'mfussenegger/nvim-dap-python',
+  --   },
+  -- },
   -- ADPATERS FOR DAP VIA MASON
-  {
-    'jay-babu/mason-nvim-dap.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'mfussenegger/nvim-dap',
-    },
-    opts= {
-      handlers = {},
-      ensure_installed = {
-        'codelldb',
-        'clangd',
-        'pyright',
-        'ruff',
-        'biome',
-        'vtsls',
-        'lua-language-server'
-      },
-    },
-  },
+  -- {
+  --   'jay-babu/mason-nvim-dap.nvim',
+  --   dependencies = {
+  --     'williamboman/mason.nvim',
+  --     'mfussenegger/nvim-dap',
+  --   },
+  --   opts= {
+  --     handlers = {},
+  --     ensure_installed = {
+  --       'codelldb',
+  --       'clangd',
+  --       'pyright',
+  --       'ruff',
+  --       'biome',
+  --       'vtsls',
+  --       'lua-language-server'
+  --     },
+  --   },
+  -- },
 
   --markdown highlighting
   {
@@ -629,15 +652,15 @@ require('lazy').setup({
   -- `sudo cp target/release/distant /usr/local/bin/`
   -- `rm -rf ~/my-temp`
 
-  {
-    "hedyhli/outline.nvim",
-    lazy = true,
-    cmd = { "Outline", "OutlineOpen" },
-    keys = { -- Example mapping to toggle outline
-      { "<leader>f", ":Outline<CR>", desc = "Toggle outline" },
-    },
-    opts = {},
-  },
+  -- {
+  --   "hedyhli/outline.nvim",
+  --   lazy = true,
+  --   cmd = { "Outline", "OutlineOpen" },
+  --   keys = { -- Example mapping to toggle outline
+  --     { "<leader>f", ":Outline<CR>", desc = "Toggle outline" },
+  --   },
+  --   opts = {},
+  -- },
 
   -- {
   --   "coder/claudecode.nvim",
@@ -870,19 +893,19 @@ require('lazy').setup({
 
 
 
-require("outline").setup({
-  keymaps = {
-    goto_and_close = '<CR>',
-  },
-  outline_window = {
-    position = 'left',
-    width = 23,
-    auto_jump = true,
-  },
-  outline_items = {
-    show_symbol_lineno = true,
-  },
-})
+-- require("outline").setup({
+--   keymaps = {
+--     goto_and_close = '<CR>',
+--   },
+--   outline_window = {
+--     position = 'left',
+--     width = 23,
+--     auto_jump = true,
+--   },
+--   outline_items = {
+--     show_symbol_lineno = true,
+--   },
+-- })
 
 local wk = require('which-key')
 wk.add({
@@ -970,24 +993,24 @@ require('harpoon').setup{
 
 require('render-markdown').setup({})
 
-local dap = require "dap"
-local ui = require "dapui"
-require("dapui").setup()
-require("dap-go").setup()
-require("nvim-dap-virtual-text").setup()
+-- local dap = require "dap"
+-- local ui = require "dapui"
+-- require("dapui").setup()
+-- require("dap-go").setup()
+-- require("nvim-dap-virtual-text").setup()
 
-dap.listeners.before.attach.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-  ui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  ui.close()
-end
+-- dap.listeners.before.attach.dapui_config = function()
+--   ui.open()
+-- end
+-- dap.listeners.before.launch.dapui_config = function()
+--   ui.open()
+-- end
+-- dap.listeners.before.event_terminated.dapui_config = function()
+--   ui.close()
+-- end
+-- dap.listeners.before.event_exited.dapui_config = function()
+--   ui.close()
+-- end
 
 require("noice").setup({
   lsp = {
