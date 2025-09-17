@@ -124,3 +124,5 @@ memory-tools/*
 !memory-tools/info.md
 
 .env
+
+.m/memory.db

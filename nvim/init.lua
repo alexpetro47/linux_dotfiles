@@ -194,15 +194,38 @@ vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>', {des
 vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
 vim.keymap.set('n', '<leader>f;', ':e ~/Documents/notes2/processing.md<CR>', {desc = 'phone.md'})
 
-vim.keymap.set('n', '<leader>fn', ":cd ~/Documents/notes2/<CR>:e tmp.md | set local buftype=nofile<CR>", {desc = "new note"})
-vim.keymap.set('n', '<leader>ff', ":cd ~/Documents/notes2/<CR>:lua require'telescope.builtin'.fd()<CR>", {desc = 'searches notes/'})
-
 vim.keymap.set('n', '<leader>fc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'CLAUDE.md'})
 vim.keymap.set('n', '<leader>fC', ':e ~/.claude.json<CR>', {desc = 'claude.json '})
 vim.keymap.set('n', '<leader>fv', ":e ~/.config/nvim/init.lua<CR>", {desc = 'nvim init.lua'})
 vim.keymap.set('n', '<leader>fI', ":e ~/.config/i3/config<CR>", {desc = 'i3 config'})
 vim.keymap.set('n', '<leader>fz', ":e ~/.config/zsh/.zshrc<CR>", {desc = '.zshrc'})
 vim.keymap.set('n', '<leader>fi', ":e ~/.config/new-machine-setup/installs.md<CR>", {desc = 'installs.md'})
+
+
+vim.keymap.set('n', '<leader>fn', function()
+  local notes_dir = vim.fn.expand("~/Documents/notes2/")
+  local i = 1
+  local filename
+  repeat
+    filename = notes_dir .. "tmp_" .. i .. ".md"
+    i = i + 1
+  until vim.fn.filereadable(filename) == 0
+  vim.cmd("cd " .. notes_dir)
+  vim.cmd("e " .. filename)
+end, {desc = "new note"})
+
+
+-- Then use it in your keymap:
+vim.keymap.set('n', '<leader>ff', function()
+  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
+end, { desc = 'searches notes/' })
+
+
+
+-- -- Then use it in your keymap:
+-- vim.keymap.set('n', '<leader>fd', function()
+--   require('telescope.builtin').find_files({ cwd = '~/Documents/notes2/'})
+-- end, { desc = 'searches notes/' })
 
 
 
@@ -1032,10 +1055,14 @@ local function nvim_tree_on_attach(bufnr)
   vim.keymap.del("n", "<Tab>", { buffer = bufnr }) --disable nvim-tree tab keybind in favor of my own
   vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
   vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
-  vim.keymap.set("n", "D", api.fs.remove, opts("Delete"))
+  -- vim.keymap.set("n", "D", api.fs.remove, opts("Delete"))
   vim.keymap.set("n", "d", api.fs.trash, opts("Trash"))
-  vim.keymap.set("n", "bD", api.marks.bulk.delete, opts("Delete Bookmarked"))
-  vim.keymap.set("n", "bd", api.marks.bulk.trash, opts("Trash Bookmarked"))
+  vim.keymap.set("n", "m", api.marks.toggle, opts("Toggle Mark"))
+  -- vim.keymap.set("n", "x", api.marks.bulk.cut, opts("Cut Bookmarked"))
+  -- vim.keymap.set("n", "c", api.marks.bulk.copy, opts("Copy Bookmarked"))
+  vim.keymap.set("n", "p", api.fs.paste, opts("Paste"))
+  vim.keymap.set("n", "D", api.marks.bulk.trash, opts("Trash marks"))
+  vim.keymap.set("n", "M", api.marks.bulk.move, opts("Move marks"))
   vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
   vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
   vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
@@ -1049,6 +1076,19 @@ require("nvim-tree").setup({
   reload_on_bufenter = true,
   respect_buf_cwd = true,
   update_focused_file = {
+    enable = true,
+    update_root = true,
+  },
+  actions = {
+    remove_file = {
+      close_window = true,
+    },
+  },
+  trash = {
+    cmd = "trash-put",
+    require_confirm = false,
+  },
+  filesystem_watchers = {
     enable = true,
   },
   sort = {
