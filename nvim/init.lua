@@ -189,20 +189,10 @@ vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current dire
 -- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
 
 
-vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>', {desc = 'index.md'})
-vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>', {desc = 'workspace.md'})
-vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
-vim.keymap.set('n', '<leader>f;', ':e ~/Documents/notes2/processing.md<CR>', {desc = 'phone.md'})
-
-vim.keymap.set('n', '<leader>fc', ':e ~/.claude/CLAUDE.md<CR>', {desc = 'CLAUDE.md'})
-vim.keymap.set('n', '<leader>fC', ':e ~/.claude.json<CR>', {desc = 'claude.json '})
-vim.keymap.set('n', '<leader>fv', ":e ~/.config/nvim/init.lua<CR>", {desc = 'nvim init.lua'})
-vim.keymap.set('n', '<leader>fI', ":e ~/.config/i3/config<CR>", {desc = 'i3 config'})
-vim.keymap.set('n', '<leader>fz', ":e ~/.config/zsh/.zshrc<CR>", {desc = '.zshrc'})
-vim.keymap.set('n', '<leader>fi', ":e ~/.config/new-machine-setup/installs.md<CR>", {desc = 'installs.md'})
-
-
-vim.keymap.set('n', '<leader>fn', function()
+vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc = 'index.md'})
+vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
+vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
+vim.keymap.set('n', '<leader>f;', function()
   local notes_dir = vim.fn.expand("~/Documents/notes2/")
   local i = 1
   local filename
@@ -216,10 +206,17 @@ end, {desc = "new note"})
 
 
 -- Then use it in your keymap:
-vim.keymap.set('n', '<leader>ff', function()
-  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
-end, { desc = 'searches notes/' })
+vim.keymap.set('n', '<leader>fK', function()
+  require('telescope.builtin').fd({ cwd = '~/.config/'})
+end, { desc = '~/.config/' })
 
+vim.keymap.set('n', '<leader>fJ', function()
+  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
+end, { desc = '~/Documents/notes2/' })
+
+vim.keymap.set('n', '<leader>fL', function()
+  require('telescope.builtin').fd({ cwd = '~/.claude/'})
+end, { desc = '~/.claude/' })
 
 
 -- -- Then use it in your keymap:
