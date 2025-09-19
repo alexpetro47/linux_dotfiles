@@ -110,7 +110,7 @@ vim.keymap.set("v", "<leader>W", [[:s/\S\+//gn<CR>]], {noremap = true, silent = 
 vim.keymap.set("n", "<leader>W", [[:%s/\S\+//gn<CR>]], {noremap = true, silent = true, desc = 'word count in file'})
 vim.keymap.set('n', '<leader>=', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
 vim.keymap.set('n', '<leader><', ':cd ..<CR>:pwd<CR>', {noremap=true, silent=true, desc="cd back 1 dir"})
-vim.keymap.set('n', '<leader>rr', ':e!<CR>', {desc = 'reload buffer'})
+vim.keymap.set('n', '<leader>r', ':e!<CR>', {desc = 'reload buffer'})
 vim.keymap.set('n', '<leader>8', 'I* <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('n', '<leader>-', 'I- <Esc>', {desc = 'insert bullet point *'})
 vim.keymap.set('v', '<leader>8', ":'<,'>normal! I* <CR>", { silent = true, desc = 'Insert bullet point * on visual selection' })
@@ -193,7 +193,7 @@ vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc 
 vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
 vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
 vim.keymap.set('n', '<leader>f;', function()
-  local notes_dir = vim.fn.expand("~/Documents/notes2/")
+  local notes_dir = vim.fn.expand("~/Documents/notes2/ACTIVE/")
   local i = 1
   local filename
   repeat
@@ -216,6 +216,10 @@ end, { desc = '~/Documents/notes2/' })
 
 vim.keymap.set('n', '<leader>fL', function()
   require('telescope.builtin').fd({ cwd = '~/.claude/'})
+end, { desc = '~/.claude/' })
+
+vim.keymap.set('n', '<leader>f:', function()
+  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/ACTIVE/'})
 end, { desc = '~/.claude/' })
 
 
@@ -718,11 +722,14 @@ require('lazy').setup({
           ensure_installed = {
             'lua-language-server',
             'clangd',
+            'codelldb',
             'clang-format',
             'marksman',
             'typescript-language-server',
             'eslint-lsp',
             'prettier',
+            'uv',
+            'ruff'
           }
         }
       },
