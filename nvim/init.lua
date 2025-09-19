@@ -204,6 +204,18 @@ vim.keymap.set('n', '<leader>f;', function()
   vim.cmd("e " .. filename)
 end, {desc = "new note"})
 
+vim.keymap.set('n', '<leader>fc', function()
+  local notes_dir = ".context"
+  local i = 1
+  local filename
+  repeat
+    filename = "tmp_" .. i .. ".md"
+    i = i + 1
+  until vim.fn.filereadable(filename) == 0
+  vim.cmd("cd " .. notes_dir)
+  vim.cmd("e " .. filename)
+end, {desc = "new .context note"})
+
 
 -- Then use it in your keymap:
 vim.keymap.set('n', '<leader>fK', function()
@@ -241,6 +253,9 @@ vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc =
 vim.keymap.set('n', 'J', ':lua require("harpoon.ui").nav_file(1)<CR>' , { desc = 'harpoon 1' })
 vim.keymap.set('n', 'K', ':lua require("harpoon.ui").nav_file(2)<CR>' , { desc = 'harpoon 2' })
 vim.keymap.set('n', 'L', ':lua require("harpoon.ui").nav_file(3)<CR>' , { desc = 'harpoon 3' })
+vim.keymap.set('n', '<M-J>', ':lua require("harpoon.ui").nav_file(4)<CR>' , { desc = 'harpoon 4' })
+vim.keymap.set('n', '<M-K>', ':lua require("harpoon.ui").nav_file(5)<CR>' , { desc = 'harpoon 5' })
+vim.keymap.set('n', '<M-L>', ':lua require("harpoon.ui").nav_file(6)<CR>' , { desc = 'harpoon 6' })
 --open files with absolute path
 vim.api.nvim_create_autocmd("FileType", { pattern = "NvimTree", callback =
   function(args) vim.keymap.set("n", "gx", function() local node =
@@ -721,6 +736,8 @@ require('lazy').setup({
         opts = {
           ensure_installed = {
             'lua-language-server',
+            'pyright',
+            'vtsls',
             'clangd',
             'codelldb',
             'clang-format',
