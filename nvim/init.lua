@@ -205,14 +205,12 @@ vim.keymap.set('n', '<leader>f;', function()
 end, {desc = "new note"})
 
 vim.keymap.set('n', '<leader>fc', function()
-  local notes_dir = ".context"
   local i = 1
   local filename
   repeat
-    filename = "tmp_" .. i .. ".md"
+    filename = ".context/tmp_" .. i .. ".md"
     i = i + 1
   until vim.fn.filereadable(filename) == 0
-  vim.cmd("cd " .. notes_dir)
   vim.cmd("e " .. filename)
 end, {desc = "new .context note"})
 
