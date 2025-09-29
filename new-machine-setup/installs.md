@@ -228,6 +228,12 @@ cd tree-sitter-python
 tree-sitter generate
 tree-sitter dump-languages
 
+### DOCKER
+`sudo apt update && sudo apt install docker.io docker-compose`
+`sudo usermod -aG docker $USER`
+`docker --version`
+`sudo systemctl start docker`
+`newgrp docker`
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*

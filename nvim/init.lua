@@ -188,10 +188,9 @@ vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current dire
 -- vim.keymap.set('n', '<leader>, ":Ex ~/Documents/code<CR>", {desc = 'code/'})
 -- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
 
-
 vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc = 'index.md'})
-vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/todo.md<CR>', {desc = 'todos.md'})
-vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
+vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
+vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/journal/`date +\\%Y_\\%m_\\%d`.md<CR>', {desc = 'journal'})
 vim.keymap.set('n', '<leader>f;', function()
   local notes_dir = vim.fn.expand("~/Documents/notes2/ACTIVE/")
   local i = 1
@@ -230,7 +229,11 @@ end, { desc = '~/.claude/' })
 
 vim.keymap.set('n', '<leader>f:', function()
   require('telescope.builtin').fd({ cwd = '~/Documents/notes2/ACTIVE/'})
-end, { desc = '~/.claude/' })
+end, { desc = '~notes2/ACTIVE/' })
+
+vim.keymap.set('n', '<leader>fC', function()
+  require('telescope.builtin').fd({ cwd = '.context/'})
+end, { desc = '.context/'})
 
 
 -- -- Then use it in your keymap:
@@ -244,7 +247,6 @@ end, { desc = '~/.claude/' })
 -- get better with sneak in visual mode
 -- lots of cognitive overload iwth your current system. personal system. should be no cognitive overload. wtf
 
--- vim.keymap.set('n', '<leader>fj', ":e ~/Documents/notes/personal/journal/`date +\\%Y_\\%m_\\%d`.md<CR>", {desc = 'new journal'})
 
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
 vim.keymap.set('n', 'M', ':lua require("harpoon.mark").add_file()<CR>', { desc = 'harpoon mark' })
@@ -764,6 +766,24 @@ require('lazy').setup({
             telemetry = { enable = false },
           },
         },
+        pyright = {
+          python = {
+            pythonPath = function()
+              -- Try uv venv first, fallback to system python
+              local uv_python = vim.fn.getcwd() .. "/.venv/bin/python"
+              if vim.fn.executable(uv_python) == 1 then
+                return uv_python
+              end
+              return vim.fn.exepath("python3")
+            end,
+            analysis = {
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = "workspace",  -- Changed from "openFilesOnly"
+            },
+          },
+        },
+
       }
 
       -- This single setup call replaces the two previous ones.
