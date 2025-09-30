@@ -3,7 +3,7 @@
 decorations = "Full"
 startup_mode = "Windowed"
 dynamic_padding = true
-dimensions = { columns = 192, lines = 55 }
+# dimensions = { columns = 192, lines = 55 }
 padding = { x = 0, y = 0 }
 
 [scrolling]
@@ -14,7 +14,7 @@ multiplier = 5
 hide_when_typing = true
 
 [font]
-size = 15
+size = 8
 normal = {family = "JetBrainsMono NF", style = "Regular"}
 bold = {family = "JetBrainsMono NF", style = "Bold"}
 italic = {family = "JetBrainsMono NF", style = "Italic"}
