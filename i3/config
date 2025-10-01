@@ -95,9 +95,10 @@ bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuo
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
-exec --no-startup-id picom -b
+# exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
+exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
 exec --no-startup-id alacritty
 exec --no-startup-id google-chrome
 

@@ -57,6 +57,8 @@ gh auth setup-git
 git config --global user.name "Alex Petro"
 git config --global user.email "alexmpetro@gmail.com"
 git config --list | grep user
+git config --global push.autoSetupRemote true
+git config --global init.defaultBranch main
 
 ## DOTFILES
 cd ~ 
@@ -115,7 +117,7 @@ cp -r JetBrainsMonoNF/*.ttf /home/alexpetro/.local/share/fonts
 mkdir -p /home/alexpetro/.icons
 cp -r ComixCursorWhite/ /home/alexpetro/.icons/
 
-other opts listed in the installation.md as well
+change via `lxappearance` as apt installed
 
 ## X11 / XCONF SETTINGS
 ln -s ~/.config/.xsessionrc ~/.xsessionrc
@@ -139,7 +141,7 @@ clone any current code projects into Documents/code/
 e.g. git clone https://www.github.com/justatoaster47/
 
 ## OTHER INSTALLS
-see [./other-installs.sh]
+see [installs.md]
 
 ### keychron config in browser
 https://launcher.keychron.com/#/keymap

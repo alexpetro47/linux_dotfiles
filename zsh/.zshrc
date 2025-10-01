@@ -177,4 +177,4 @@ zinit light-mode for \
 
 
 
-alias claude="/home/alexpetro/.claude/local/claude"
+export PATH="$HOME/.local/bin:$PATH"

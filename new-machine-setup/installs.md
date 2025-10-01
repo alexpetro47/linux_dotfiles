@@ -57,13 +57,14 @@ sudo apt install\
   rename\
   ffmpeg\
   caffeine\
-  sqlite-3\
+  sqlite3\
   sqlitebrowser\
   libsqlite3-dev\
   yq\
   bat\
   miller\
   universal-ctags\
+  lxappearance\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -82,9 +83,7 @@ uv tool install pyright
 curl -fsSL https://bun.sh/install | bash
 
 bun add -g\
-  @google/gemini-cli\
   markmap-cli\
-  plantuml-cli\
   pm2\
   repomix\
   tsx\
@@ -95,12 +94,14 @@ bun add -g\
   prettier\
   typescript\
   vscode-langservers-extracted\
-  @mermaid-js/mermaid-cli\
   puppeteer\
   @biomejs/biome\
   @ast-grep/cli\
 
   cc-lsp\
+  plantuml-cli\
+  @mermaid-js/mermaid-cli\
+  @google/gemini-cli\
 
 ## RUST/CARGO/BINSTALL
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -119,16 +120,13 @@ cargo binstall\
 
 ### CLAUDE CODE
 curl -fsSL https://claude.ai/install.sh | bash
+git clone https://github.com/alexpetro47/claude_code ~/.claude
 
 ### **GOOGLE CHROME**
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 sudo apt update
 sudo apt install google-chrome-stable
-
-### GIT SETUP
-git config --global push.autoSetupRemote true
-git config --global init.defaultBranch main
 
 ### SPOTIFY
 curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
@@ -234,6 +232,15 @@ tree-sitter dump-languages
 `docker --version`
 `sudo systemctl start docker`
 `newgrp docker`
+
+#### IMPROVE CPU PERFORMANCE
+```
+  sudo apt install cpufrequtils
+  echo 'GOVERNOR="schedutil"' | sudo tee /etc/default/cpufrequtils
+  sudo systemctl enable cpufrequtils
+  sudo systemctl restart cpufrequtils
+```
+
 
 #### FIREWALL
 *for redis local setup, using firewall to block any external access*
