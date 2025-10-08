@@ -10,9 +10,9 @@ export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
 export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 export PATH="$HOME/.config/memory-tools:$PATH"
 
-HISTORY=50000
-HISTSIZE=50000
-SAVEHIST=50000
+HISTORY=5000
+HISTSIZE=5000
+SAVEHIST=5000
 HISTFILE=~/.zsh_history
 
 # Essential options:
@@ -95,6 +95,7 @@ alias gi='git init && touch .gitignore && git add .gitignore && git commit -m "i
 alias cl="claude"
 alias clm="claude mcp list"
 alias clc="claude -c"
+alias clr="claude --resume"
 # alias vid="openshot-qt"
 # alias sql="sqlitebrowser &"
 # alias db="dbgate &"
@@ -109,6 +110,7 @@ alias j1="clear; cbonsai -l -i -t .045 -M 15 -L 75"
 
 
 
+alias dcomp='docker-compose'
 
 alias br='bun dev '
 alias bc='rm -rf .next && echo "nextjs cache and error log cleared"'

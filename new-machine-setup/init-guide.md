@@ -20,48 +20,74 @@ https://www.youtube.com/watch?v=wyF0I64j_1M
 
 ## BOOTING OS (LINUX MINT)
 https://www.youtube.com/watch?v=vFn6EHAilNs
-1. download linux mint iso [linuxmint.com]
+1. download linux mint iso [https://linuxmint.com]
    * from berkeley since its close
 2. insert usb into device
 3. `sudo fdisk -l` then find the usb name (e.g. `/dev/sdb`)
 4. `sudo dd if=/path/to/your.iso of=path/to/usb bs=4M status=progress && sync`
    e.g. `sudo dd if=/home/alexpetro/Downloads/linuxmint-22.1-xfce-64bit.iso of=/dev/sdb bs=4M status=progress && sync`
+     (takes a minute or two, no visible progress sometimes)
 5. check its downloaded e.g. `sudo file -s /dev/sdb`
 6. eject from laptop
-    * `sudo umount /dev/sdb*`
+    * `sudo umount /dev/sdb`
     * `sudo eject /dev/sdb`
     * `sudo file -s /dev/sdb` should be empty
 7. insert into PC
 8. boot (with mine its just a boot gui button) - other devices may have some
    F7 F11 etc keypress combos
+   (on thinkpad its F12 to boot from temporary device -> usb)
 9. select linux mint in boot option
+   [at this point, you can wipe old os's as well, see below]
 10. double click install on linux mint preview to download to SSD
 11. at some point you'll have wifi menu - plug in LAN ethernet, back to last
 menu, then it should skip this with a ethernet connected message on
 screen
 
+[yes] multimedia codes
+
+### wiping usb
+1. insert usb
+2. `lsblk -f` (nvme0n1 is your current os (careful), sda is usb)
+3. `sudo wipefs -a /dev/sda` wipe all signatures from usb
+4. `sudo sgdisk --zap-all /dev/sda` wipe all partitions from usb
+5. `lsblk -f` should now show clean sda
+
+### wiping old os
+CAREFUl this wipes your fucking harddrive
+lsblk
+~~ sudo wipefs -a /dev/nvme0n1 ~~
+~~ sudo sgdisk --zap-all /dev/nvme0n1 ~~
+lsblk
 
 ---
 
-sudo apt update + upgrade
+sudo apt update && sudo apt upgrade
 
 ## INSTALL CHROME
-sudo apt install google-chrome
-  *may need to wget its key to add to apt*
-*log into google account, github*
+google.com/chrome
+download the .deb or whatever, install via gui. 
+*login to google*
+
 
 ## GITHUB
 *(may need to:) generate net Personal Access Token (classic w. all boxes checked, no expiration) (settings->developer settings-> classic token)* sudo apt install gh 
-sudo apt install git
+sudo apt install git gh
+gh auth login
+
+
 gh auth setup-git
 git config --global user.name "Alex Petro"
 git config --global user.email "alexmpetro@gmail.com"
 git config --list | grep user
+git config --global push.autoSetupRemote true
+git config --global init.defaultBranch main
+git config --global credential.helper store
 
 ## DOTFILES
 cd ~ 
 git clone https://github.com/justatoaster47/linux_dotfiles
-cp -r * linux_dotfiles ./.config
+cd linux_dotfiles
+cp -r * ~/.config
 
 ## NVIM
 cd ~ 

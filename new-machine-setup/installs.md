@@ -126,10 +126,6 @@ echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.g
 sudo apt update
 sudo apt install google-chrome-stable
 
-### GIT SETUP
-git config --global push.autoSetupRemote true
-git config --global init.defaultBranch main
-
 ### SPOTIFY
 curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list

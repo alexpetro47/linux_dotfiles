@@ -1111,12 +1111,12 @@ end
 require("nvim-tree").setup({
   on_attach=nvim_tree_on_attach,
   hijack_cursor = true,
-  sync_root_with_cwd= true,
+  -- sync_root_with_cwd= true,
   reload_on_bufenter = true,
-  respect_buf_cwd = true,
+  -- respect_buf_cwd = true,
   update_focused_file = {
     enable = true,
-    update_root = true,
+    -- update_root = true,
   },
   actions = {
     remove_file = {
