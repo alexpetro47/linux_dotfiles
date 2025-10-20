@@ -1,6 +1,6 @@
 # PANDOC DEFAULTS
 
-reader: gfm+hard_line_breaks+strikeout+task_lists+smart
+reader: markdown+hard_line_breaks+strikeout+task_lists+smart+raw_tex
 writer: pdf
 
 standalone: true

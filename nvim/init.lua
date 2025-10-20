@@ -94,12 +94,13 @@ vim.keymap.set('v', '<leader>`', '<Esc>o```<Esc>gvo<Esc>O```<Esc>gvo<Esc>k', {no
 vim.keymap.set('n', 'P', '"+p', {desc="paste from clipboard", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
 vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
+vim.keymap.set('n', '<leader>q', ':q<CR>', {desc="quit buffer", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
-vim.keymap.set('n', '<leader>da', 'ggdG', {desc = 'delete all'})
+vim.keymap.set('n', '<leader>D', 'ggdG', {desc = 'delete all'})
 vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
-vim.keymap.set('n', '<leader>d*', 'V:s/**//g<CR>i<Esc>', {desc = 'delete bolded selection'})
+vim.keymap.set('n', '<leader>B', 'V:s/**//g<CR>i<Esc>', {desc = 'delete bolded selection'})
 vim.keymap.set('v', "<leader>'", "c''<Esc>hp", {desc = 'quote visual selection'})
 vim.keymap.set('v', '<leader>i', 'c**<Esc>hp', {desc = 'italicize visual selection'})
 vim.keymap.set('n', '<leader>I', 'A[]()<esc>h"+pBa', {desc = 'insert link'})
@@ -172,7 +173,21 @@ vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wal
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
-vim.keymap.set('n', '<leader>e', '<CMD>NvimTreeToggle<CR>', {desc = 'explore current directory'})
+vim.keymap.set('n', '<leader>e', function()
+  local api = require('nvim-tree.api')
+  api.tree.toggle()
+  -- Small delay to let tree open before finding file
+  vim.defer_fn(function()
+    if api.tree.is_visible() then
+      api.tree.find_file({ open = false, focus = true })
+    end
+  end, 50)
+end, {desc = 'toggle tree and reveal current buffer'})
+vim.keymap.set('n', '<leader>E', function()
+  vim.cmd('only')
+  require('nvim-tree.api').tree.open()
+  require('nvim-tree.api').tree.find_file({ open = true, focus = true })
+end, {desc = 'close splits and reveal current buffer in tree'})
 
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
@@ -180,7 +195,7 @@ vim.keymap.set('n', '<leader>p', ':let @+ = expand("%")<CR>', { noremap = true, 
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
-vim.keymap.set('n', '<leader>do', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>O', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
 -- vim.keymap.set('n', '<leader>dT', ":! open ~/.local/share/Trash/files<CR>", {desc = 'trash'})
 -- vim.keymap.set('n', '<leader>dp', ":! open ~/Documents/prod<CR>", {desc = 'prod'})
 
@@ -212,6 +227,13 @@ vim.keymap.set('n', '<leader>fc', function()
   until vim.fn.filereadable(filename) == 0
   vim.cmd("e " .. filename)
 end, {desc = "new .context note"})
+
+vim.keymap.set('n', '<leader>fe', function()
+  local src = vim.fn.expand('~/Documents/notes2/.excalidraw-store/1.excalidraw')
+  local dest = vim.fn.getcwd() .. '/1.excalidraw'
+  vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest))
+  vim.notify('Copied 1.excalidraw to ' .. dest)
+end, {desc = 'copy excalidraw template'})
 
 
 -- Then use it in your keymap:
@@ -284,26 +306,27 @@ vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent
 -- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
 -- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
 
--- --Debugging
--- vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
--- vim.keymap.set('n', '<leader>Di', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
--- vim.keymap.set('n', '<leader>Dd', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
--- vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
--- vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
--- vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
--- vim.keymap.set('n', 'dj', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
--- vim.keymap.set('n', 'dl', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
--- vim.keymap.set('n', 'dh', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
--- vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
+vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
 
---Quickfix management
-vim.keymap.set('n', '<leader>qo', ':cope<CR>', { desc = 'quickfix open' })
-vim.keymap.set('n', '<leader>qq', ':cclose<CR>', { desc = 'quickfix close' })
-vim.keymap.set('n', '<leader>qc', ':call setqflist([])<CR>', { desc = 'quickfix clear' })
-vim.keymap.set('n', '<leader>qn', ':cnext<CR>', { desc = 'quickfix next' })
-vim.keymap.set('n', '<leader>ql', ':cprevious<CR>', { desc = 'quickfix last' })
-vim.keymap.set('n', '<leader>qg', ':new<CR><C-w>o:cope<CR>:grep ""<Left>', { desc = 'quickfix grep' })
-vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
+--Debugging
+vim.keymap.set('n', '<leader>di', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
+vim.keymap.set('n', '<leader>dd', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
+vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
+vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
+vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
+vim.keymap.set('n', 'dj', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
+vim.keymap.set('n', 'dl', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
+vim.keymap.set('n', 'dh', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
+vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
+
+-- --Quickfix management
+-- vim.keymap.set('n', '<leader>qo', ':cope<CR>', { desc = 'quickfix open' })
+-- vim.keymap.set('n', '<leader>qq', ':cclose<CR>', { desc = 'quickfix close' })
+-- vim.keymap.set('n', '<leader>qc', ':call setqflist([])<CR>', { desc = 'quickfix clear' })
+-- vim.keymap.set('n', '<leader>qn', ':cnext<CR>', { desc = 'quickfix next' })
+-- vim.keymap.set('n', '<leader>ql', ':cprevious<CR>', { desc = 'quickfix last' })
+-- vim.keymap.set('n', '<leader>qg', ':new<CR><C-w>o:cope<CR>:grep ""<Left>', { desc = 'quickfix grep' })
+-- vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
 
 --Nvim Management
 vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
@@ -328,7 +351,8 @@ vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage al
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
 vim.keymap.set('n', '<leader>gF', ':Git push --force<CR>', { desc = 'force push' })
 vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch origin' })
-vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
+-- vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
+vim.keymap.set('n', '<leader>gP', ':Git pull <CR>', { desc = 'pull (rebase)' })
 -- vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch' })
 vim.keymap.set('n', '<leader>gcm', ':Git commit -m ""<Left>', { desc = 'commit with message' })
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'commit with standard message' })
@@ -340,6 +364,7 @@ vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
 vim.keymap.set('n', '<leader>gRF', ':! git reflog expire --expire=now --all && git gc --prune=now && bfg --D ', { desc = 'delete all history of <path/to/file>, clears reflog + prunes. force push manually afterwards' })
 vim.keymap.set('n', '<leader>gRs', ':Git reset %<CR>', { desc = 'unstage current file' })
 vim.keymap.set('n', '<leader>gRS', ':Git reset .<CR>', { desc = 'unstage all files' })
+-- vim.keymap.set('n', '<leader>gRc', ':! git filter-repo --path  --invert-paths<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'git status' })
 vim.keymap.set('n', '<leader>gRt', ':! rm %<CR>:! git rm --cached %<CR>', { desc = 'untrack+delete current file' })
 vim.keymap.set('n', '<leader>gRT', ':! git clean -fd <CR>', { desc = 'delete untracked files' })
 vim.keymap.set('n', '<leader>gRX', ':! git checkout -- .<CR>:! git clean -fd<CR>', { desc = 'delete all unstaged changes'})
@@ -604,41 +629,41 @@ require('lazy').setup({
   -- },
 
   --DAP / DEBUGGING
-  -- 'tpope/vim-dadbod',
-  -- 'kristijanhusak/vim-dadbod-ui',
-  -- 'kristijanhusak/vim-dadbod-completion',
-  -- {
-  --   "mfussenegger/nvim-dap",
-  --   dependencies = {
-  --     'rcarriga/nvim-dap-ui',
-  --     'theHamsta/nvim-dap-virtual-text',
-  --     'nvim-neotest/nvim-nio',
-  --     'williamboman/mason.nvim',
-  --     'jay-babu/mason-nvim-dap.nvim',
-  --     'leoluz/nvim-dap-go',
-  --     'mfussenegger/nvim-dap-python',
-  --   },
-  -- },
+  'tpope/vim-dadbod',
+  'kristijanhusak/vim-dadbod-ui',
+  'kristijanhusak/vim-dadbod-completion',
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      'rcarriga/nvim-dap-ui',
+      'theHamsta/nvim-dap-virtual-text',
+      'nvim-neotest/nvim-nio',
+      'williamboman/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
+      'leoluz/nvim-dap-go',
+      'mfussenegger/nvim-dap-python',
+    },
+  },
   -- ADPATERS FOR DAP VIA MASON
-  -- {
-  --   'jay-babu/mason-nvim-dap.nvim',
-  --   dependencies = {
-  --     'williamboman/mason.nvim',
-  --     'mfussenegger/nvim-dap',
-  --   },
-  --   opts= {
-  --     handlers = {},
-  --     ensure_installed = {
-  --       'codelldb',
-  --       'clangd',
-  --       'pyright',
-  --       'ruff',
-  --       'biome',
-  --       'vtsls',
-  --       'lua-language-server'
-  --     },
-  --   },
-  -- },
+  {
+    'jay-babu/mason-nvim-dap.nvim',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'mfussenegger/nvim-dap',
+    },
+    opts= {
+      handlers = {},
+      ensure_installed = {
+        'codelldb',
+        'clangd',
+        'pyright',
+        'ruff',
+        'biome',
+        'vtsls',
+        'lua-language-server'
+      },
+    },
+  },
 
   --markdown highlighting
   {
@@ -661,6 +686,8 @@ require('lazy').setup({
       -- "rcarriga/nvim-notify",
       }
   },
+
+  { 'windwp/nvim-autopairs', event = "InsertEnter", config = true },
 
   'nvim-tree/nvim-tree.lua',
 
@@ -1053,26 +1080,27 @@ require('harpoon').setup{
   -- save_on_ui_close = true, --harpoon persists across sessions
 }
 
+require('nvim-autopairs').setup({})
 require('render-markdown').setup({})
 
--- local dap = require "dap"
--- local ui = require "dapui"
--- require("dapui").setup()
--- require("dap-go").setup()
--- require("nvim-dap-virtual-text").setup()
+local dap = require "dap"
+local ui = require "dapui"
+require("dapui").setup()
+require("dap-go").setup()
+require("nvim-dap-virtual-text").setup()
 
--- dap.listeners.before.attach.dapui_config = function()
---   ui.open()
--- end
--- dap.listeners.before.launch.dapui_config = function()
---   ui.open()
--- end
--- dap.listeners.before.event_terminated.dapui_config = function()
---   ui.close()
--- end
--- dap.listeners.before.event_exited.dapui_config = function()
---   ui.close()
--- end
+dap.listeners.before.attach.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  ui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  ui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  ui.close()
+end
 
 require("noice").setup({
   lsp = {
@@ -1108,12 +1136,21 @@ local function nvim_tree_on_attach(bufnr)
   vim.keymap.set("n", "H", api.tree.change_root_to_node, opts("change root to node"))
 end
 
+-- Auto-navigate to current file when entering nvim-tree
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "NvimTree_*",
+  callback = function()
+    local api = require("nvim-tree.api")
+    api.tree.find_file({ open = false, focus = false })
+  end,
+})
+
 require("nvim-tree").setup({
   on_attach=nvim_tree_on_attach,
   hijack_cursor = true,
   -- sync_root_with_cwd= true,
   reload_on_bufenter = true,
-  -- respect_buf_cwd = true,
+  respect_buf_cwd = true,
   update_focused_file = {
     enable = true,
     -- update_root = true,

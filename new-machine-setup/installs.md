@@ -64,6 +64,7 @@ sudo apt install\
   bat\
   miller\
   universal-ctags\
+  inotify-tools\
 
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -77,6 +78,7 @@ uv tool install vulture
 uv tool install pydeps
 uv tool install import-linter
 uv tool install pyright
+<!-- uv tool install git-filter-repo  -->
 
 ## BUN (NPM/NPX ALTERNATIVE)
 curl -fsSL https://bun.sh/install | bash
