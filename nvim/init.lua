@@ -1,52 +1,36 @@
 -- ~/.local/share/nvim/lazy/
---Set leader key
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
--- --Preferences
 vim.o.syntax = 'on'
 vim.o.mouse = ''
 vim.o.hlsearch = true
 vim.o.incsearch = true
--- vim.o.title = true
--- vim.o.showcmd = true
 vim.o.backup = false
 vim.o.swapfile = false
 vim.o.undofile = true
 vim.o.timeoutlen = 500
 vim.o.updatetime = 50
--- vim.o.relativenumber = true
 vim.wo.signcolumn = 'yes'
 vim.wo.number = true
 vim.o.scrolloff = 6
 vim.o.wrap = false
 vim.o.ignorecase = true
 vim.o.smartcase = true
--- vim.o.smartindent = true
--- vim.o.smarttab = true
--- vim.o.expandtab = true
 vim.o.shiftwidth = 2
 vim.o.softtabstop = 2
 vim.o.tabstop = 2
--- vim.o.cindent = true
--- vim.o.completeopt = 'menuone,noselect'
--- vim.o.wildmode = 'longest:full,full'
--- vim.o.wildignorecase = true
--- vim.o.wildmenu = true
 vim.opt.termguicolors = true
+-- vim.o.smartindent = true
+-- vim.o.smarttab = true
+-- vim.o.expandtab = true
 -- vim.g.loaded_netrw = 0 --use nvim-tree
 -- vim.g.loaded_netrwPlugin = 0 --use nvim-tree
 -- vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
 
---Keybind Removals 
--- vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
--- vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
--- vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true})
--- vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true})
--- vim.keymap.set({'n', 'v'}, '<C-;>', '<Nop>', {silent = true})
--- vim.keymap.set({'i'}, '<C-a>', '<Nop>', {silent = true})
--- vim.keymap.set({'n', 't'}, '<C-w>[', '<Nop>', {silent = true})
--- vim.keymap.set({'n', 't'}, '<C-w>]', '<Nop>', {silent = true})
+-- vim-surround: 'c' wraps with triple backticks
+vim.g.surround_99 = "```\r```"
+
+--Removals 
 vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'H', '<Nop>', {silent = true})
@@ -54,27 +38,18 @@ vim.keymap.set({'n', 'v'}, 'J', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'K', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true})
-vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true}) --unmaps
-vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true}) --unmaps
-vim.keymap.set({'n' }, 's', '<Nop>', {silent = true}) --unmaps
+vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true})
+vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true})
+vim.keymap.set({'n' }, 's', '<Nop>', {silent = true})
 
--- Pre-Keybind Remaps
+--Pre Remaps
 vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true}) -- remap for jumplist forward before any tab remaps, tab == C-i
-vim.keymap.set({'n'}, 's', 'J_', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
-vim.keymap.set({'n'}, 'S', 'kJ_j', {noremap = true, silent = true}) --remap S to J before J remap to harpoon. also jump back to start of line automatically
 
---General Keybinds
+--Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
-
-
+vim.keymap.set('n', 'R', 'J_', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:q!<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
--- vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
-
---Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
-
-vim.keymap.set('n', 'gU', 'VgU', {noremap=true, silent=true})
-vim.keymap.set('n', 'dS', '$x_x', {noremap=true, silent=true})
 vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
 vim.keymap.set('n', '>', '>>', {noremap=true, silent=true})
 vim.keymap.set('n', '<', '<<', {noremap=true, silent=true})
@@ -82,6 +57,7 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
+
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
 vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
 vim.keymap.set("n", "vc", [[:?```<CR>jV/```<CR>k"]], { noremap = true, silent = true, desc = 'viz code block'})
@@ -168,29 +144,6 @@ vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true })
 vim.keymap.set('n', '}', '}zz', { noremap = true })
 vim.keymap.set('n', '{', '{zz', { noremap = true })
 
--- Code 
--- vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
--- vim.keymap.set('n', '<leader>Rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
--- vim.keymap.set('n', '<leader>Rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
--- vim.keymap.set('n', '<leader>Rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
-
--- File / Directory Navigation
--- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
--- vim.keymap.set('n', '<leader>e', function()
---   local api = require('nvim-tree.api')
---   api.tree.toggle()
---   -- Small delay to let tree open before finding file
---   vim.defer_fn(function()
---     if api.tree.is_visible() then
---       api.tree.find_file({ open = false, focus = true })
---     end
---   end, 50)
--- end, {desc = 'toggle tree and reveal current buffer'})
--- vim.keymap.set('n', '<leader>E', function()
---   vim.cmd('only')
---   require('nvim-tree.api').tree.open()
---   require('nvim-tree.api').tree.find_file({ open = true, focus = true })
--- end, {desc = 'close splits and reveal current buffer in tree'})
 vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
 
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
@@ -200,78 +153,7 @@ vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>O', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
--- vim.keymap.set('n', '<leader>dT', ":! open ~/.local/share/Trash/files<CR>", {desc = 'trash'})
--- vim.keymap.set('n', '<leader>dp', ":! open ~/Documents/prod<CR>", {desc = 'prod'})
 
--- vim.keymap.set('n', '<leader>dn', ":cd ~/Documents/notes<CR>", {desc = 'notes/'})
--- vim.keymap.set('n', '<leader>, ":Ex ~/Documents/code<CR>", {desc = 'code/'})
--- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
-
--- vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc = 'index.md'})
--- vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
--- vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/journal/`date +\\%Y_\\%m_\\%d`.md<CR>', {desc = 'journal'})
--- vim.keymap.set('n', '<leader>f;', function()
---   local notes_dir = vim.fn.expand("~/Documents/notes2/ACTIVE/")
---   local i = 1
---   local filename
---   repeat
---     filename = notes_dir .. "tmp_" .. i .. ".md"
---     i = i + 1
---   until vim.fn.filereadable(filename) == 0
---   vim.cmd("cd " .. notes_dir)
---   vim.cmd("e " .. filename)
--- end, {desc = "new note"})
---
--- vim.keymap.set('n', '<leader>fc', function()
---   local i = 1
---   local filename
---   repeat
---     filename = ".context/tmp_" .. i .. ".md"
---     i = i + 1
---   until vim.fn.filereadable(filename) == 0
---   vim.cmd("e " .. filename)
--- end, {desc = "new .context note"})
---
--- vim.keymap.set('n', '<leader>fe', function()
---   local src = vim.fn.expand('~/Documents/notes2/.excalidraw-store/1.excalidraw')
---   local dest = vim.fn.getcwd() .. '/1.excalidraw'
---   vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest))
---   vim.notify('Copied 1.excalidraw to ' .. dest)
--- end, {desc = 'copy excalidraw template'})
-
-
--- Then use it in your keymap:
--- vim.keymap.set('n', '<leader>fK', function()
---   require('telescope.builtin').fd({ cwd = '~/.config/'})
--- end, { desc = '~/.config/' })
-
--- vim.keymap.set('n', '<leader>fJ', function()
---   require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
--- end, { desc = '~/Documents/notes2/' })
-
--- vim.keymap.set('n', '<leader>fL', function()
---   require('telescope.builtin').fd({ cwd = '~/.claude/'})
--- end, { desc = '~/.claude/' })
---
--- vim.keymap.set('n', '<leader>f:', function()
---   require('telescope.builtin').fd({ cwd = '~/Documents/notes2/ACTIVE/'})
--- end, { desc = '~notes2/ACTIVE/' })
---
--- vim.keymap.set('n', '<leader>fC', function()
---   require('telescope.builtin').fd({ cwd = '.context/'})
--- end, { desc = '.context/'})
-
-
--- -- Then use it in your keymap:
--- vim.keymap.set('n', '<leader>fd', function()
---   require('telescope.builtin').find_files({ cwd = '~/Documents/notes2/'})
--- end, { desc = 'searches notes/' })
-
-
-
--- nvim command to 
--- get better with sneak in visual mode
--- lots of cognitive overload iwth your current system. personal system. should be no cognitive overload. wtf
 
 
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
@@ -801,6 +683,7 @@ require('lazy').setup({
       })
     end
   },
+
   -- building distant from source locally
   -- `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
   -- `source "$HOME/.cargo/env"`
@@ -811,36 +694,6 @@ require('lazy').setup({
   -- `sudo cp target/release/distant /usr/local/bin/`
   -- `rm -rf ~/my-temp`
 
-  -- {
-  --   "hedyhli/outline.nvim",
-  --   lazy = true,
-  --   cmd = { "Outline", "OutlineOpen" },
-  --   keys = { -- Example mapping to toggle outline
-  --     { "<leader>f", ":Outline<CR>", desc = "Toggle outline" },
-  --   },
-  --   opts = {},
-  -- },
-
-  -- {
-  --   "coder/claudecode.nvim",
-  --   dependencies = { "folke/snacks.nvim" },
-  --   config = function()
-  --     require("claudecode").setup()
-  --   end,
-  --   opts = {
-  --     terminal_cmd = "/home/alexpetro/.bun/bin/claude", -- Point to local installation
-  --   },
-  --   keys = {
-  --     { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Claude Code" },
-  --     { mode="v", "<leader>av", "<cmd>ClaudeCodeSend<cr>", desc = "Send to Claude" },
-  --     { "<leader>af", "<cmd>ClaudeCodeAdd %:p<cr>", desc = "Add file" }
-  --   },
-  -- },
-
-  -- { "3rd/image.nvim", opts = {} },
-
-  --DEFAULTS-----------------------------------
-
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -848,153 +701,10 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
-  -- LEVEL 2/3: Mason for installing LSP servers, formatters, linters
-  -- {
-  --   'williamboman/mason.nvim',
-  --   opts = {
-  --     ensure_installed = {
-  --       'lua-language-server',
-  --       'pyright',
-  --       'vtsls',
-  --       'clangd',
-  --       'codelldb',
-  --       'clang-format',
-  --       'marksman',
-  --       'typescript-language-server',
-  --       'eslint-lsp',
-  --       'prettier',
-  --       'uv',
-  --       'ruff'
-  --     }
-  --   }
-  -- },
-
-  -- LEVEL 2/3: LSP progress UI
-  -- { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-
-  -- DEPRECATED: Old lspconfig approach (commented for reference)
-  -- {
-  --   'neovim/nvim-lspconfig',
-  --   dependencies = {
-  --     {
-  --       'williamboman/mason.nvim',
-  --       opts = {
-  --         ensure_installed = {
-  --           'lua-language-server',
-  --           'pyright',
-  --           'vtsls',
-  --           'clangd',
-  --           'codelldb',
-  --           'clang-format',
-  --           'marksman',
-  --           'typescript-language-server',
-  --           'eslint-lsp',
-  --           'prettier',
-  --           'uv',
-  --           'ruff'
-  --         }
-  --       }
-  --     },
-  --     'williamboman/mason-lspconfig.nvim',
-  --     { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-  --     'folke/neodev.nvim',
-  --   },
-  --   config = function()
-  --     -- Setup neodev BEFORE lspconfig
-  --     require('neodev').setup({
-  --       library = {
-  --         plugins = { "nvim-dap-ui" },
-  --         types = true,
-  --       },
-  --     })
-  --
-  --     local capabilities = require('cmp_nvim_lsp').default_capabilities()
-  --
-  --     local servers = {
-  --       clangd = {},
-  --       lua_ls = {
-  --         Lua = {
-  --           runtime = {
-  --             version = 'LuaJIT',
-  --           },
-  --           workspace = {
-  --             checkThirdParty = false,
-  --             library = {
-  --               vim.env.VIMRUNTIME,
-  --             },
-  --           },
-  --           telemetry = { enable = false },
-  --           diagnostics = {
-  --             globals = { 'vim' },
-  --           },
-  --         },
-  --       },
-  --       pyright = {
-  --         python = {
-  --           pythonPath = function()
-  --             -- Try uv venv first, fallback to system python
-  --             local uv_python = vim.fn.getcwd() .. "/.venv/bin/python"
-  --             if vim.fn.executable(uv_python) == 1 then
-  --               return uv_python
-  --             end
-  --             return vim.fn.exepath("python3")
-  --           end,
-  --           analysis = {
-  --             autoSearchPaths = true,
-  --             useLibraryCodeForTypes = true,
-  --             diagnosticMode = "workspace",  -- Changed from "openFilesOnly"
-  --           },
-  --         },
-  --       },
-  --
-  --     }
-  --
-  --     -- This single setup call replaces the two previous ones.
-  --     require('mason-lspconfig').setup {
-  --       ensure_installed = vim.tbl_keys(servers),
-  --       handlers = {
-  --         -- This is the new, correct way to define the handler
-  --         function(server_name)
-  --           if require('lspconfig.util').get_config(server_name) then
-  --             require('lspconfig')[server_name].setup {
-  --               capabilities = capabilities,
-  --               settings = servers[server_name],
-  --             }
-  --           end
-  --         end,
-  --       },
-  --     }
-  --   end,
-  -- },
-
-  -- LEVEL 3: Autocompletion
-  -- {
-  --   'hrsh7th/nvim-cmp',
-  --   dependencies = {
-  --     -- Snippet Engine & its associated nvim-cmp source
-  --     'L3MON4D3/LuaSnip',
-  --     'saadparwaiz1/cmp_luasnip',
-  --     -- Adds LSP completion capabilities
-  --     'hrsh7th/cmp-nvim-lsp',
-  --     -- Adds a number of user-friendly snippets
-  --     'rafamadriz/friendly-snippets',
-  --   },
-  -- },
-
-  -- Useful plugin to show you pending keybinds.
-  -- { 'folke/which-key.nvim',
-  --   opts = {
-  --     icons = {
-  --       mappings = false,
-  --     },
-  --   },
-  -- },
-
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      -- See `:help gitsigns.txt`
       signs = {
         add = { text = '+' },
         change = { text = '~' },
@@ -1036,18 +746,18 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = 'gruvbox',
-        component_separators = '|',
+        component_separators = '',
         section_separators = '',
       },
       sections = {
-        lualine_a = {'mode'},
+        lualine_a = {},
         lualine_b = {{'filename', path = 2}},
         lualine_c = {},
-        lualine_x = {'branch', 'diff', 'diagnostics'},
-        lualine_y = {'filetype'},
-        lualine_z = {'location', 'progress'}
+        lualine_x = {},
+        lualine_y = {'diff', 'branch'},
+        lualine_z = {}
       },
     },
   },
@@ -1123,8 +833,8 @@ require('lazy').setup({
                 ["af"] = "@function.outer",
                 ["if"] = "@function.inner",
                 -- Classes
-                ["ac"] = "@class.outer",
-                ["ic"] = "@class.inner",
+                ["aC"] = "@class.outer",
+                ["iC"] = "@class.inner",
                 -- Blocks/conditionals
                 ["ap"] = "@block.outer",
                 ["ip"] = "@block.inner",
@@ -1132,8 +842,8 @@ require('lazy').setup({
                 ["aa"] = "@parameter.outer",
                 ["ia"] = "@parameter.inner",
                 -- Code blocks (markdown ``` ```)
-                ["ab"] = { query = "@code_block.outer", desc = "around code block" },
-                ["ib"] = { query = "@code_block.inner", desc = "inside code block" },
+                ["ac"] = { query = "@code_block.outer", desc = "around code block" },
+                ["ic"] = { query = "@code_block.inner", desc = "inside code block" },
               },
             },
             move = {
