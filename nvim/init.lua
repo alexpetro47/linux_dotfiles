@@ -27,6 +27,7 @@ vim.opt.termguicolors = true
 -- vim.g.loaded_netrwPlugin = 0 --use nvim-tree
 -- vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
 
+
 --Removals 
 vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true})
