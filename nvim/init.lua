@@ -8,7 +8,7 @@ vim.o.incsearch = true
 vim.o.backup = false
 vim.o.swapfile = false
 vim.o.undofile = true
-vim.o.timeoutlen = 500
+vim.o.timeoutlen = 1000
 vim.o.updatetime = 50
 vim.wo.signcolumn = 'yes'
 vim.wo.number = true
@@ -27,9 +27,6 @@ vim.opt.termguicolors = true
 -- vim.g.loaded_netrwPlugin = 0 --use nvim-tree
 -- vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
 
--- vim-surround: 'c' wraps with triple backticks
-vim.g.surround_99 = "```\r```"
-
 --Removals 
 vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true})
@@ -40,7 +37,7 @@ vim.keymap.set({'n', 'v'}, 'L', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'M', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'gl', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'gn', '<Nop>', {silent = true})
-vim.keymap.set({'n' }, 's', '<Nop>', {silent = true})
+vim.keymap.set({'n'     }, 's', '<Nop>', {silent = true})
 
 --Pre Remaps
 vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true}) -- remap for jumplist forward before any tab remaps, tab == C-i
@@ -59,10 +56,7 @@ vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
 
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
-vim.keymap.set("n", "yc", [[:?```<CR>jV/```<CR>k"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard'})
-vim.keymap.set("n", "vc", [[:?```<CR>jV/```<CR>k"]], { noremap = true, silent = true, desc = 'viz code block'})
-vim.keymap.set("n", "yC", [[:?```<CR>kVj/```<CR>"+y]], { noremap = true, silent = true, desc = 'copy code block to clipboard w. ticks'})
-vim.keymap.set("n", "dc", [[:?```<CR>V/```<CR>d]], { noremap = true, silent = true, desc = 'delete codeblock'})
+vim.keymap.set('v', 's', 'g_')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
@@ -300,55 +294,22 @@ vim.keymap.set('n', '<leader>F', function()
 end)
 
 --Search
-vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
-
--- LEVEL 2/3: LSP diagnostics search
--- vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
-
-vim.keymap.set('n', '<leader>sD', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
+vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
+vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
-vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
-vim.keymap.set('n', '<leader>sH', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search Commits' })
-
--- LEVEL 2/3: LSP keybindings (require LSP servers)
--- vim.keymap.set('n', 'gd', ":lua require'telescope.builtin'.lsp_definitions()<CR>", { desc = 'go to definition'})
--- vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'go to definition'})
--- vim.keymap.set('n', 'gi', ":lua require'telescope.builtin'.lsp_implementations()<CR>", { desc = 'go to definition'})
--- vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>", { desc = 'search symbols'})
-
-vim.keymap.set('n', '<leader>st', ":lua require'telescope.builtin'.treesitter()<CR>", { desc = 'search treesitter'})
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 
--- vim.keymap.set('n', '<leader>si', ":lua require'telescope.builtin'.git_files()<CR>" , { desc = 'search git Files' })
--- vim.keymap.set({'n', 'v'}, '<leader>sr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'search references'})
--- vim.keymap.set('n', '<leader>sB', ":lua require'telescope.builtin'.buffers()<CR>", { desc = 'search buffers' })
--- vim.keymap.set('n', '<leader>sk', ":lua require'telescope.builtin'.keymaps()<CR>", { desc = 'search keymaps' })
--- vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>", { desc = 'search marks'})
--- vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
-
--- LEVEL 2/3: LSP keybindings
--- vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})
--- vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true})
--- vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true})
-
--- LEVEL 3: Completion keybinding
--- vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
 
 --sneak
 vim.g["sneak#label"] = 1 --label mode for vim-sneak
 vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 
---terminal navigation within vim splits
-vim.cmd[[
-  autocmd BufEnter * if &buftype == 'terminal' | setlocal bufhidden= nobuflisted nolist nonumber norelativenumber | startinsert | endif
-  autocmd BufLeave * if &buftype == 'terminal' | setlocal bufhidden= | endif
-]]
 
---sets text wrapping in markdown files
--- vim.cmd([[
--- autocmd FileType markdown setlocal textwidth=92
--- ]])
+-- sets text wrapping in markdown files
+vim.cmd([[
+autocmd FileType markdown setlocal textwidth=92
+]])
 
 -- package manager
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -371,24 +332,40 @@ require('lazy').setup({
   --MY ADDITIONS---------------------------------
 
   --Editing enclosing characters
-  'tpope/vim-surround',
+  -- 'tpope/vim-surround', -- deprecated, using nvim-surround instead
+  {
+    'kylechui/nvim-surround',
+    version = "*",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup({
+        aliases = {
+          -- Disable default 'b' = ) alias so we can use 'b' for bold
+          ["b"] = false,
+        },
+        surrounds = {
+          -- 'c' wraps with triple backticks
+          ["c"] = {
+            add = { "```", "```" },
+          },
+          -- 'i' wraps with italic (single *)
+          -- ["i"] = {
+          --   add = { "*", "*" },
+          -- },
+          -- 'b' wraps with bold (double **) - overrides default 'b' = )
+          ["b"] = {
+            add = { "**", "**" },
+            find = "%*%*.-%*%*",
+            delete = "^(%*%*)().-()(%*%*)$",
+          },
+        },
+      })
+    end
+  },
 
   --preview substitutions
   'markonm/traces.vim',
 
-  -- {
-  --   "iamcco/markdown-preview.nvim",
-  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-  --   build = "cd app && yarn install",
-  --   init = function()
-  --     vim.g.mkdp_filetypes = { "markdown" }
-  --     -- vim.g.mkdp_refresh_slow = 1
-  --     vim.g.mkdp_preview_options = {
-  --       disable_sync_scroll = 0
-  --     }
-  --   end,
-  --   ft = { "markdown" },
-  -- },
 
   --colorscheme
   {
@@ -424,19 +401,6 @@ require('lazy').setup({
     vim.keymap.set('n', 'T', '<Plug>Sneak_T', { noremap = true }),
   },
 
-  --copilot
-  -- {
-  --   'github/copilot.vim',
-  --   vim.keymap.set('i', '<C-a>', '<Plug>(copilot-accept-word)'), { noremap = true },
-  --   vim.keymap.set('n', '<leader>Cp', ':Copilot panel<CR>', { desc="Copilot panel"}),
-  --   vim.keymap.set('n', '<leader>Cd', ':Copilot disable<CR>', {desc = 'copilot disable'}),
-  --   vim.keymap.set('n', '<leader>Ce', ':Copilot enable<CR>', {desc = 'copilot enable'}),
-  --   vim.keymap.set('n', '<leader>Cs', ':Copilot setup<CR>', {desc = 'copilot setup'}),
-  -- },
-
-  --start page 
-  -- { 'echasnovski/mini.nvim', version = '*' },
-
   --harpoon
   {
     'ThePrimeagen/harpoon',
@@ -466,105 +430,7 @@ require('lazy').setup({
   -- nice markdown formatting
   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 
-  -- --nvim integrated llm
-  -- {
-  -- "yetone/avante.nvim",
-  -- event = "VeryLazy",
-  -- version = false,
-  -- opts = {
-  --   provider = "gemini", -- Recommend using Claude
-  --   auto_suggestions_provider = "copilot", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
-  --   behaviour = {
-  --     auto_suggestions = false, -- Experimental stage
-  --     auto_set_highlight_group = true,
-  --     auto_set_keymaps = true,
-  --     auto_apply_diff_after_generation = false,
-  --     support_paste_from_clipboard = false,
-  --   },
-  --   gemini = {
-  --     -- @see https://ai.google.dev/gemini-api/docs/models/gemini
-  --     model = "gemini-2.5-pro-preview-03-25",
-  --     temperature = 0,
-  --     max_tokens = 4096,
-  --   },
-  -- },
-  -- build = "make",
-  -- dependencies = {
-  --   "nvim-treesitter/nvim-treesitter",
-  --   "stevearc/dressing.nvim",
-  --   "nvim-lua/plenary.nvim",
-  --   "MunifTanjim/nui.nvim",
-  --   --- The below dependencies are optional,
-  --   -- "echasnovski/mini.pick", -- for file_selector provider mini.pick
-  --   "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-  --   "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-  --   "ibhagwan/fzf-lua", -- for file_selector provider fzf
-  --   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-  --   -- "zbirenbaum/copilot.lua", -- for providers='copilot'
-  --   {
-  --     -- support for image pasting
-  --     "HakonHarnes/img-clip.nvim",
-  --     event = "VeryLazy",
-  --     opts = {
-  --       -- recommended settings
-  --       default = {
-  --         embed_image_as_base64 = false,
-  --         prompt_for_file_name = false,
-  --         drag_and_drop = {
-  --           insert_mode = true,
-  --         },
-  --         -- required for Windows users
-  --         use_absolute_path = true,
-  --       },
-  --     },
-  --   },
-  --   {
-  --     -- Make sure to set this up properly if you have lazy=true
-  --     'MeanderingProgrammer/render-markdown.nvim',
-  --     opts = {
-  --       file_types = { "markdown", "Avante" },
-  --     },
-  --     ft = { "markdown", "Avante" },
-  --   },
-  -- },
-  -- },
 
-  -- --DAP / DEBUGGING
-  -- 'tpope/vim-dadbod',
-  -- 'kristijanhusak/vim-dadbod-ui',
-  -- 'kristijanhusak/vim-dadbod-completion',
-  -- {
-  --   "mfussenegger/nvim-dap",
-  --   dependencies = {
-  --     'rcarriga/nvim-dap-ui',
-  --     'theHamsta/nvim-dap-virtual-text',
-  --     'nvim-neotest/nvim-nio',
-  --     'williamboman/mason.nvim',
-  --     'jay-babu/mason-nvim-dap.nvim',
-  --     'leoluz/nvim-dap-go',
-  --     'mfussenegger/nvim-dap-python',
-  --   },
-  -- },
-  -- -- ADPATERS FOR DAP VIA MASON
-  -- {
-  --   'jay-babu/mason-nvim-dap.nvim',
-  --   dependencies = {
-  --     'williamboman/mason.nvim',
-  --     'mfussenegger/nvim-dap',
-  --   },
-  --   opts= {
-  --     handlers = {},
-  --     ensure_installed = {
-  --       'codelldb',
-  --       'clangd',
-  --       'pyright',
-  --       'ruff',
-  --       'biome',
-  --       'vtsls',
-  --       'lua-language-server'
-  --     },
-  --   },
-  -- },
 
   --markdown highlighting
   {
@@ -836,11 +702,11 @@ require('lazy').setup({
                 ["aC"] = "@class.outer",
                 ["iC"] = "@class.inner",
                 -- Blocks/conditionals
-                ["ap"] = "@block.outer",
-                ["ip"] = "@block.inner",
+                ["aB"] = "@block.outer",
+                ["iB"] = "@block.inner",
                 -- Parameters/arguments
-                ["aa"] = "@parameter.outer",
-                ["ia"] = "@parameter.inner",
+                -- ["aa"] = "@parameter.outer",
+                -- ["ia"] = "@parameter.inner",
                 -- Code blocks (markdown ``` ```)
                 ["ac"] = { query = "@code_block.outer", desc = "around code block" },
                 ["ic"] = { query = "@code_block.inner", desc = "inside code block" },
