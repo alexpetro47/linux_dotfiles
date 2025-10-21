@@ -4,7 +4,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- --Preferences
--- vim.o.syntax = 'on'
+vim.o.syntax = 'on'
 vim.o.mouse = ''
 vim.o.hlsearch = true
 vim.o.incsearch = true
@@ -19,7 +19,7 @@ vim.o.updatetime = 50
 vim.wo.signcolumn = 'yes'
 vim.wo.number = true
 vim.o.scrolloff = 6
-vim.o.wrap = true
+vim.o.wrap = false
 vim.o.ignorecase = true
 vim.o.smartcase = true
 -- vim.o.smartindent = true
@@ -40,13 +40,13 @@ vim.opt.termguicolors = true
 
 --Keybind Removals 
 -- vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
-vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
-vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true})
-vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true})
-vim.keymap.set({'n', 'v'}, '<C-;>', '<Nop>', {silent = true})
-vim.keymap.set({'i'}, '<C-a>', '<Nop>', {silent = true})
-vim.keymap.set({'n', 't'}, '<C-w>[', '<Nop>', {silent = true})
-vim.keymap.set({'n', 't'}, '<C-w>]', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 'v'}, '<C-;>', '<Nop>', {silent = true})
+-- vim.keymap.set({'i'}, '<C-a>', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 't'}, '<C-w>[', '<Nop>', {silent = true})
+-- vim.keymap.set({'n', 't'}, '<C-w>]', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'U', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'Y', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, 'H', '<Nop>', {silent = true})
@@ -65,11 +65,14 @@ vim.keymap.set({'n'}, 'S', 'kJ_j', {noremap = true, silent = true}) --remap S to
 
 --General Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
+
+
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:q!<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
 -- vim.keymap.set('n', '<leader>dy', ":lua vim.fn.setreg('+', vim.inspect(vim.diagnostic.get(nil, { severity = vim.diagnostic.severity.ERROR })))<CR>", { noremap = true, silent = true, desc = 'yank all error diagnostics' })
 
 --Text Editing
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
+
 vim.keymap.set('n', 'gU', 'VgU', {noremap=true, silent=true})
 vim.keymap.set('n', 'dS', '$x_x', {noremap=true, silent=true})
 vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
@@ -97,8 +100,8 @@ vim.keymap.set('n', '<leader>Q', ':q!<CR>', {desc="quit buffer without write", n
 vim.keymap.set('n', '<leader>q', ':q<CR>', {desc="quit buffer", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
-vim.keymap.set('n', '<leader>D', 'ggdG', {desc = 'delete all'})
-vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
+-- vim.keymap.set('n', '<leader>D', 'ggdG', {desc = 'delete all'})
+-- vim.keymap.set('n', '<leader>A', 'ggVG', {desc = 'highlight all'})
 vim.keymap.set('v', '<leader>b', 'c****<Esc>hhp', {desc = 'bold visual selection'})
 vim.keymap.set('n', '<leader>B', 'V:s/**//g<CR>i<Esc>', {desc = 'delete bolded selection'})
 vim.keymap.set('v', "<leader>'", "c''<Esc>hp", {desc = 'quote visual selection'})
@@ -491,19 +494,19 @@ require('lazy').setup({
   --preview substitutions
   'markonm/traces.vim',
 
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-      -- vim.g.mkdp_refresh_slow = 1
-      vim.g.mkdp_preview_options = {
-        disable_sync_scroll = 0
-      }
-    end,
-    ft = { "markdown" },
-  },
+  -- {
+  --   "iamcco/markdown-preview.nvim",
+  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  --   build = "cd app && yarn install",
+  --   init = function()
+  --     vim.g.mkdp_filetypes = { "markdown" }
+  --     -- vim.g.mkdp_refresh_slow = 1
+  --     vim.g.mkdp_preview_options = {
+  --       disable_sync_scroll = 0
+  --     }
+  --   end,
+  --   ft = { "markdown" },
+  -- },
 
   --colorscheme
   {
@@ -550,7 +553,7 @@ require('lazy').setup({
   -- },
 
   --start page 
-  { 'echasnovski/mini.nvim', version = '*' },
+  -- { 'echasnovski/mini.nvim', version = '*' },
 
   --harpoon
   'ThePrimeagen/harpoon',
@@ -696,9 +699,79 @@ require('lazy').setup({
       }
   },
 
-  { 'windwp/nvim-autopairs', event = "InsertEnter", config = true },
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    config = function()
+      require('nvim-autopairs').setup({})
+    end
+  },
 
-  'nvim-tree/nvim-tree.lua',
+  {
+    'nvim-tree/nvim-tree.lua',
+    config = function()
+      local function nvim_tree_on_attach(bufnr)
+        local api = require("nvim-tree.api")
+        local function opts(desc)
+          return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+        end
+        api.config.mappings.default_on_attach(bufnr)
+        vim.keymap.del("n", "<Tab>", { buffer = bufnr })
+        vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+        vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+        vim.keymap.set("n", "d", api.fs.trash, opts("Trash"))
+        vim.keymap.set("n", "m", api.marks.toggle, opts("Toggle Mark"))
+        vim.keymap.set("n", "p", api.fs.paste, opts("Paste"))
+        vim.keymap.set("n", "D", api.marks.bulk.trash, opts("Trash marks"))
+        vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
+        vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
+        vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
+        vim.keymap.set("n", "H", api.tree.change_root_to_node, opts("change root to node"))
+      end
+
+      require("nvim-tree").setup({
+        on_attach = nvim_tree_on_attach,
+        hijack_cursor = true,
+        sync_root_with_cwd = false,
+        reload_on_bufenter = true,
+        respect_buf_cwd = false,
+        update_focused_file = {
+          enable = true,
+          update_root = {
+            enable = true,
+            ignore_list = {},
+          },
+        },
+        actions = {
+          change_dir = {
+            enable = false,
+          },
+          remove_file = {
+            close_window = true,
+          },
+        },
+        trash = {
+          cmd = "trash-put",
+          require_confirm = false,
+        },
+        filesystem_watchers = {
+          enable = true,
+        },
+        sort = {
+          sorter = "case_sensitive",
+        },
+        view = {
+          width = 20,
+        },
+        renderer = {
+          group_empty = true,
+        },
+        filters = {
+          enable = false,
+        },
+      })
+    end
+  },
 
   'romainl/vim-cool',
 
@@ -898,13 +971,13 @@ require('lazy').setup({
   -- },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',
-    opts = {
-      icons = {
-        mappings = false,
-      },
-    },
-  },
+  -- { 'folke/which-key.nvim',
+  --   opts = {
+  --     icons = {
+  --       mappings = false,
+  --     },
+  --   },
+  -- },
 
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
@@ -1005,247 +1078,23 @@ require('lazy').setup({
 
 }, {})
 
---MY CONFIGS----------------------------------
-
-
-  
-
-
-
-
--- require('main_plugin').setup()
--- Main plugin functions
--- vim.keymap.set("n", "<leader>ao", function() require('main_plugin').open() end, { desc = "[a]i open buffer" })
--- vim.keymap.set("n", "<leader>ap", function() require('main_plugin').submit() end, { desc = "[a]i [p]rocess" })
--- vim.keymap.set("n", "<leader>aP", function() require('main_plugin').stop_agent() end, { desc = "[a]i stop [P]rocess" })
--- vim.keymap.set("n", "<leader>as", function() require('main_plugin').open_config_popup() end, { desc = "[a]i [s]ettings" })
--- vim.keymap.set("n", "<leader>ac", function() require('main_plugin').open_context_popup() end, { desc = "[a]i [c]ontext" })
--- -- Context injection functions
--- vim.keymap.set("n", "<leader>at", function() require('main_plugin').inject_raw_text() end, { desc = "text" })
--- vim.keymap.set("n", "<leader>ay", function() require('main_plugin').inject_clipboard() end, { desc = "clipboard" })
--- vim.keymap.set("n", "<leader>af", function() require('main_plugin').inject_filepath() end, { desc = "filepath" })
--- vim.keymap.set("n", "<leader>aF", function() require('main_plugin').inject_current_buffer() end, { desc = "current file" })
--- vim.keymap.set("n", "<leader>ad", function() require('main_plugin').inject_directory() end, { desc = "directory" })
--- vim.keymap.set("n", "<leader>aw", function() require('main_plugin').inject_website() end, { desc = "website" })
--- vim.keymap.set("n", "<leader>av", function() require('main_plugin').inject_video() end, { desc = "video" })
-
-
-
-
--- require("outline").setup({
---   keymaps = {
---     goto_and_close = '<CR>',
---   },
---   outline_window = {
---     position = 'left',
---     width = 23,
---     auto_jump = true,
---   },
---   outline_items = {
---     show_symbol_lineno = true,
---   },
--- })
-
-local wk = require('which-key')
-wk.add({
-  { "<leader>C", group = "copilot" },
-  { "<leader>C_", hidden = true },
-  { "<leader>H", group = "Hover" },
-  { "<leader>H_", hidden = true },
-  -- { "<leader>R", group = "render md" },
-  -- { "<leader>R_", hidden = true },
-  { "<leader>d", group = "directories/docs" },
-  { "<leader>d_", hidden = true },
-  { "<leader>g", group = "git" },
-  { "<leader>gr", group = "git rebase" },
-  { "<leader>gR", group = "resets" },
-  { "<leader>gR_", hidden = true },
-  { "<leader>g_", hidden = true },
-  { "<leader>gc", group = "commit" },
-  { "<leader>gc_", hidden = true },
-  { "<leader>gf", group = "fetch" },
-  { "<leader>gf_", hidden = true },
-  { "<leader>gr", group = "rebase" },
-  { "<leader>gr_", hidden = true },
-  { "<leader>r", group = "run file" },
-  { "<leader>r_", hidden = true },
-  { "<leader>s", group = "search" },
-  { "<leader>s_", hidden = true },
-  { "gh", group = "hunk" },
-  { "gh_", hidden = true },
-})
-
-local header_art =
-[[
-             ,                                  
-             \\`-._           __                
-              \\\\  `-..____,.'  `.             
-               :`.         /    \\`.            
-               :  )       :      : \\           
-                ;'        '   ;  |  :           
-                )..      .. .:.`.;  :           
-               /::...  .:::...   ` ;            
-               ; _ '    __        /:\\          
-               `:o>   /\o_>      ;:. `.        
-              `-`.__ ;   __..--- /:.   \\       
-              === \\_/   ;=====_.':.     ;      
-               ,/'`--'...`--....        ;       
-                    ;                    ;      
-                  .'                      ;     
-                .'                        ;     
-              .'     ..     ,      .       ;    
-             :       ::..  /      ;::.     |    
-            /      `.;::.  |       ;:..    ;    
-           :         |:.   :       ;:.    ;     
-           :         ::     ;:..   |.    ;      
-            :       :;      :::....|     |      
-            /\\     ,/ \\      ;:::::;     ;    
-          .:. \\:..|    :     ; '.--|     ;     
-         ::.  :''  `-.,,;     ;'   ;     ;      
-      .-'. _.'\\      / `;      \\,__:      \\  
-      `---'    `----'   ;      /    \\,.,,,/    
-                     `----`     __           
-   ___     ___    ___   __  __ /\_\    ___ ___    
-  / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  
- /\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \/\ \ 
- \ \_\ \_\ \____\ \____/\ \___/  \ \_\ \_\ \_\ \_\
-  \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/_/\/_/
-]]
-
-local starter = require('mini.starter')
-starter.setup({
-  items = {
-    starter.sections.builtin_actions(),
-  },
-  content_hooks = {
-      starter.gen_hook.adding_bullet(),
-      starter.gen_hook.aligning('center', 'center'),
-  },
-  header = header_art,
-  footer = '',
-  silent = true,
-})
 
 require('harpoon').setup{
-  -- save_on_ui_close = true, --harpoon persists across sessions
+  save_on_ui_close = true,
 }
 
-require('nvim-autopairs').setup({})
 require('render-markdown').setup({})
 
--- local dap = require "dap"
--- local ui = require "dapui"
--- require("dapui").setup()
--- require("dap-go").setup()
--- require("nvim-dap-virtual-text").setup()
---
--- dap.listeners.before.attach.dapui_config = function()
---   ui.open()
--- end
--- dap.listeners.before.launch.dapui_config = function()
---   ui.open()
--- end
--- dap.listeners.before.event_terminated.dapui_config = function()
---   ui.close()
--- end
--- dap.listeners.before.event_exited.dapui_config = function()
---   ui.close()
--- end
-
 require("noice").setup({
-  lsp = {
-    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-    override = {
-      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-      ["vim.lsp.util.stylize_markdown"] = true,
-      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
-    },
+  cmdline = {
+    enabled = true,
+    view = "cmdline_popup", -- Center it
+  },
+  messages = {
+    enabled = true,
   },
 })
 
-local function nvim_tree_on_attach(bufnr)
-  local api = require("nvim-tree.api")
-  local function opts(desc)
-    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
-  api.config.mappings.default_on_attach(bufnr)
-  vim.keymap.del("n", "<Tab>", { buffer = bufnr }) --disable nvim-tree tab keybind in favor of my own
-  vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
-  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
-  -- vim.keymap.set("n", "D", api.fs.remove, opts("Delete"))
-  vim.keymap.set("n", "d", api.fs.trash, opts("Trash"))
-  vim.keymap.set("n", "m", api.marks.toggle, opts("Toggle Mark"))
-  -- vim.keymap.set("n", "x", api.marks.bulk.cut, opts("Cut Bookmarked"))
-  -- vim.keymap.set("n", "c", api.marks.bulk.copy, opts("Copy Bookmarked"))
-  vim.keymap.set("n", "p", api.fs.paste, opts("Paste"))
-  vim.keymap.set("n", "D", api.marks.bulk.trash, opts("Trash marks"))
-  vim.keymap.set("n", "M", api.marks.bulk.move, opts("Move marks"))
-  vim.keymap.set("n", "y", api.fs.copy.relative_path, opts("Copy Relative Path"))
-  vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
-  vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
-  vim.keymap.set("n", "H", api.tree.change_root_to_node, opts("change root to node"))
-end
-
--- Auto-navigate to current file when entering nvim-tree
-vim.api.nvim_create_autocmd("BufEnter", {
-  pattern = "NvimTree_*",
-  callback = function()
-    local api = require("nvim-tree.api")
-    api.tree.find_file({ open = false, focus = false })
-  end,
-})
-
-require("nvim-tree").setup({
-  on_attach=nvim_tree_on_attach,
-  hijack_cursor = true,
-  sync_root_with_cwd = false,  -- tree root doesn't follow cwd changes
-  reload_on_bufenter = true,
-  respect_buf_cwd = false,  -- don't change tree's cwd when opening
-  update_focused_file = {
-    enable = true,  -- focus current file when switching buffers
-    update_root = {
-      enable = true,  -- update tree root to show file even if outside current root
-      ignore_list = {},
-    },
-  },
-  actions = {
-    change_dir = {
-      enable = false,  -- don't change vim's cwd when tree root changes
-    },
-    remove_file = {
-      close_window = true,
-    },
-  },
-  trash = {
-    cmd = "trash-put",
-    require_confirm = false,
-  },
-  filesystem_watchers = {
-    enable = true,
-  },
-  sort = {
-    sorter = "case_sensitive",
-  },
-  view = {
-    width = 20,
-  },
-  renderer = {
-    group_empty = true,
-  },
-  filters = {
-    enable=false,
-  },
-})
-
-
-require('mini.align').setup({
-    mappings = {
-      -- start = 'ga',
-      start_with_preview = 'ga',
-    },
-})
-
---DEFAULT CONFIGS----------------------------------
 -- Highlight on yank 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -1275,44 +1124,61 @@ require('telescope').setup {
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
--- Configure Treesitter 
+-- Configure Treesitter
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql'},
+    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline'},
     auto_install = true,
     highlight = { enable = true },
     indent = { enable = true },
     modules = {},
-    sync_install = false,
+    sync_install = true,
     ignore_install = {},
+
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          -- Functions
+          ["af"] = "@function.outer",
+          ["if"] = "@function.inner",
+          -- Classes
+          ["ac"] = "@class.outer",
+          ["ic"] = "@class.inner",
+          -- Blocks/conditionals
+          ["ap"] = "@block.outer",
+          ["ip"] = "@block.inner",
+          -- Parameters/arguments
+          ["aa"] = "@parameter.outer",
+          ["ia"] = "@parameter.inner",
+          -- Code blocks (markdown ``` ```)
+          ["ab"] = { query = "@code_block.outer", desc = "around code block" },
+          ["ib"] = { query = "@code_block.inner", desc = "inside code block" },
+        },
+      },
+      move = {
+        enable = true,
+        set_jumps = true,
+        goto_next_start = {
+          ["]f"] = "@function.outer",
+          ["]c"] = "@class.outer",
+          ["]b"] = "@block.outer",
+        },
+        goto_previous_start = {
+          ["[f"] = "@function.outer",
+          ["[c"] = "@class.outer",
+          ["[b"] = "@block.outer",
+        },
+      },
+    },
   }
 end, 0)
 
--- LEVEL 3: Configure nvim-cmp
--- local cmp = require 'cmp'
--- local luasnip = require 'luasnip'
---
--- require('luasnip.loaders.from_vscode').lazy_load()
--- luasnip.config.setup {}
---
--- cmp.setup {
---   snippet = {
---     expand = function(args)
---       luasnip.lsp_expand(args.body)
---     end,
---   },
---   mapping = cmp.mapping.preset.insert {
---     ['<C-Space>'] = cmp.mapping.select_next_item(),
---     ['<CR>'] = cmp.mapping.confirm {
---       behavior = cmp.ConfirmBehavior.Replace,
---       select = false, --doesn't mess with your indents when nothings selected
---     },
---   },
---   sources = {
---     { name = 'nvim_lsp' },
---     { name = 'luasnip' },
---   },
--- }
+-- Define custom markdown code block queries for treesitter textobjects
+vim.treesitter.query.set("markdown", "textobjects", [[
+  (fenced_code_block) @code_block.outer
+  (fenced_code_block
+    (code_fence_content) @code_block.inner)
+]])
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
