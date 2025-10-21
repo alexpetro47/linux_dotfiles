@@ -148,46 +148,12 @@ vim.keymap.set('n', '<leader>Se', ':vs<CR><C-w>40< :DistantOpen<CR>' , { desc = 
 vim.keymap.set('n', '<leader>St', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 'Distant Term' })
 
 --file conversions
-vim.keymap.set('n', '<leader>c0', ":MarkdownPreview<CR>", {desc = 'markdown preview'})
 vim.keymap.set('n', '<leader>c9', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c8', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
-vim.keymap.set('n', '<leader>c3', ':!cp % %:r.txt<CR>', { desc = 'md -> txt' })
--- vim.keymap.set('n', '<leader>c3', ':!pandoc % --wrap=none --filter mermaid-filter -f gfm -o %:r.pdf<CR>', { desc = 'md -> pdf' })
--- vim.keymap.set('n', '<leader>c4', ':!python3 /home/alexpetro/Documents/code/file-converters/pptx-pdf.py /home/alexpetro/Downloads/.pptx<Left><Left><Left><Left><Left>' , { desc = 'pptx -> pdf' })
-vim.keymap.set('n', '<leader>c5', ':!mmdc -i % -o %:r.png -w 2400 -b transparent -t neutral && xdg-open %:r.png &<CR>', {desc = 'mermaid -> png'})
--- vim.keymap.set('n', '<leader>c6', ':!mmdc -i % --outputFormat png && xdg-open %:r.png &<CR>', {desc = 'md+mermaid extract -> png'})
-
-
--- vim.keymap.set('n', '<leader>Dv', ':!svg<CR>' , { desc = 'svg editor' })
--- vim.keymap.set('v', '<leader>c3', ':! ~/Documents/plantuml/venv/bin/python3 ~/Documents/plantuml/script.py <CR>', {desc = 'create puml diagram'}) --use python from venv s.t. don't need to source venv
--- vim.keymap.set('n', '<leader>c2', ':!puml % <CR>', { desc = 'render puml' })
-
-vim.keymap.set('n', '<leader>B', ":DBUIToggle<CR>", {desc = 'database ui'})
-
---Debugging
-vim.keymap.set('n', '<leader>di', ':DapContinue<CR>', { desc = 'Dap init (need 1+ breakpoints)' })
-vim.keymap.set('n', '<leader>dd', ':DapTerminate<CR>', { desc = 'Dap disconect ' })
-vim.keymap.set('n', 'db', ':lua require"dap".toggle_breakpoint()<CR>', { desc = 'toggle breakpoint' })
-vim.keymap.set('n', 'dc', ':lua require"dap".run_to_cursor()<CR>', { desc = 'skips to cursor' })
-vim.keymap.set('n', 'dC', ':lua require"dap".continue()<CR>', { desc = 'continue (skips to next breakpoint / terminates if none)' })
-vim.keymap.set('n', 'dj', ':lua require"dap".step_over()<CR>', { desc = 'step over (next line, skips functions)' })
-vim.keymap.set('n', 'dl', ':lua require"dap".step_into()<CR>', { desc = 'step into (next line, into functions)' })
-vim.keymap.set('n', 'dh', ':lua require"dap".step_out()<CR>', { desc = 'step out (pop current stack / return current function)' })
-vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = 'hover variable' })
-
--- --Quickfix management
--- vim.keymap.set('n', '<leader>qo', ':cope<CR>', { desc = 'quickfix open' })
--- vim.keymap.set('n', '<leader>qq', ':cclose<CR>', { desc = 'quickfix close' })
--- vim.keymap.set('n', '<leader>qc', ':call setqflist([])<CR>', { desc = 'quickfix clear' })
--- vim.keymap.set('n', '<leader>qn', ':cnext<CR>', { desc = 'quickfix next' })
--- vim.keymap.set('n', '<leader>ql', ':cprevious<CR>', { desc = 'quickfix last' })
--- vim.keymap.set('n', '<leader>qg', ':new<CR><C-w>o:cope<CR>:grep ""<Left>', { desc = 'quickfix grep' })
--- vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
 
 --Nvim Management
 vim.keymap.set('n', '<leader>m', ':messages<CR>:horizontal resize 25<CR>', { desc = 'nvim messages'})
 vim.keymap.set('n', '<leader>L', ':Lazy<CR>', { desc = 'lazy package manager'})
-
 
 -- Git
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', { desc = 'git status' })
@@ -208,16 +174,8 @@ vim.keymap.set('n', '<leader>gP', ':Git pull <CR>', { desc = 'pull (rebase)' })
 vim.keymap.set('n', '<leader>gcm', ':Git commit -m ""<Left>', { desc = 'commit with message' })
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'commit with standard message' })
 vim.keymap.set('n', '<leader>gca', ":Git commit --amend <CR>", { desc = 'amend last commit with staged changes' })
-
--- vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'rebase continue' })
--- vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'rebase abort' })
--- vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
-
 vim.keymap.set('n', '<leader>grs', ':Git reset %<CR>', { desc = 'unstage current file' })
 vim.keymap.set('n', '<leader>grS', ':Git reset .<CR>', { desc = 'unstage all files' })
-
-vim.keymap.set('n', '<leader>grt', ':! git rm --cached %<CR>', { desc = 'untrack current file' })
-vim.keymap.set('n', '<leader>grT', ':! git clean -fd <CR>', { desc = 'delete untracked files' })
 vim.keymap.set('n', '<leader>grX', ':! git checkout -- .<CR>:! git clean -fd<CR>', { desc = 'delete all unstaged changes'})
 vim.keymap.set('n', '<leader>grx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
 vim.keymap.set('n', '<leader>grH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
@@ -360,7 +318,6 @@ require('lazy').setup({
   --preview substitutions
   'markonm/traces.vim',
 
-
   --colorscheme
   {
     'sainnhe/gruvbox-material',
@@ -371,12 +328,6 @@ require('lazy').setup({
       -- vim.g.gruvbox_material_transparent_background = 0
       vim.cmd.colorscheme 'gruvbox-material'
     end,
-  },
-
-  --fzf
-  {
-    'junegunn/fzf',
-    'junegunn/fzf.vim',
   },
 
   -- use . to repeat commands
@@ -409,7 +360,7 @@ require('lazy').setup({
   "nvim-tree/nvim-web-devicons",
 
   --better indenting
-  'lukas-reineke/format.nvim',
+  -- 'lukas-reineke/format.nvim',
 
   {
   --undotree
@@ -421,14 +372,11 @@ require('lazy').setup({
   'BurntSushi/ripgrep',
   'sharkdp/fd',
 
-  -- nice markdown formatting
-  "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-
   --markdown highlighting
   {
     'MeanderingProgrammer/render-markdown.nvim',
     -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
-    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
