@@ -139,21 +139,21 @@ vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
 -- vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
 
 --vim-after-object: select last pasted text
-vim.keymap.set('n', 'gv', '`[v`]', {desc = 'select last pasted text'})
+-- vim.keymap.set('n', 'gv', '`[v`]', {desc = 'select last pasted text'})
 
 --Window Management
 -- (C-w) is used for tmux. (Tab) is used for vim
 vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
-vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
-vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
-vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
-vim.keymap.set({'n', 't'}, '<Tab>[', '<C-w>20<', { noremap = true })
-vim.keymap.set({'n', 't'}, '<Tab>]', '<C-w>20>', { noremap = true })
-vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
-vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
+-- vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
+-- vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
+-- vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
+vim.keymap.set('n', '<Tab>[', '<C-w>20<', { noremap = true })
+vim.keymap.set('n', '<Tab>]', '<C-w>20>', { noremap = true })
+-- vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
+-- vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
 
 
---Navigation
+--centered navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
 vim.keymap.set("n", "<C-u>", "<C-u>zz", {noremap = true, silent = true})
 vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true})
@@ -166,28 +166,29 @@ vim.keymap.set('n', '}', '}zz', { noremap = true })
 vim.keymap.set('n', '{', '{zz', { noremap = true })
 
 -- Code 
-vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
+-- vim.keymap.set('n', '<leader>cc', ':! clang++ -std=c++14 -fstandalone-debug -Wall -g -o %:r %<CR>', {desc = 'clang++ compile w. debug'})
 -- vim.keymap.set('n', '<leader>Rc', ':w<CR>:! clang++ -std=c++14 -o %:r %<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term ./%:r<CR>a', {desc = 'run c++'})
 -- vim.keymap.set('n', '<leader>Rg', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term go run %<CR>a', {desc = 'run go'})
 -- vim.keymap.set('n', '<leader>Rp', ':w<CR><C-w>v<C-w>l :cd %:p:h<CR>:pwd<CR>:term python3 %<CR>a', {desc = 'run python(3)'})
 
 -- File / Directory Navigation
 -- vim.keymap.set('n', '<leader>e', '<CMD>Ex<CR>', {desc = 'explore current directory'})
-vim.keymap.set('n', '<leader>e', function()
-  local api = require('nvim-tree.api')
-  api.tree.toggle()
-  -- Small delay to let tree open before finding file
-  vim.defer_fn(function()
-    if api.tree.is_visible() then
-      api.tree.find_file({ open = false, focus = true })
-    end
-  end, 50)
-end, {desc = 'toggle tree and reveal current buffer'})
-vim.keymap.set('n', '<leader>E', function()
-  vim.cmd('only')
-  require('nvim-tree.api').tree.open()
-  require('nvim-tree.api').tree.find_file({ open = true, focus = true })
-end, {desc = 'close splits and reveal current buffer in tree'})
+-- vim.keymap.set('n', '<leader>e', function()
+--   local api = require('nvim-tree.api')
+--   api.tree.toggle()
+--   -- Small delay to let tree open before finding file
+--   vim.defer_fn(function()
+--     if api.tree.is_visible() then
+--       api.tree.find_file({ open = false, focus = true })
+--     end
+--   end, 50)
+-- end, {desc = 'toggle tree and reveal current buffer'})
+-- vim.keymap.set('n', '<leader>E', function()
+--   vim.cmd('only')
+--   require('nvim-tree.api').tree.open()
+--   require('nvim-tree.api').tree.find_file({ open = true, focus = true })
+-- end, {desc = 'close splits and reveal current buffer in tree'})
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
 
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
@@ -1148,14 +1149,20 @@ vim.api.nvim_create_autocmd("BufEnter", {
 require("nvim-tree").setup({
   on_attach=nvim_tree_on_attach,
   hijack_cursor = true,
-  -- sync_root_with_cwd= true,
+  sync_root_with_cwd = false,  -- tree root doesn't follow cwd changes
   reload_on_bufenter = true,
-  respect_buf_cwd = true,
+  respect_buf_cwd = false,  -- don't change tree's cwd when opening
   update_focused_file = {
-    enable = true,
-    -- update_root = true,
+    enable = true,  -- focus current file when switching buffers
+    update_root = {
+      enable = true,  -- update tree root to show file even if outside current root
+      ignore_list = {},
+    },
   },
   actions = {
+    change_dir = {
+      enable = false,  -- don't change vim's cwd when tree root changes
+    },
     remove_file = {
       close_window = true,
     },
