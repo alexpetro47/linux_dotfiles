@@ -5,8 +5,8 @@ vim.g.maplocalleader = ' '
 
 -- --Preferences
 -- vim.o.syntax = 'on'
--- vim.o.mouse = ''
--- vim.o.hlsearch = true
+vim.o.mouse = ''
+vim.o.hlsearch = true
 vim.o.incsearch = true
 -- vim.o.title = true
 -- vim.o.showcmd = true
@@ -330,7 +330,8 @@ vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = '
 -- vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
 
 --Nvim Management
-vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
+-- LEVEL 2/3: Mason keybinding
+-- vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
 vim.keymap.set('n', '<leader>m', ':messages<CR> :horizontal resize 15<CR>', { desc = 'nvim messages'})
 vim.keymap.set('n', '<leader>L', ':Lazy check<CR>', { desc = 'lazy package manager'})
 vim.keymap.set('n', '<leader>CD', function() vim.o.background = 'dark' vim.g.gruvbox_material_transparent_background = 2 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Dark Background' })
@@ -415,16 +416,22 @@ end)
 
 --Search
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
-vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
+
+-- LEVEL 2/3: LSP diagnostics search
+-- vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.diagnostics()<CR>", { desc = 'search diagnostics' })
+
 vim.keymap.set('n', '<leader>sD', ":cd ~<CR> :lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>sb', ":lua require'telescope.builtin'.current_buffer_fuzzy_find()<CR>", { desc = 'search current buffer' })
 vim.keymap.set('n', '<leader>sH', ":lua require'telescope.builtin'.git_bcommits()<CR>", { desc = 'search Commits' })
-vim.keymap.set('n', 'gd', ":lua require'telescope.builtin'.lsp_definitions()<CR>", { desc = 'go to definition'})
-vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'go to definition'})
-vim.keymap.set('n', 'gi', ":lua require'telescope.builtin'.lsp_implementations()<CR>", { desc = 'go to definition'})
-vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>", { desc = 'search symbols'})
+
+-- LEVEL 2/3: LSP keybindings (require LSP servers)
+-- vim.keymap.set('n', 'gd', ":lua require'telescope.builtin'.lsp_definitions()<CR>", { desc = 'go to definition'})
+-- vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>", { desc = 'go to definition'})
+-- vim.keymap.set('n', 'gi', ":lua require'telescope.builtin'.lsp_implementations()<CR>", { desc = 'go to definition'})
+-- vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>", { desc = 'search symbols'})
+
 vim.keymap.set('n', '<leader>st', ":lua require'telescope.builtin'.treesitter()<CR>", { desc = 'search treesitter'})
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 
@@ -435,12 +442,13 @@ vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<C
 -- vim.keymap.set('n', '<leader>sm', ":lua require'telescope.builtin'.marks()<CR>", { desc = 'search marks'})
 -- vim.keymap.set('n', '<leader>sv', ":lua require'telescope.builtin'.vim_options()<CR>", { desc = 'search vim options'})
 
+-- LEVEL 2/3: LSP keybindings
+-- vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})
+-- vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true})
+-- vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true})
 
---Lsp
-vim.keymap.set("n", "cd", vim.lsp.buf.rename, {desc = 'change lsp definition', noremap = true, silent = true})
-vim.keymap.set("n", "<leader>Hi", vim.lsp.buf.hover , {desc = 'hover info', noremap = true, silent = true})
-vim.keymap.set("n", "<leader>Hd", vim.diagnostic.open_float , {desc = 'hover diagnostic', noremap = true, silent = true})
-vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
+-- LEVEL 3: Completion keybinding
+-- vim.keymap.set('n', '<C-Space>', ":lua require('cmp').select_next_item()" )
 
 --sneak
 vim.g["sneak#label"] = 1 --label mode for vim-sneak
@@ -629,42 +637,42 @@ require('lazy').setup({
   -- },
   -- },
 
-  --DAP / DEBUGGING
-  'tpope/vim-dadbod',
-  'kristijanhusak/vim-dadbod-ui',
-  'kristijanhusak/vim-dadbod-completion',
-  {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      'rcarriga/nvim-dap-ui',
-      'theHamsta/nvim-dap-virtual-text',
-      'nvim-neotest/nvim-nio',
-      'williamboman/mason.nvim',
-      'jay-babu/mason-nvim-dap.nvim',
-      'leoluz/nvim-dap-go',
-      'mfussenegger/nvim-dap-python',
-    },
-  },
-  -- ADPATERS FOR DAP VIA MASON
-  {
-    'jay-babu/mason-nvim-dap.nvim',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'mfussenegger/nvim-dap',
-    },
-    opts= {
-      handlers = {},
-      ensure_installed = {
-        'codelldb',
-        'clangd',
-        'pyright',
-        'ruff',
-        'biome',
-        'vtsls',
-        'lua-language-server'
-      },
-    },
-  },
+  -- --DAP / DEBUGGING
+  -- 'tpope/vim-dadbod',
+  -- 'kristijanhusak/vim-dadbod-ui',
+  -- 'kristijanhusak/vim-dadbod-completion',
+  -- {
+  --   "mfussenegger/nvim-dap",
+  --   dependencies = {
+  --     'rcarriga/nvim-dap-ui',
+  --     'theHamsta/nvim-dap-virtual-text',
+  --     'nvim-neotest/nvim-nio',
+  --     'williamboman/mason.nvim',
+  --     'jay-babu/mason-nvim-dap.nvim',
+  --     'leoluz/nvim-dap-go',
+  --     'mfussenegger/nvim-dap-python',
+  --   },
+  -- },
+  -- -- ADPATERS FOR DAP VIA MASON
+  -- {
+  --   'jay-babu/mason-nvim-dap.nvim',
+  --   dependencies = {
+  --     'williamboman/mason.nvim',
+  --     'mfussenegger/nvim-dap',
+  --   },
+  --   opts= {
+  --     handlers = {},
+  --     ensure_installed = {
+  --       'codelldb',
+  --       'clangd',
+  --       'pyright',
+  --       'ruff',
+  --       'biome',
+  --       'vtsls',
+  --       'lua-language-server'
+  --     },
+  --   },
+  -- },
 
   --markdown highlighting
   {
@@ -756,97 +764,138 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
-  {
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      {
-        'williamboman/mason.nvim',
-        opts = {
-          ensure_installed = {
-            'lua-language-server',
-            'pyright',
-            'vtsls',
-            'clangd',
-            'codelldb',
-            'clang-format',
-            'marksman',
-            'typescript-language-server',
-            'eslint-lsp',
-            'prettier',
-            'uv',
-            'ruff'
-          }
-        }
-      },
-      'williamboman/mason-lspconfig.nvim',
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-      'folke/neodev.nvim',
-    },
-    -- Replace the entire 'config' function in your 'neovim/nvim-lspconfig' spec with this
-    config = function()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  -- LEVEL 2/3: Mason for installing LSP servers, formatters, linters
+  -- {
+  --   'williamboman/mason.nvim',
+  --   opts = {
+  --     ensure_installed = {
+  --       'lua-language-server',
+  --       'pyright',
+  --       'vtsls',
+  --       'clangd',
+  --       'codelldb',
+  --       'clang-format',
+  --       'marksman',
+  --       'typescript-language-server',
+  --       'eslint-lsp',
+  --       'prettier',
+  --       'uv',
+  --       'ruff'
+  --     }
+  --   }
+  -- },
 
-      local servers = {
-        clangd = {},
-        lua_ls = {
-          Lua = {
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-          },
-        },
-        pyright = {
-          python = {
-            pythonPath = function()
-              -- Try uv venv first, fallback to system python
-              local uv_python = vim.fn.getcwd() .. "/.venv/bin/python"
-              if vim.fn.executable(uv_python) == 1 then
-                return uv_python
-              end
-              return vim.fn.exepath("python3")
-            end,
-            analysis = {
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              diagnosticMode = "workspace",  -- Changed from "openFilesOnly"
-            },
-          },
-        },
+  -- LEVEL 2/3: LSP progress UI
+  -- { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
 
-      }
+  -- DEPRECATED: Old lspconfig approach (commented for reference)
+  -- {
+  --   'neovim/nvim-lspconfig',
+  --   dependencies = {
+  --     {
+  --       'williamboman/mason.nvim',
+  --       opts = {
+  --         ensure_installed = {
+  --           'lua-language-server',
+  --           'pyright',
+  --           'vtsls',
+  --           'clangd',
+  --           'codelldb',
+  --           'clang-format',
+  --           'marksman',
+  --           'typescript-language-server',
+  --           'eslint-lsp',
+  --           'prettier',
+  --           'uv',
+  --           'ruff'
+  --         }
+  --       }
+  --     },
+  --     'williamboman/mason-lspconfig.nvim',
+  --     { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+  --     'folke/neodev.nvim',
+  --   },
+  --   config = function()
+  --     -- Setup neodev BEFORE lspconfig
+  --     require('neodev').setup({
+  --       library = {
+  --         plugins = { "nvim-dap-ui" },
+  --         types = true,
+  --       },
+  --     })
+  --
+  --     local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  --
+  --     local servers = {
+  --       clangd = {},
+  --       lua_ls = {
+  --         Lua = {
+  --           runtime = {
+  --             version = 'LuaJIT',
+  --           },
+  --           workspace = {
+  --             checkThirdParty = false,
+  --             library = {
+  --               vim.env.VIMRUNTIME,
+  --             },
+  --           },
+  --           telemetry = { enable = false },
+  --           diagnostics = {
+  --             globals = { 'vim' },
+  --           },
+  --         },
+  --       },
+  --       pyright = {
+  --         python = {
+  --           pythonPath = function()
+  --             -- Try uv venv first, fallback to system python
+  --             local uv_python = vim.fn.getcwd() .. "/.venv/bin/python"
+  --             if vim.fn.executable(uv_python) == 1 then
+  --               return uv_python
+  --             end
+  --             return vim.fn.exepath("python3")
+  --           end,
+  --           analysis = {
+  --             autoSearchPaths = true,
+  --             useLibraryCodeForTypes = true,
+  --             diagnosticMode = "workspace",  -- Changed from "openFilesOnly"
+  --           },
+  --         },
+  --       },
+  --
+  --     }
+  --
+  --     -- This single setup call replaces the two previous ones.
+  --     require('mason-lspconfig').setup {
+  --       ensure_installed = vim.tbl_keys(servers),
+  --       handlers = {
+  --         -- This is the new, correct way to define the handler
+  --         function(server_name)
+  --           if require('lspconfig.util').get_config(server_name) then
+  --             require('lspconfig')[server_name].setup {
+  --               capabilities = capabilities,
+  --               settings = servers[server_name],
+  --             }
+  --           end
+  --         end,
+  --       },
+  --     }
+  --   end,
+  -- },
 
-      -- This single setup call replaces the two previous ones.
-      require('mason-lspconfig').setup {
-        ensure_installed = vim.tbl_keys(servers),
-        handlers = {
-          -- This is the new, correct way to define the handler
-          function(server_name)
-            if require('lspconfig.util').get_config(server_name) then
-              require('lspconfig')[server_name].setup {
-                capabilities = capabilities,
-                settings = servers[server_name],
-              }
-            end
-          end,
-        },
-      }
-
-      require('neodev').setup()
-    end,
-  },
-
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
-      -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
-    },
-  },
+  -- LEVEL 3: Autocompletion
+  -- {
+  --   'hrsh7th/nvim-cmp',
+  --   dependencies = {
+  --     -- Snippet Engine & its associated nvim-cmp source
+  --     'L3MON4D3/LuaSnip',
+  --     'saadparwaiz1/cmp_luasnip',
+  --     -- Adds LSP completion capabilities
+  --     'hrsh7th/cmp-nvim-lsp',
+  --     -- Adds a number of user-friendly snippets
+  --     'rafamadriz/friendly-snippets',
+  --   },
+  -- },
 
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim',
@@ -1084,24 +1133,24 @@ require('harpoon').setup{
 require('nvim-autopairs').setup({})
 require('render-markdown').setup({})
 
-local dap = require "dap"
-local ui = require "dapui"
-require("dapui").setup()
-require("dap-go").setup()
-require("nvim-dap-virtual-text").setup()
-
-dap.listeners.before.attach.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  ui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-  ui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  ui.close()
-end
+-- local dap = require "dap"
+-- local ui = require "dapui"
+-- require("dapui").setup()
+-- require("dap-go").setup()
+-- require("nvim-dap-virtual-text").setup()
+--
+-- dap.listeners.before.attach.dapui_config = function()
+--   ui.open()
+-- end
+-- dap.listeners.before.launch.dapui_config = function()
+--   ui.open()
+-- end
+-- dap.listeners.before.event_terminated.dapui_config = function()
+--   ui.close()
+-- end
+-- dap.listeners.before.event_exited.dapui_config = function()
+--   ui.close()
+-- end
 
 require("noice").setup({
   lsp = {
@@ -1239,31 +1288,31 @@ vim.defer_fn(function()
   }
 end, 0)
 
---  Configure nvim-cmp 
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-Space>'] = cmp.mapping.select_next_item(),
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = false, --doesn't mess with your indents when nothings selected
-    },
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  },
-}
+-- LEVEL 3: Configure nvim-cmp
+-- local cmp = require 'cmp'
+-- local luasnip = require 'luasnip'
+--
+-- require('luasnip.loaders.from_vscode').lazy_load()
+-- luasnip.config.setup {}
+--
+-- cmp.setup {
+--   snippet = {
+--     expand = function(args)
+--       luasnip.lsp_expand(args.body)
+--     end,
+--   },
+--   mapping = cmp.mapping.preset.insert {
+--     ['<C-Space>'] = cmp.mapping.select_next_item(),
+--     ['<CR>'] = cmp.mapping.confirm {
+--       behavior = cmp.ConfirmBehavior.Replace,
+--       select = false, --doesn't mess with your indents when nothings selected
+--     },
+--   },
+--   sources = {
+--     { name = 'nvim_lsp' },
+--     { name = 'luasnip' },
+--   },
+-- }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
