@@ -250,6 +250,12 @@ curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/downl
 tar xf lazygit.tar.gz lazygit
 sudo install lazygit -D -t /usr/local/bin/
 
+### GIT CREDENTIAL MANAGER
+curl -L https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.deb -o /tmp/gcm.deb
+sudo dpkg -i /tmp/gcm.deb
+git-credential-manager configure
+git config --global credential.credentialStore secretservice
+git clone https://Alidainc@dev.azure.com/Alidainc/AD/_git/ad_apps
 
 
 #### DISABLE SLEEP/LOCK (PC)

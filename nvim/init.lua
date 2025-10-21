@@ -226,6 +226,8 @@ vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfile
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' })
+vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>" , { desc = 'search document symbols' })
+vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>" , { desc = 'search references' })
 vim.keymap.set('n', '<leader>sd', function()
   require('telescope.builtin').find_files({
     prompt_title = "Find Directories",
@@ -460,7 +462,7 @@ require('lazy').setup({
           sorter = "case_sensitive",
         },
         view = {
-          width = 20,
+          width = 25,
         },
         renderer = {
           group_empty = true,
@@ -473,6 +475,29 @@ require('lazy').setup({
   },
 
   'romainl/vim-cool',
+
+  {
+    'neovim/nvim-lspconfig',
+    config = function()
+      vim.diagnostic.enable(false)
+
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
+      vim.keymap.set('n', 'gi', vim.lsp.buf.hover)
+      vim.keymap.set('n', 'cd', vim.lsp.buf.rename)
+
+      vim.lsp.config('lua_ls', {
+        settings = {
+          Lua = {
+            diagnostics = { globals = { 'vim' } }
+          }
+        }
+      })
+      vim.lsp.enable('lua_ls')
+
+      vim.lsp.config('pyright', {})
+      vim.lsp.enable('pyright')
+    end
+  },
 
   {
     'chipsenkbeil/distant.nvim',
