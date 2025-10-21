@@ -57,6 +57,7 @@ vim.keymap.set("n", "Y", '"+y')
 
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
 vim.keymap.set('v', 's', 'g_')
+vim.keymap.set('n', 's', '0vg_')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
@@ -130,12 +131,21 @@ vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
 
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
--- vim.keymap.set('n', '<leader>p', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
--- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
-vim.keymap.set('n', '<leader>O', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
+vim.keymap.set('n', '<leader>p', ':let @+ = "@" . expand("%") . " " <CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+vim.keymap.set('n', '<leader>O', ':! xdg-open %:p:h &<CR>', {desc = 'open current buffer directory in file manager'})
 
+--sneak
+vim.g["sneak#label"] = 1 --label mode for vim-sneak
+vim.g["sneak#use_ic_scs"] = 1 --case insensitive
+
+
+-- sets text wrapping in markdown files
+vim.cmd([[
+autocmd FileType markdown setlocal textwidth=92
+]])
 
 
 vim.keymap.set('n', 'H', ':lua require("harpoon.ui").toggle_quick_menu()<CR>' , { desc = 'harpoon menu' })
@@ -237,7 +247,7 @@ vim.keymap.set('n', '<leader>grR', ':Git reset ', { desc = 'delete git history b
        
 vim.keymap.set('n', '<leader>F', function()
  require('telescope.pickers').new({}, {
-   prompt_title = "Downloads (3 most recent)",
+   prompt_title = "Downloads (from most recent)",
    finder = require('telescope.finders').new_oneshot_job(
      { 'sh', '-c', 'ls -1t ~/Downloads | head -10' },
      {}
@@ -276,10 +286,10 @@ vim.keymap.set('n', '<leader>F', function()
 end)
 
 --Search
+vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
+vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' })
-
--- Directory search with custom action to open nvim-tree
 vim.keymap.set('n', '<leader>sd', function()
   require('telescope.builtin').find_files({
     prompt_title = "Find Directories",
@@ -312,19 +322,8 @@ vim.keymap.set('n', '<leader>sd', function()
   })
 end, { desc = 'search dirs -> open in nvim-tree' })
 
-vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
-vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 
 
---sneak
-vim.g["sneak#label"] = 1 --label mode for vim-sneak
-vim.g["sneak#use_ic_scs"] = 1 --case insensitive
-
-
--- sets text wrapping in markdown files
-vim.cmd([[
-autocmd FileType markdown setlocal textwidth=92
-]])
 
 -- package manager
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -359,9 +358,11 @@ require('lazy').setup({
           ["b"] = false,
         },
         surrounds = {
-          -- 'c' wraps with triple backticks
+          -- 'c' wraps with triple backticks on isolated lines
           ["c"] = {
-            add = { "```", "```" },
+            add = function()
+              return { { "", "```", "" }, { "", "```", "" } }
+            end,
           },
           -- 'i' wraps with italic (single *)
           -- ["i"] = {
@@ -444,8 +445,6 @@ require('lazy').setup({
 
   -- nice markdown formatting
   "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-
-
 
   --markdown highlighting
   {
