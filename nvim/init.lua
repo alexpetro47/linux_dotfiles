@@ -197,7 +197,7 @@ vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = '
 -- vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
 
 --Nvim Management
-vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'nvim messages'})
+vim.keymap.set('n', '<leader>m', ':messages<CR>:horizontal resize 25<CR>', { desc = 'nvim messages'})
 vim.keymap.set('n', '<leader>L', ':Lazy<CR>', { desc = 'lazy package manager'})
 
 
@@ -277,8 +277,41 @@ end)
 
 --Search
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep()<CR>" , { desc = 'search grep' })
-vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' }) --use fd to search files not dirs, find_files arg is for dirs by my config
-vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.find_files()<CR>" , { desc = 'search dirs' }) -- dir arg is specificied in telescope config
+vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd()<CR>" , { desc = 'search files' })
+
+-- Directory search with custom action to open nvim-tree
+vim.keymap.set('n', '<leader>sd', function()
+  require('telescope.builtin').find_files({
+    prompt_title = "Find Directories",
+    find_command = { "fd", "--type", "d", "--hidden", "--no-ignore" },
+    attach_mappings = function(_, map)
+      local actions = require('telescope.actions')
+      local action_state = require('telescope.actions.state')
+
+      -- Override default <CR> action
+      map('i', '<CR>', function(bufnr)
+        local selection = action_state.get_selected_entry()
+        actions.close(bufnr)
+
+        -- Open nvim-tree at selected directory (without changing cwd)
+        require('nvim-tree.api').tree.open()
+        require('nvim-tree.api').tree.change_root(selection.path)
+      end)
+
+      map('n', '<CR>', function(bufnr)
+        local selection = action_state.get_selected_entry()
+        actions.close(bufnr)
+
+        -- Open nvim-tree at selected directory (without changing cwd)
+        require('nvim-tree.api').tree.open()
+        require('nvim-tree.api').tree.change_root(selection.path)
+      end)
+
+      return true
+    end,
+  })
+end, { desc = 'search dirs -> open in nvim-tree' })
+
 vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfiles()<CR>", { desc = '[ ] recent files' })
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 
@@ -640,13 +673,23 @@ require('lazy').setup({
           file_ignore_patterns = {
             "node_modules",
             "venv",
+            ".venv",
+            "__pycache__",
+            ".pytest_cache",
+            ".git/",
+            "%.git/",
+            "build/",
+            "dist/",
+            "target/",
+            ".next/",
+            ".cache/",
+            "vendor/",
+            "%.egg%-info/",
+            "coverage/",
+            ".coverage",
+            "%.min%.js$",
+            "%.map$",
           }
-        },
-        pickers = {
-          find_files = {
-            hidden = true,
-            find_command = { "fdfind", "--type", "d", "--hidden", "--no-ignore", "--unrestricted"}
-          },
         },
       }
       -- Enable telescope fzf native, if installed
