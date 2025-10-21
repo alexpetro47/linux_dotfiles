@@ -109,22 +109,12 @@ vim.keymap.set('n', '<leader>*', 'I* <Esc>:s/\\s*,\\s*/\\r* /g<CR>', {desc = 'co
 vim.keymap.set('n', '<leader>)', 'I(<Esc>$a)<Esc>0', {desc = 'wrap line in ()'})
 vim.keymap.set('n', '<leader>]', 'I[<Esc>$a]<Esc>0', {desc = 'wrap line in []'})
 vim.keymap.set('n', '<leader>"', 'I"<Esc>$a"<Esc>0', {desc = 'wrap line in ""'})
--- vim.keymap.set('n', '<leader>@q', 'qq0gwwkq', {desc = 'set @q reg to wrap line, move up (executes once)'})
 
---vim-after-object: select last pasted text
--- vim.keymap.set('n', 'gv', '`[v`]', {desc = 'select last pasted text'})
 
 --Window Management
--- (C-w) is used for tmux. (Tab) is used for vim
 vim.keymap.set('n', '<Tab>', '<C-w>', { noremap = true })
--- vim.keymap.set('t', '<Tab>', '<C-\\><C-n><C-w>', { noremap = true })
--- vim.keymap.set('n', '<Tab>f', '<C-w>_<C-w>|', { noremap = true })
--- vim.keymap.set('n', '<C-i><C-i>', '<C-w>v<C-w>lgf', {noremap=true, silent=true})
 vim.keymap.set('n', '<Tab>[', '<C-w>20<', { noremap = true })
 vim.keymap.set('n', '<Tab>]', '<C-w>20>', { noremap = true })
--- vim.keymap.set('n', '<leader>t', '<C-w>v<C-w>l :lcd %:p:h<CR> :term<CR>a', {desc = 'terminal'})
--- vim.keymap.set('n', '<leader>N', '<C-w>v :term<CR> <C-w>l :enew<CR><C-w>h nr<CR>', {desc = 'next project terminal splits'})
-
 
 --centered navigation
 vim.keymap.set("n", "<C-d>", "<C-d>zz", {noremap = true, silent = true})
@@ -133,8 +123,6 @@ vim.keymap.set("n", "N", "Nzzzv", {noremap = true, silent = true})
 vim.keymap.set("n", "n", "nzzzv", {noremap = true, silent = true})
 vim.keymap.set("n", "g;", "g;zz", {noremap = true, silent = true})
 vim.keymap.set('n', '*', '*zzzv', { noremap = true, silent = true })
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
-vim.keymap.set('t', 'jj', '<C-\\><C-n>', { noremap = true })
 vim.keymap.set('n', '}', '}zz', { noremap = true })
 vim.keymap.set('n', '{', '{zz', { noremap = true })
 
@@ -142,8 +130,8 @@ vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
 
 vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
-vim.keymap.set('n', '<leader>p', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
-vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+-- vim.keymap.set('n', '<leader>p', ':let @+ = expand("%")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+-- vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>O', ':! open ./ &<CR>', {desc = 'open current directory in finder'})
@@ -209,12 +197,9 @@ vim.keymap.set('n', 'dI', ':lua require"dap.ui.widgets".hover()<CR>', { desc = '
 -- vim.keymap.set('n', '<leader>qd', ':cdo s//gc | update<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'quickfix command' })
 
 --Nvim Management
--- LEVEL 2/3: Mason keybinding
--- vim.keymap.set('n', '<leader>M', ':Mason<CR>', { desc = 'Mason lsp'})
-vim.keymap.set('n', '<leader>m', ':messages<CR> :horizontal resize 15<CR>', { desc = 'nvim messages'})
-vim.keymap.set('n', '<leader>L', ':Lazy check<CR>', { desc = 'lazy package manager'})
-vim.keymap.set('n', '<leader>CD', function() vim.o.background = 'dark' vim.g.gruvbox_material_transparent_background = 2 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Dark Background' })
-vim.keymap.set('n', '<leader>CL', function() vim.o.background = 'light' vim.g.gruvbox_material_transparent_background = 0 vim.cmd('colorscheme gruvbox-material') end, { desc = 'Set Light Background' })
+vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'nvim messages'})
+vim.keymap.set('n', '<leader>L', ':Lazy<CR>', { desc = 'lazy package manager'})
+
 
 -- Git
 vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', { desc = 'git status' })
@@ -222,36 +207,33 @@ vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'open git repo in bro
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'stash save' })
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'stash pop' })
 vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>L<C-w>', { desc = 'log view' })
-vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge ' })
+
 vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
-vim.keymap.set('n', '<leader>gd', ':Gvdiff ', { desc = 'diff <hash/branch needed> (current on right)'})
-vim.keymap.set('n', '<leader>gv', ':Gvdiffsplit HEAD<CR><C-w>L<C-w>h ', { desc = 'vertical diff split with HEAD' })
+vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge (changes -> current branch)' })
+
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
 vim.keymap.set('n', '<leader>gF', ':Git push --force<CR>', { desc = 'force push' })
-vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch origin' })
--- vim.keymap.set('n', '<leader>gP', ':Git pull --rebase<CR>', { desc = 'pull (rebase)' })
 vim.keymap.set('n', '<leader>gP', ':Git pull <CR>', { desc = 'pull (rebase)' })
--- vim.keymap.set('n', '<leader>gf', ':Git fetch origin<CR>', { desc = 'fetch' })
 vim.keymap.set('n', '<leader>gcm', ':Git commit -m ""<Left>', { desc = 'commit with message' })
 vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'commit with standard message' })
 vim.keymap.set('n', '<leader>gca', ":Git commit --amend <CR>", { desc = 'amend last commit with staged changes' })
-vim.keymap.set("n", "<leader>gt", ":Gitsigns toggle_signs<CR>", {noremap = true, silent = true, desc = 'toggle git-signs'})
-vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'rebase continue' })
-vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'rebase abort' })
-vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
-vim.keymap.set('n', '<leader>gRF', ':! git reflog expire --expire=now --all && git gc --prune=now && bfg --D ', { desc = 'delete all history of <path/to/file>, clears reflog + prunes. force push manually afterwards' })
-vim.keymap.set('n', '<leader>gRs', ':Git reset %<CR>', { desc = 'unstage current file' })
-vim.keymap.set('n', '<leader>gRS', ':Git reset .<CR>', { desc = 'unstage all files' })
--- vim.keymap.set('n', '<leader>gRc', ':! git filter-repo --path  --invert-paths<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>', { desc = 'git status' })
-vim.keymap.set('n', '<leader>gRt', ':! rm %<CR>:! git rm --cached %<CR>', { desc = 'untrack+delete current file' })
-vim.keymap.set('n', '<leader>gRT', ':! git clean -fd <CR>', { desc = 'delete untracked files' })
-vim.keymap.set('n', '<leader>gRX', ':! git checkout -- .<CR>:! git clean -fd<CR>', { desc = 'delete all unstaged changes'})
-vim.keymap.set('n', '<leader>gRx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
-vim.keymap.set('n', '<leader>gRH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
-vim.keymap.set('n', '<leader>gRR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
+
+-- vim.keymap.set('n', '<leader>grc', ':Git rebase --continue<CR>', { desc = 'rebase continue' })
+-- vim.keymap.set('n', '<leader>gra', ':Git rebase --abort<CR>', { desc = 'rebase abort' })
+-- vim.keymap.set('n', '<leader>grr', ':Git rebase ', { desc = 'rebase' })
+
+vim.keymap.set('n', '<leader>grs', ':Git reset %<CR>', { desc = 'unstage current file' })
+vim.keymap.set('n', '<leader>grS', ':Git reset .<CR>', { desc = 'unstage all files' })
+
+vim.keymap.set('n', '<leader>grt', ':! git rm --cached %<CR>', { desc = 'untrack current file' })
+vim.keymap.set('n', '<leader>grT', ':! git clean -fd <CR>', { desc = 'delete untracked files' })
+vim.keymap.set('n', '<leader>grX', ':! git checkout -- .<CR>:! git clean -fd<CR>', { desc = 'delete all unstaged changes'})
+vim.keymap.set('n', '<leader>grx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
+vim.keymap.set('n', '<leader>grH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
+vim.keymap.set('n', '<leader>grR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
        
 vim.keymap.set('n', '<leader>F', function()
  require('telescope.pickers').new({}, {
@@ -356,7 +338,7 @@ require('lazy').setup({
           ["b"] = {
             add = { "**", "**" },
             find = "%*%*.-%*%*",
-            delete = "^(%*%*)().-()(%*%*)$",
+            delete = "^(%*%*)().-(%*%*)()$",
           },
         },
       })
@@ -663,7 +645,7 @@ require('lazy').setup({
         pickers = {
           find_files = {
             hidden = true,
-            find_command = { "fdfind", "--type", "d", "--hidden"}
+            find_command = { "fdfind", "--type", "d", "--hidden", "--no-ignore", "--unrestricted"}
           },
         },
       }
@@ -702,8 +684,8 @@ require('lazy').setup({
                 ["aC"] = "@class.outer",
                 ["iC"] = "@class.inner",
                 -- Blocks/conditionals
-                ["aB"] = "@block.outer",
-                ["iB"] = "@block.inner",
+                -- ["ab"] = "@block.outer",
+                -- ["ib"] = "@block.inner",
                 -- Parameters/arguments
                 -- ["aa"] = "@parameter.outer",
                 -- ["ia"] = "@parameter.inner",
