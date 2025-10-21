@@ -3,43 +3,43 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
---Preferences
-vim.o.syntax = 'on'
-vim.o.mouse = ''
-vim.o.hlsearch = true
+-- --Preferences
+-- vim.o.syntax = 'on'
+-- vim.o.mouse = ''
+-- vim.o.hlsearch = true
 vim.o.incsearch = true
-vim.o.title = true
-vim.o.showcmd = true
+-- vim.o.title = true
+-- vim.o.showcmd = true
 vim.o.backup = false
 vim.o.swapfile = false
 vim.o.undofile = true
 vim.o.timeoutlen = 500
-vim.o.updatetime = 500
-vim.o.relativenumber = true
+vim.o.updatetime = 50
+-- vim.o.relativenumber = true
 vim.wo.signcolumn = 'yes'
 vim.wo.number = true
-vim.o.scrolloff = 8
-vim.o.wrap = false
+vim.o.scrolloff = 6
+vim.o.wrap = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
-vim.o.smartindent = true
-vim.o.smarttab = true
-vim.o.expandtab = true
+-- vim.o.smartindent = true
+-- vim.o.smarttab = true
+-- vim.o.expandtab = true
 vim.o.shiftwidth = 2
 vim.o.softtabstop = 2
 vim.o.tabstop = 2
-vim.o.cindent = true
-vim.o.completeopt = 'menuone,noselect'
-vim.o.wildmode = 'longest:full,full'
-vim.o.wildignorecase = true
-vim.o.wildmenu = true
+-- vim.o.cindent = true
+-- vim.o.completeopt = 'menuone,noselect'
+-- vim.o.wildmode = 'longest:full,full'
+-- vim.o.wildignorecase = true
+-- vim.o.wildmenu = true
 vim.opt.termguicolors = true
-vim.g.loaded_netrw = 1 --use nvim-tree
-vim.g.loaded_netrwPlugin = 1 --use nvim-tree
-vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
+-- vim.g.loaded_netrw = 0 --use nvim-tree
+-- vim.g.loaded_netrwPlugin = 0 --use nvim-tree
+-- vim.o.grepprg = 'rg --vimgrep --no-heading --smart-case'
 
 --Keybind Removals 
-vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
+-- vim.keymap.set({'n', 'v'}, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({'n', 'v'}, '<C-j>', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, '<C-k>', '<Nop>', {silent = true})
 vim.keymap.set({'n', 'v'}, '<C-l>', '<Nop>', {silent = true})
@@ -204,59 +204,59 @@ vim.keymap.set('n', '<leader>O', ':! open ./ &<CR>', {desc = 'open current direc
 -- vim.keymap.set('n', '<leader>, ":Ex ~/Documents/code<CR>", {desc = 'code/'})
 -- vim.keymap.set('n', '<leader>', ":Ex ~/.conf/<CR>", {desc = '.config/'})
 
-vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc = 'index.md'})
-vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
-vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/journal/`date +\\%Y_\\%m_\\%d`.md<CR>', {desc = 'journal'})
-vim.keymap.set('n', '<leader>f;', function()
-  local notes_dir = vim.fn.expand("~/Documents/notes2/ACTIVE/")
-  local i = 1
-  local filename
-  repeat
-    filename = notes_dir .. "tmp_" .. i .. ".md"
-    i = i + 1
-  until vim.fn.filereadable(filename) == 0
-  vim.cmd("cd " .. notes_dir)
-  vim.cmd("e " .. filename)
-end, {desc = "new note"})
-
-vim.keymap.set('n', '<leader>fc', function()
-  local i = 1
-  local filename
-  repeat
-    filename = ".context/tmp_" .. i .. ".md"
-    i = i + 1
-  until vim.fn.filereadable(filename) == 0
-  vim.cmd("e " .. filename)
-end, {desc = "new .context note"})
-
-vim.keymap.set('n', '<leader>fe', function()
-  local src = vim.fn.expand('~/Documents/notes2/.excalidraw-store/1.excalidraw')
-  local dest = vim.fn.getcwd() .. '/1.excalidraw'
-  vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest))
-  vim.notify('Copied 1.excalidraw to ' .. dest)
-end, {desc = 'copy excalidraw template'})
+-- vim.keymap.set('n', '<leader>fj', ':e ~/Documents/notes2/index.md<CR>3j', {desc = 'index.md'})
+-- vim.keymap.set('n', '<leader>fk', ':e ~/Documents/notes2/workspace.md<CR>3j', {desc = 'workspace.md'})
+-- vim.keymap.set('n', '<leader>fl', ':e ~/Documents/notes2/journal/`date +\\%Y_\\%m_\\%d`.md<CR>', {desc = 'journal'})
+-- vim.keymap.set('n', '<leader>f;', function()
+--   local notes_dir = vim.fn.expand("~/Documents/notes2/ACTIVE/")
+--   local i = 1
+--   local filename
+--   repeat
+--     filename = notes_dir .. "tmp_" .. i .. ".md"
+--     i = i + 1
+--   until vim.fn.filereadable(filename) == 0
+--   vim.cmd("cd " .. notes_dir)
+--   vim.cmd("e " .. filename)
+-- end, {desc = "new note"})
+--
+-- vim.keymap.set('n', '<leader>fc', function()
+--   local i = 1
+--   local filename
+--   repeat
+--     filename = ".context/tmp_" .. i .. ".md"
+--     i = i + 1
+--   until vim.fn.filereadable(filename) == 0
+--   vim.cmd("e " .. filename)
+-- end, {desc = "new .context note"})
+--
+-- vim.keymap.set('n', '<leader>fe', function()
+--   local src = vim.fn.expand('~/Documents/notes2/.excalidraw-store/1.excalidraw')
+--   local dest = vim.fn.getcwd() .. '/1.excalidraw'
+--   vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest))
+--   vim.notify('Copied 1.excalidraw to ' .. dest)
+-- end, {desc = 'copy excalidraw template'})
 
 
 -- Then use it in your keymap:
-vim.keymap.set('n', '<leader>fK', function()
-  require('telescope.builtin').fd({ cwd = '~/.config/'})
-end, { desc = '~/.config/' })
+-- vim.keymap.set('n', '<leader>fK', function()
+--   require('telescope.builtin').fd({ cwd = '~/.config/'})
+-- end, { desc = '~/.config/' })
 
-vim.keymap.set('n', '<leader>fJ', function()
-  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
-end, { desc = '~/Documents/notes2/' })
+-- vim.keymap.set('n', '<leader>fJ', function()
+--   require('telescope.builtin').fd({ cwd = '~/Documents/notes2/'})
+-- end, { desc = '~/Documents/notes2/' })
 
-vim.keymap.set('n', '<leader>fL', function()
-  require('telescope.builtin').fd({ cwd = '~/.claude/'})
-end, { desc = '~/.claude/' })
-
-vim.keymap.set('n', '<leader>f:', function()
-  require('telescope.builtin').fd({ cwd = '~/Documents/notes2/ACTIVE/'})
-end, { desc = '~notes2/ACTIVE/' })
-
-vim.keymap.set('n', '<leader>fC', function()
-  require('telescope.builtin').fd({ cwd = '.context/'})
-end, { desc = '.context/'})
+-- vim.keymap.set('n', '<leader>fL', function()
+--   require('telescope.builtin').fd({ cwd = '~/.claude/'})
+-- end, { desc = '~/.claude/' })
+--
+-- vim.keymap.set('n', '<leader>f:', function()
+--   require('telescope.builtin').fd({ cwd = '~/Documents/notes2/ACTIVE/'})
+-- end, { desc = '~notes2/ACTIVE/' })
+--
+-- vim.keymap.set('n', '<leader>fC', function()
+--   require('telescope.builtin').fd({ cwd = '.context/'})
+-- end, { desc = '.context/'})
 
 
 -- -- Then use it in your keymap:
@@ -453,9 +453,9 @@ vim.cmd[[
 ]]
 
 --sets text wrapping in markdown files
-vim.cmd([[
-autocmd FileType markdown setlocal textwidth=92
-]])
+-- vim.cmd([[
+-- autocmd FileType markdown setlocal textwidth=92
+-- ]])
 
 -- package manager
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
