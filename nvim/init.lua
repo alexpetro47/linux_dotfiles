@@ -556,7 +556,14 @@ require('lazy').setup({
   -- { 'echasnovski/mini.nvim', version = '*' },
 
   --harpoon
-  'ThePrimeagen/harpoon',
+  {
+    'ThePrimeagen/harpoon',
+    config = function()
+      require('harpoon').setup{
+        save_on_ui_close = true,
+      }
+    end
+  },
 
   -- nice icons, requires nerd fonts probably
   "nvim-tree/nvim-web-devicons",
@@ -692,11 +699,15 @@ require('lazy').setup({
     "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
+      cmdline = {
+        enabled = true,
+        view = "cmdline_popup",
+      }
     },
     dependencies = {
       "MunifTanjim/nui.nvim",
       -- "rcarriga/nvim-notify",
-      }
+    }
   },
 
   {
@@ -1065,6 +1076,24 @@ require('lazy').setup({
         end,
       },
     },
+    config = function()
+      require('telescope').setup {
+        defaults = {
+          file_ignore_patterns = {
+            "node_modules",
+            "venv",
+          }
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+            find_command = { "fdfind", "--type", "d", "--hidden"}
+          },
+        },
+      }
+      -- Enable telescope fzf native, if installed
+      pcall(require('telescope').load_extension, 'fzf')
+    end
   },
 
   {
@@ -1074,26 +1103,67 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
+    config = function()
+      vim.defer_fn(function()
+        require('nvim-treesitter.configs').setup {
+          ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline'},
+          auto_install = true,
+          highlight = { enable = true },
+          indent = { enable = true },
+          modules = {},
+          sync_install = true,
+          ignore_install = {},
+
+          textobjects = {
+            select = {
+              enable = true,
+              lookahead = true,
+              keymaps = {
+                -- Functions
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                -- Classes
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
+                -- Blocks/conditionals
+                ["ap"] = "@block.outer",
+                ["ip"] = "@block.inner",
+                -- Parameters/arguments
+                ["aa"] = "@parameter.outer",
+                ["ia"] = "@parameter.inner",
+                -- Code blocks (markdown ``` ```)
+                ["ab"] = { query = "@code_block.outer", desc = "around code block" },
+                ["ib"] = { query = "@code_block.inner", desc = "inside code block" },
+              },
+            },
+            move = {
+              enable = true,
+              set_jumps = true,
+              goto_next_start = {
+                ["]f"] = "@function.outer",
+                ["]c"] = "@class.outer",
+                ["]b"] = "@block.outer",
+              },
+              goto_previous_start = {
+                ["[f"] = "@function.outer",
+                ["[c"] = "@class.outer",
+                ["[b"] = "@block.outer",
+              },
+            },
+          },
+        }
+      end, 0)
+
+      -- Define custom markdown code block queries for treesitter textobjects
+      vim.treesitter.query.set("markdown", "textobjects", [[
+        (fenced_code_block) @code_block.outer
+        (fenced_code_block
+          (code_fence_content) @code_block.inner)
+      ]])
+    end
   },
 
 }, {})
-
-
-require('harpoon').setup{
-  save_on_ui_close = true,
-}
-
-require('render-markdown').setup({})
-
-require("noice").setup({
-  cmdline = {
-    enabled = true,
-    view = "cmdline_popup", -- Center it
-  },
-  messages = {
-    enabled = true,
-  },
-})
 
 -- Highlight on yank 
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -1104,81 +1174,4 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
-
--- Configure Telescope 
-require('telescope').setup {
-  defaults = {
-    file_ignore_patterns = {
-      "node_modules",
-      "venv", -- assume python venv name
-    }
-  },
-  pickers = {
-    find_files = {
-      hidden = true,
-      find_command = { "fdfind", "--type", "d", "--hidden"}
-    },
-  },
-}
-
--- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
-
--- Configure Treesitter
-vim.defer_fn(function()
-  require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline'},
-    auto_install = true,
-    highlight = { enable = true },
-    indent = { enable = true },
-    modules = {},
-    sync_install = true,
-    ignore_install = {},
-
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true,
-        keymaps = {
-          -- Functions
-          ["af"] = "@function.outer",
-          ["if"] = "@function.inner",
-          -- Classes
-          ["ac"] = "@class.outer",
-          ["ic"] = "@class.inner",
-          -- Blocks/conditionals
-          ["ap"] = "@block.outer",
-          ["ip"] = "@block.inner",
-          -- Parameters/arguments
-          ["aa"] = "@parameter.outer",
-          ["ia"] = "@parameter.inner",
-          -- Code blocks (markdown ``` ```)
-          ["ab"] = { query = "@code_block.outer", desc = "around code block" },
-          ["ib"] = { query = "@code_block.inner", desc = "inside code block" },
-        },
-      },
-      move = {
-        enable = true,
-        set_jumps = true,
-        goto_next_start = {
-          ["]f"] = "@function.outer",
-          ["]c"] = "@class.outer",
-          ["]b"] = "@block.outer",
-        },
-        goto_previous_start = {
-          ["[f"] = "@function.outer",
-          ["[c"] = "@class.outer",
-          ["[b"] = "@block.outer",
-        },
-      },
-    },
-  }
-end, 0)
-
--- Define custom markdown code block queries for treesitter textobjects
-vim.treesitter.query.set("markdown", "textobjects", [[
-  (fenced_code_block) @code_block.outer
-  (fenced_code_block
-    (code_fence_content) @code_block.inner)
-]])
 
