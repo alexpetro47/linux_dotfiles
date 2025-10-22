@@ -78,8 +78,8 @@ bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspa
 bindsym $mod+m exec --no-startup-id spotify
 # bindsym $mod+e exec --no-startup-id nemo ~/Downloads
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
-# bindsym $mod+shift+d exec --no-startup-id drawio
-bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
+bindsym $mod+shift+d exec --no-startup-id drawio
+# bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
 # bindsym $mod+shift+d exec --no-startup-id google-chrome --app=https://excalidraw.com
 bindsym $mod+shift+e exec --no-startup-id openshot-qt
 bindsym $mod+b exec --no-startup-id dbgate

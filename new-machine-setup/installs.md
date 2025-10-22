@@ -257,6 +257,12 @@ git-credential-manager configure
 git config --global credential.credentialStore secretservice
 git clone https://Alidainc@dev.azure.com/Alidainc/AD/_git/ad_apps
 
+### DRAWIO
+curl -L https://github.com/jgraph/drawio-desktop/releases/download/v24.7.17/drawio-amd64-24.7.17.deb -o /tmp/drawio.deb
+sudo apt install /tmp/drawio.deb
+which drawio
+
+set theme to "sketch"
 
 #### DISABLE SLEEP/LOCK (PC)
 * linux mint GUI application "Power Manager" [SET]
