@@ -74,6 +74,7 @@ alias gdp='git --no-pager diff HEAD'
 alias gi='git init && touch .gitignore && git add .gitignore && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && git status'
 alias cl="claude"
 alias clc="claude -c"
+alias trashList="trash-list | sort -r | head -25"
 
 
 alias musicExport="rclone copy -v ~/Documents/prod/drive_workspace/ google_drive:music/workspace/"
@@ -179,4 +180,3 @@ zinit light-mode for \
 
 
 
-alias claude="/home/alexpetro/.claude/local/claude"

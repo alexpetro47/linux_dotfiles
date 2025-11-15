@@ -78,6 +78,7 @@ uv tool install vulture
 uv tool install pydeps
 uv tool install import-linter
 uv tool install pyright
+uv tool install pre-commit
 <!-- uv tool install git-filter-repo  -->
 
 ## BUN (NPM/NPX ALTERNATIVE)
@@ -263,6 +264,21 @@ sudo apt install /tmp/drawio.deb
 which drawio
 
 set theme to "sketch"
+
+### NGROK 
+[site](https://dashboard.ngrok.com/get-started/setup/linux)
+
+```
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok```
+
+then get auth token 
+`ngrok config add-authtoken 2xA3Dec....`
+
 
 #### DISABLE SLEEP/LOCK (PC)
 * linux mint GUI application "Power Manager" [SET]

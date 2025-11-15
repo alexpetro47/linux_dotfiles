@@ -1,6 +1,76 @@
 
 # alt+shift+r to refresh
 
+
+
+# ● Research Summary: Web Search TUI Tool Integration
+#
+#   Yes, absolutely! You can create a web search TUI tool and integrate it with both tmux and i3. Here's what I
+#   found:
+#
+#   Existing TUI Web Search Tools
+#
+#   1. googler (Google search)
+#   - Full TUI with interactive "omniprompt"
+#   - Navigate results with n/p, open in browser, fire new searches without exiting
+#   - Clean, fast, no ads
+#   - Python-based, requires Python 3.6+
+#   - Install: sudo apt install googler or from GitHub
+#
+#   2. ddgr (DuckDuckGo search)
+#   - Similar to googler but privacy-focused
+#   - Works over Tor network
+#   - Supports DuckDuckGo Bangs
+#   - Interactive TUI interface
+#
+#   3. Other options:
+#   - chawan - Full TUI web browser with CSS/JS support
+#   - ggl - CLI tool for Google/YouTube/Gmail/Wiki/GitHub searches
+#
+#   Integration Approaches
+#
+#   For tmux (what you're using):
+#
+#   # Add to ~/.config/tmux/tmux.conf
+#   bind-key g display-popup -E -w 90% -h 90% "googler --colors bjdxxy"
+#   bind-key G display-popup -E -w 90% -h 90% "ddgr"
+#
+#   - Uses display-popup (like you have for tms)
+#   - Opens in floating popup window
+#   - -E closes popup when command exits
+#   - Adjust width/height as needed
+#
+#   For i3 (alternative):
+#
+#   # Add to ~/.config/i3/config
+#   bindsym $mod+g exec --no-startup-id i3-sensible-terminal -e googler
+#   bindsym $mod+Shift+g exec --no-startup-id "alacritty --class floating -e googler"
+#
+#   # Make it float
+#   for_window [class="floating"] floating enable
+#
+#   Or use rofi for input then pass to googler:
+#   bindsym $mod+g exec --no-startup-id "i3-sensible-terminal -e googler $(rofi -dmenu -p 'Search:')"
+#
+#   Quick Setup (Recommended)
+#
+#   1. Install googler:
+#   sudo apt install googler  # Debian/Ubuntu
+#   # or
+#   pip install googler
+#   2. Add tmux binding:
+#   bind-key g display-popup -E -w 90% -h 90% "googler"
+#   3. Use it: Ctrl-w + g → type search → navigate results
+#
+#   Why This Works
+#
+#   - Both googler/ddgr are designed as TUI apps with omniprompt mode
+#   - tmux's display-popup creates floating windows (like your tms setup)
+#   - i3 can launch terminal windows with keybindings easily
+#   - No custom plugin needed - just keybinding + external command
+#
+#   Want me to install googler/ddgr and set up the tmux binding for you?
+
 set $mod Mod1 
 floating_modifier $mod
 # mod+left click to re-position tiled window
@@ -55,6 +125,14 @@ bindsym Ctrl+Shift+k workspace 6
 bindsym Ctrl+Shift+l workspace 7
 bindsym Ctrl+Shift+semicolon workspace 8
 
+# bindsym Ctrl+Shift+l workspace 7
+
+# Split navigation and modes
+# bindsym Ctrl+Shift+j focus left
+# bindsym Ctrl+Shift+semicolon focus right
+# bindsym Ctrl+Shift+k split v
+# bindsym Ctrl+Shift+h split h
+
 bindsym $mod+1 move container to workspace 1
 bindsym $mod+2 move container to workspace 2
 bindsym $mod+3 move container to workspace 3
@@ -68,7 +146,8 @@ bindsym $mod+Shift+r restart
 bindsym $mod+n focus next
 bindsym $mod+shift+F fullscreen toggle
 bindsym $mod+Escape exec systemctl suspend
-bindsym $mod+Ctrl+Escape exec --no-startup-id "tmux send-keys C-w C-s 2>/dev/null || true; sleep 1; systemctl poweroff"
+bindsym $mod+Shift+Escape exec --no-startup-id xset dpms force off
+# bindsym $mod+Ctrl+Escape exec --no-startup-id "tmux send-keys C-w C-s 2>/dev/null || true; sleep 1; systemctl poweroff"
 bindsym $mod+w kill
 bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
@@ -110,7 +189,7 @@ exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/
 # assign [class="alacritty"] 1
 # assign [class="Google-chrome"] 2
 assign [class="REAPER"] 4
-assign [class="Spotify"] 4
+assign [class="Spotify"] 5
 assign [class="dbgate"] 3
 assign [class="QjackCtl"] 5
 

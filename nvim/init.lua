@@ -45,7 +45,7 @@ vim.keymap.set({'n'}, '<C-p>', '<C-i>', {noremap = true, silent = true}) -- rema
 
 --Keybinds
 vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('n', 'R', 'J_', {noremap = true, silent = true})
+vim.keymap.set('n', 's', 'J_', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>R', ':! rm %<CR><Esc>:q!<CR>:echo "file removed"<CR>', { noremap = true, silent = true, desc = 'remove file' })
 vim.keymap.set('n', 'D', 'dd', {noremap=true, silent=true})
 vim.keymap.set('v', 'D', '"+ygvd', {noremap=true, silent=true})
@@ -56,8 +56,8 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("n", "Y", '"+y')
 vim.keymap.set('n', 'y`', '"+yi`', {desc = 'yank in backticks'})
-vim.keymap.set('v', 's', 'g_')
-vim.keymap.set('n', 's', '0vg_')
+vim.keymap.set('v', 'S', 'g_')
+vim.keymap.set('n', 'S', '0vg_')
 vim.keymap.set('n', 'U', '<C-r>', { noremap = true, silent = true })
 vim.keymap.set({"n", 'v'}, "x", '"_x', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>.', 'I <Esc>', {noremap=true, silent=true, desc="add space to start of line"})
@@ -66,6 +66,7 @@ vim.keymap.set('n', 'P', '"+p', {desc="paste from clipboard", noremap = true, si
 vim.keymap.set('n', '<leader>w', ':w<CR>', {desc="write buffer", noremap = true, silent = true})
 vim.keymap.set('n', 'Q', ':q!<CR>', {desc="quit buffer without write", noremap = true, silent = true})
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
+vim.keymap.set("n", "<leader>X", "_x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
 vim.keymap.set('n', '<leader>I', 'A[]()<esc>h"+pBa', {desc = 'insert link'})
 vim.keymap.set('n', '<leader>=', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
@@ -157,7 +158,7 @@ vim.keymap.set('n', '<leader>m', ':messages<CR>:horizontal resize 25<CR>', { des
 vim.keymap.set('n', '<leader>L', ':Lazy<CR>', { desc = 'lazy package manager'})
 
 -- Git
-vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L :vertical resize 45<CR>4j0', { desc = 'git status' })
+vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L<C-w>=4j0', { desc = 'git status' })
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'open git repo in browser' })
 vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'stash save' })
 vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'stash pop' })
@@ -167,6 +168,7 @@ vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
 vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge (changes -> current branch)' })
 
 vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
+vim.keymap.set('n', '<leader>gK', ':G switch ', { desc = 'switch (branch)' })
 vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
 vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
 vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
@@ -199,23 +201,73 @@ vim.keymap.set('n', '<leader>F', function()
        local actions = require('telescope.actions')
        local picker = require('telescope.actions.state').get_current_picker(bufnr)
        local multi = picker:get_multi_selection()
-       
+
        if #multi == 0 then
          actions.add_selection(bufnr)
          multi = picker:get_multi_selection()
        end
-       
+
        actions.close(bufnr)
-       
-       local dest_dir = vim.fn.getcwd()
-       local paths = {}
-       for _, entry in ipairs(multi) do
-         local src = vim.fn.expand('~/Downloads/') .. entry.value
-         vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest_dir))
-         table.insert(paths, src)
+
+       -- Open directory picker to choose destination
+       local cwd = vim.fn.getcwd()
+       local fd_results = vim.fn.systemlist({ "fd", "--type", "d", "--hidden", "--no-ignore" })
+       local dir_list = { cwd }  -- Current directory first
+       for _, dir in ipairs(fd_results) do
+         table.insert(dir_list, dir)
        end
-       vim.fn.setreg('+', table.concat(paths, '\n'))
-       vim.notify('Copied ' .. #multi .. ' files to ' .. dest_dir .. ' and paths to clipboard')
+
+       require('telescope.pickers').new({}, {
+         prompt_title = "Choose Destination Directory",
+         finder = require('telescope.finders').new_table({
+           results = dir_list,
+           entry_maker = function(entry)
+             local display = entry == cwd and ". (current dir)" or entry
+             return {
+               value = entry,
+               display = display,
+               ordinal = entry,
+               path = entry,
+             }
+           end,
+         }),
+         sorter = require('telescope.config').values.generic_sorter({}),
+         attach_mappings = function(_, dir_map)
+           local action_state = require('telescope.actions.state')
+
+           dir_map('i', '<CR>', function(dir_bufnr)
+             local selection = action_state.get_selected_entry()
+             actions.close(dir_bufnr)
+
+             local dest_dir = selection.path
+             local paths = {}
+             for _, entry in ipairs(multi) do
+               local src = vim.fn.expand('~/Downloads/') .. entry.value
+               vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest_dir))
+               table.insert(paths, src)
+             end
+             vim.fn.setreg('+', table.concat(paths, '\n'))
+             vim.notify('Copied ' .. #multi .. ' files to ' .. dest_dir .. ' and paths to clipboard')
+           end)
+
+           dir_map('n', '<CR>', function(dir_bufnr)
+             local selection = action_state.get_selected_entry()
+             actions.close(dir_bufnr)
+
+             local dest_dir = selection.path
+             local paths = {}
+             for _, entry in ipairs(multi) do
+               local src = vim.fn.expand('~/Downloads/') .. entry.value
+               vim.fn.system('cp ' .. vim.fn.shellescape(src) .. ' ' .. vim.fn.shellescape(dest_dir))
+               table.insert(paths, src)
+             end
+             vim.fn.setreg('+', table.concat(paths, '\n'))
+             vim.notify('Copied ' .. #multi .. ' files to ' .. dest_dir .. ' and paths to clipboard')
+           end)
+
+           return true
+         end,
+       }):find()
      end)
      return true
    end
@@ -300,7 +352,7 @@ require('lazy').setup({
           -- 'c' wraps with triple backticks on isolated lines
           ["c"] = {
             add = function()
-              return { { "", "```", "" }, { "", "```", "" } }
+              return { { "", "```"}, { "```"} }
             end,
           },
           -- 'i' wraps with italic (single *)
@@ -454,7 +506,7 @@ require('lazy').setup({
         },
         trash = {
           cmd = "trash-put",
-          require_confirm = false,
+          require_confirm = true,
         },
         filesystem_watchers = {
           enable = true,
@@ -463,7 +515,7 @@ require('lazy').setup({
           sorter = "case_sensitive",
         },
         view = {
-          width = 25,
+          width = 30,
         },
         renderer = {
           group_empty = true,
@@ -712,6 +764,18 @@ require('lazy').setup({
         (fenced_code_block
           (code_fence_content) @code_block.inner)
       ]])
+
+      -- Make % jump between opening/closing ``` using matchup pairs
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+          vim.b.match_words = vim.b.match_words or ""
+          if vim.b.match_words ~= "" then
+            vim.b.match_words = vim.b.match_words .. ","
+          end
+          vim.b.match_words = vim.b.match_words .. "^```.*$:^```$"
+        end
+      })
     end
   },
 
