@@ -180,3 +180,6 @@ zinit light-mode for \
 
 
 
+
+# opencode
+export PATH=/home/alexpetro/.opencode/bin:$PATH

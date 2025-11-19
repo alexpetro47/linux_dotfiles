@@ -27,6 +27,10 @@ nvim/lua/main_plugin/*
 tmux/*
 !tmux/tmux.conf
 
+!tmux-sessionizer/
+tmux-sessionizer/*
+!tmux-sessionizer/tmux-sessionizer.conf
+
 !zsh/
 zsh/*
 !zsh/.zshrc

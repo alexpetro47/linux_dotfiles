@@ -171,6 +171,7 @@ bindsym $mod+p exec --no-startup-id keepassxc
 # bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome --remote-debugging-port=9222
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
+bindsym $mod+shift+a exec --no-startup-id antigravity
 # bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
 
 exec --no-startup-id ~/.xsessionrc

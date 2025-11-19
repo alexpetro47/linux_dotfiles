@@ -265,6 +265,10 @@ which drawio
 
 set theme to "sketch"
 
+### tmux sessionizer
+curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer
+
+
 ### NGROK 
 [site](https://dashboard.ngrok.com/get-started/setup/linux)
 
