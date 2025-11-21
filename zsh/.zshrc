@@ -68,14 +68,13 @@ alias c="clear"
 alias x="exit"
 alias ls='eza -a --long --sort type --no-user --icons --group-directories-first'
 alias lsr='eza --icons --group-directories-first --tree'
-
 alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUnstaged changes:\033[0m" && git diff --numstat | awk '\''{printf "\033[32m+%s\033[0m \033[31m-%s\033[0m %s\n", $1, $2, $3}'\'' && echo -e "\n\033[1mUntracked files:\033[0m" && git ls-files --others --exclude-standard | while read file; do lines=$(wc -l < "$file"); printf "\033[32m+%s\033[0m %s\n" "$lines" "$file"; done'
 alias gdp='git --no-pager diff HEAD'
 alias gi='git init && touch .gitignore && git add .gitignore && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && git status'
 alias cl="claude"
 alias clc="claude -c"
+alias clr="claude --resume"
 alias trashList="trash-list | sort -r | head -25"
-
 
 alias musicExport="rclone copy -v ~/Documents/prod/drive_workspace/ google_drive:music/workspace/"
 alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/drive_workspace"
