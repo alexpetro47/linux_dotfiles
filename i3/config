@@ -165,6 +165,9 @@ bindsym $mod+shift+e exec --no-startup-id openshot-qt
 bindsym $mod+b exec --no-startup-id dbgate
 bindsym $mod+p exec --no-startup-id keepassxc
 
+# Voice dictation toggle (nerd-dictation with VOSK)
+bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-toggle
+
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)

@@ -127,6 +127,10 @@ memory-tools/*
 !memory-tools/m
 !memory-tools/info.md
 
+!nerd-dictation/
+nerd-dictation/*
+!nerd-dictation/nerd-dictation-toggle
+
 .env
 
 .m/memory.db

@@ -283,6 +283,63 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 then get auth token 
 `ngrok config add-authtoken 2xA3Dec....`
 
+### voice typing w. nerd dictation and vosk
+`git clone https://github.com/ideasman42/nerd-dictation.git ~/.config/nerd-dictation`
+`cd ~/.config/nerd-dictation`
+`uv venv`
+`uv pip install vosk`
+`wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip`
+`unzip vosk-model-small-en-us-0.15.zip`
+`mv vosk-model-small-en-us-0.15 model`
+`sudo apt install xdotool pulseaudio-utils`
+create ~/.local/bin/nerd-dictation-toggle:
+```
+#!/bin/bash
+NERD_DIR="$HOME/.config/nerd-dictation"
+ 
+if pgrep -f "nerd-dictation begin" > /dev/null; then
+# End dictation
+cd "$NERD_DIR" && uv run ./nerd-dictation end
+else
+# Begin dictation with auto-timeout after 1 second of silence
+cd "$NERD_DIR" && uv run ./nerd-dictation begin \
+--vosk-model-dir="$NERD_DIR/model" \
+--timeout=1 \
+--defer-output
+fi
+```
+Make it executable:
+`chmod +x ~/.local/bin/nerd-dictation-toggle`
+Add to ~/.config/i3/config:
+`bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/nerd-dictation-toggle`
+
+  Reload i3: $mod+Shift+r
+
+  How It Works
+
+  - Press $mod+Shift+v → starts recording
+  - Speak your text
+  - After 1 second of silence → auto-transcribes and types at cursor
+  - Press $mod+Shift+v again while recording → manually end
+
+  Alternative: No Timeout (Manual Toggle)
+
+  If you prefer explicit start/stop without auto-timeout, change the wrapper to:
+
+  #!/bin/bash
+  NERD_DIR="$HOME/.config/nerd-dictation"
+
+  if pgrep -f "nerd-dictation begin" > /dev/null; then
+      cd "$NERD_DIR" && uv run ./nerd-dictation end
+  else
+      cd "$NERD_DIR" && uv run ./nerd-dictation begin \
+          --vosk-model-dir="$NERD_DIR/model"
+  fi
+
+  Then: press once to start, speak as long as you want, press again to type everything.
+
+  Want me to help you set this up or check if you already have the necessary system dependencies?
+
 
 #### DISABLE SLEEP/LOCK (PC)
 * linux mint GUI application "Power Manager" [SET]
