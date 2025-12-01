@@ -2,6 +2,17 @@
 # INSTALLS
 
 
+## FONTS (NERD FONTS)
+*download from https://www.nerdfonts.com/font-downloads*
+```bash
+mkdir -p ~/.local/share/fonts
+unzip ~/Downloads/FiraCode.zip -d ~/.local/share/fonts/FiraCode
+fc-cache -fv
+```
+font family names for terminal configs:
+- `FiraCode Nerd Font` or `FiraCode Nerd Font Mono`
+
+
 ## APT
 sudo apt update
 
@@ -65,6 +76,8 @@ sudo apt install\
   miller\
   universal-ctags\
   inotify-tools\
+  fonts-hack-ttf\
+
 
 
 ## UV (PIP/PIPX ALTERNATIVE)

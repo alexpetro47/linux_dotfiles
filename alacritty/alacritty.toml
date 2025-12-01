@@ -14,11 +14,11 @@ multiplier = 5
 hide_when_typing = true
 
 [font]
-size = 13
-normal = {family = "JetBrainsMono NF", style = "Regular"}
-bold = {family = "JetBrainsMono NF", style = "Bold"}
-italic = {family = "JetBrainsMono NF", style = "Italic"}
-bold_italic = {family = "JetBrainsMono NF", style = "Bold Italic"}
+size = 22
+normal = {family = "FiraCode Nerd Font", style = "Regular"}
+bold = {family = "FiraCode Nerd Font", style = "Bold"}
+italic = {family = "FiraCode Nerd Font", style = "Italic"}
+bold_italic = {family = "FiraCode Nerd Font", style = "Bold Italic"}
 
 [terminal]
 osc52 = "CopyPaste"
