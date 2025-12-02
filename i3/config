@@ -121,10 +121,10 @@ bindsym Ctrl+k workspace 2
 bindsym Ctrl+l workspace 3
 bindsym Ctrl+semicolon workspace 4
 
-# bindsym Ctrl+Shift+j workspace 5
-# bindsym Ctrl+Shift+k workspace 6
-# bindsym Ctrl+Shift+l workspace 7
-# bindsym Ctrl+Shift+semicolon workspace 8
+bindsym Ctrl+Shift+j workspace 5
+bindsym Ctrl+Shift+k workspace 6
+bindsym Ctrl+Shift+l workspace 7
+bindsym Ctrl+Shift+semicolon workspace 8
 
 # bindsym Ctrl+Shift+l workspace 7
 
