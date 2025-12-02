@@ -9,9 +9,15 @@ mkdir -p ~/.local/share/fonts
 unzip ~/Downloads/FiraCode.zip -d ~/.local/share/fonts/FiraCode
 fc-cache -fv
 ```
-font family names for terminal configs:
-- `FiraCode Nerd Font` or `FiraCode Nerd Font Mono`
+font family names:
+- `FiraCode Nerd Font Mono` - monospace, use for terminals (alacritty, kitty, etc)
+- `FiraCode Nerd Font` - proportional, use for editors/IDEs
 
+set as system default (GTK3/4 apps, Chrome, etc):
+```bash
+gsettings set org.gnome.desktop.interface font-name 'FiraCode Nerd Font 11'
+gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 11'
+```
 
 ## APT
 sudo apt update
