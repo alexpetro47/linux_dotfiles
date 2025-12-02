@@ -515,7 +515,7 @@ require('lazy').setup({
           sorter = "case_sensitive",
         },
         view = {
-          width = 30,
+          width = 20,
         },
         renderer = {
           group_empty = true,
