@@ -124,7 +124,7 @@ vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 
 -- sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=92
+autocmd FileType markdown setlocal textwidth=72
 ]])
 
 
