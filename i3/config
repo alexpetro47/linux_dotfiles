@@ -145,7 +145,7 @@ bindsym $mod+8 move container to workspace 8
 
 bindsym $mod+Shift+r restart
 bindsym $mod+n focus next
-bindsym $mod+shift+F fullscreen toggle
+bindsym $mod+Shift+f exec --no-startup-id "i3-msg fullscreen toggle && polybar-msg cmd toggle"
 bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Shift+Escape exec --no-startup-id xset dpms force off
 # bindsym $mod+Ctrl+Escape exec --no-startup-id "tmux send-keys C-w C-s 2>/dev/null || true; sleep 1; systemctl poweroff"
@@ -174,7 +174,7 @@ bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-togg
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 # bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome --remote-debugging-port=9222
-bindsym $mod+s exec --no-startup-id "google-chrome --new-window https://google.com/aimode & sleep 0.1 && i3-msg '[id='$(xdotool getactivewindow)'] floating enable, resize set 80 ppt 80 ppt, move position center'"
+bindsym $mod+s exec --no-startup-id "google-chrome --new-window https://google.com/aimode & sleep 0.3 && i3-msg '[id='$(xdotool getactivewindow)'] floating enable, resize set 80 ppt 80 ppt, move position center'"
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+shift+a exec --no-startup-id antigravity
 # bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
