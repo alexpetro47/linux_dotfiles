@@ -174,6 +174,7 @@ bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-togg
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 # bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
 bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome --remote-debugging-port=9222
+bindsym $mod+s exec --no-startup-id "google-chrome --new-window https://google.com/aimode & sleep 0.1 && i3-msg '[id='$(xdotool getactivewindow)'] floating enable, resize set 80 ppt 80 ppt, move position center'"
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+shift+a exec --no-startup-id antigravity
 # bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
