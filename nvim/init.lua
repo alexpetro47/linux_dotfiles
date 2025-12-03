@@ -115,7 +115,7 @@ vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>p', ':let @+ = "@" . expand("%") . " " <CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
-vim.keymap.set('n', '<leader>O', ':! xdg-open %:p:h &<CR>', {desc = 'open current buffer directory in file manager'})
+vim.keymap.set('n', '<leader>E', ':! xdg-open %:p:h &<CR>', {desc = 'open current buffer directory in file manager'})
 
 --sneak
 vim.g["sneak#label"] = 1 --label mode for vim-sneak
@@ -481,6 +481,17 @@ require('lazy').setup({
         vim.keymap.set("n", "Y", api.fs.copy.absolute_path, opts("Copy Relative Path"))
         vim.keymap.set("n", "v", api.node.open.vertical, opts("open vertical split"))
         vim.keymap.set("n", "H", api.tree.change_root_to_node, opts("change root to node"))
+        vim.keymap.set("n", "<leader>h", function()
+          local node = api.tree.get_node_under_cursor()
+          local path = node.type == "directory" and node.absolute_path or vim.fn.fnamemodify(node.absolute_path, ":h")
+          vim.cmd("cd " .. vim.fn.fnameescape(path))
+          vim.notify("cwd: " .. path)
+        end, opts("cd to node directory"))
+        vim.keymap.set("n", "<leader>E", function()
+          local node = api.tree.get_node_under_cursor()
+          local path = node.type == "directory" and node.absolute_path or vim.fn.fnamemodify(node.absolute_path, ":h")
+          vim.fn.jobstart({"xdg-open", path}, {detach = true})
+        end, opts("open directory in file manager"))
       end
 
       require("nvim-tree").setup({
