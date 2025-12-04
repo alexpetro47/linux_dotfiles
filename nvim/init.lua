@@ -492,6 +492,31 @@ require('lazy').setup({
           local path = node.type == "directory" and node.absolute_path or vim.fn.fnamemodify(node.absolute_path, ":h")
           vim.fn.jobstart({"xdg-open", path}, {detach = true})
         end, opts("open directory in file manager"))
+        vim.keymap.set("n", "z", function()
+          local node = api.tree.get_node_under_cursor()
+          if not node or node.type == "directory" then return end
+          local filepath = node.absolute_path
+          if not filepath:match("%.zip$") then
+            vim.notify("Not a .zip file", vim.log.levels.WARN)
+            return
+          end
+          local dir = vim.fn.fnamemodify(filepath, ":h")
+          vim.fn.jobstart({"unzip", "-o", filepath, "-d", dir}, {
+            detach = false,
+            on_exit = function(_, code)
+              if code == 0 then
+                vim.schedule(function()
+                  api.tree.reload()
+                  vim.notify("Unzipped: " .. vim.fn.fnamemodify(filepath, ":t"))
+                end)
+              else
+                vim.schedule(function()
+                  vim.notify("Unzip failed (code " .. code .. ")", vim.log.levels.ERROR)
+                end)
+              end
+            end,
+          })
+        end, opts("unzip file in place"))
       end
 
       require("nvim-tree").setup({
