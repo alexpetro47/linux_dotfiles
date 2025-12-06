@@ -170,6 +170,10 @@ bindsym $mod+p exec --no-startup-id keepassxc
 # Voice dictation toggle (nerd-dictation with VOSK)
 bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-toggle
 
+# Scratchpad nvim - floating tmux session in /tmp
+for_window [instance="scratch_nvim"] floating enable, sticky enable, resize set 50 ppt 90 ppt, move position 0 65
+bindsym $mod+Shift+s exec --no-startup-id "alacritty --class scratch_nvim,scratch_nvim --working-directory /tmp -e tmux new-session -A -s scratchpad nvim"
+
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
 # 100% CPU = 1 core, i have 8 cores in the thinkpad (via `nproc`)
