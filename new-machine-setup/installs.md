@@ -142,6 +142,10 @@ cargo binstall\
 ### CLAUDE CODE
 curl -fsSL https://claude.ai/install.sh | bash
 
+#### MCP's
+`claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`
+
+
 ### **GOOGLE CHROME**
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
