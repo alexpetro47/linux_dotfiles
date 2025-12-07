@@ -287,6 +287,10 @@ set theme to "sketch"
 ### tmux sessionizer
 curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer
 
+### marp (markdown preview w. latex)
+wget -qO- https://github.com/marp-team/marp-cli/releases/latest/download/marp-cli-v4.2.3-linux.tar.gz \
+  | sudo tar xz -C /usr/local/bin
+
 
 ### NGROK 
 [site](https://dashboard.ngrok.com/get-started/setup/linux)
