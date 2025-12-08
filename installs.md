@@ -83,8 +83,12 @@ sudo apt install\
   universal-ctags\
   inotify-tools\
   fonts-hack-ttf\
+  zathura zathura-pdf-poppler\
 
-
+### DEFAULT APPLICATIONS
+```bash
+xdg-mime default org.pwmt.zathura.desktop application/pdf
+```
 
 ## UV (PIP/PIPX ALTERNATIVE)
 curl -LsSf https://astral.sh/uv/install.sh | sh

@@ -1,9 +1,11 @@
 
-on the creation of new files (such as a script or new config file) as
-user if they'd like to add the filepath to gitignore include patterns
-s.t. its saved with rest of configs
 
-on the installation of new software libraries, applications, etc - ask
-user if they'd like to create / update entries in
-new-machine-setup/installs.md for the commands used and any additional
-notes on configuration
+- on installation of new packages / libs / tools /
+applications, update @installs.md in apropriate section
+(e.g. apt / bun / cargo / uv) or create new entry (e.g. curl
+download)
+
+- on creation of new config files or scripts, add to
+@.gitignore with alternating whitelist pattern s.t. its
+tracked by git (e.g. `!installs.md` for installs.md doc)
+
