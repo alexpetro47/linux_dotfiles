@@ -4,7 +4,7 @@ reader: markdown+hard_line_breaks+strikeout+task_lists+smart+raw_tex
 writer: pdf
 
 standalone: true
-pdf-engine: pdflatex
+pdf-engine: xelatex
 
 wrap: preserve
 columns: 72

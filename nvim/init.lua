@@ -352,9 +352,7 @@ require('lazy').setup({
         surrounds = {
           -- 'c' wraps with triple backticks on isolated lines
           ["c"] = {
-            add = function()
-              return { { "", "```"}, { "```"} }
-            end,
+            add = { "```\n", "\n```" },
           },
           -- 'i' wraps with italic (single *)
           -- ["i"] = {

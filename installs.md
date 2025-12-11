@@ -20,9 +20,8 @@ gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Fon
 ```
 
 ## APT
-sudo apt update
-
-sudo apt install\
+```
+sudo apt update && sudo apt install\
   git\
   cmake\
   zsh\
@@ -37,16 +36,14 @@ sudo apt install\
   fzf\
   nemo\
   ripgrep\
-  lf\
   btop\
-  ranger\
-  trash-cli\
+  trash-cli\ 
+  zathura zathura-pdf-poppler\
+  vlc\
   flameshot\
   simplescreenrecorder\
   playerctl\
-  vlc\
   cbonsai\
-  lldb\
   python3\
   xclip\
   xdotool\
@@ -55,152 +52,90 @@ sudo apt install\
   unzip\
   wget\
   qjackctl\
-  neofetch\
-  jq\
-  gimp\
-  golang\
   zoxide\
   eza\
-  texlive-latex-recommended texlive-fonts-recommended\
-  texlive-latex-extra texlive-science texlive-pictures\
-  texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
-  redis-server\
-  ruby-dev\
   pandoc\
-  tree\
   openshot-qt\
   rclone\
   keepassxc\
-  rename\
   ffmpeg\
   caffeine\
+  texlive-latex-recommended texlive-fonts-recommended texlive-xetex\
+  texlive-latex-extra texlive-science texlive-pictures\
+  texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
   sqlite-3\
-  sqlitebrowser\
   libsqlite3-dev\
-  yq\
-  bat\
-  miller\
-  universal-ctags\
-  inotify-tools\
-  fonts-hack-ttf\
-  zathura zathura-pdf-poppler\
-
-### DEFAULT APPLICATIONS
-```bash
-xdg-mime default org.pwmt.zathura.desktop application/pdf
 ```
 
 ## UV (PIP/PIPX ALTERNATIVE)
+```
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
 uv tool install jupyterlab
 uv tool install ruff
-uv tool install pandoc-mermaid-filter
 uv tool install pytest
-uv tool install vulture
-uv tool install pydeps
-uv tool install import-linter
 uv tool install pyright
 uv tool install pre-commit
-<!-- uv tool install git-filter-repo  -->
-
-## BUN (NPM/NPX ALTERNATIVE)
-curl -fsSL https://bun.sh/install | bash
-
-bun add -g\
-  @google/gemini-cli\
-  markmap-cli\
-  plantuml-cli\
-  pm2\
-  repomix\
-  tsx\
-  vercel\
-  eslint\
-  nodemon\
-  serve\
-  prettier\
-  typescript\
-  vscode-langservers-extracted\
-  @mermaid-js/mermaid-cli\
-  puppeteer\
-  @biomejs/biome\
-  @ast-grep/cli\
-
-  cc-lsp\
+```
 
 ## RUST/CARGO/BINSTALL
+```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.zshrc
 rustup update
 cargo install cargo-binstall
 rustup component add rust-analyzer rust-src
-
 cargo binstall\
   xh\
   starship\
-  ast-grep\
   fd-find\
-  sd\
-  tree-sitter-cli\
+```
 
-### CLAUDE CODE
+## NODE/NPM (or use `bun add -g` for modern stack)
+```
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install nodejs
+```
+
+## CLAUDE CODE
+```
 curl -fsSL https://claude.ai/install.sh | bash
+claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
+claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking
+```
 
-#### MCP's
-`claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`
-
-
-### **GOOGLE CHROME**
+## **GOOGLE CHROME**
+```
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 sudo apt update
 sudo apt install google-chrome-stable
+```
 
-### SPOTIFY
+## SPOTIFY
+```
 curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 sudo apt update
 sudo apt install spotify-client
+```
 
-### CLOUDFLARED
-sudo mkdir -p --mode=0755 /usr/share/keyrings
-curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
-sudo apt update
-sudo apt install cloudflared
-
-### NEO4J
-curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/neotechnology.gpg
-echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
-sudo apt update && sudo apt install neo4j
-
-### NODE/NPM
-*(this is a dep for many installs, even if not for personal use)*
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install nodejs
-
-### LUA
-curl https://raw.githubusercontent.com/DhavalKapil/luaver/master/install.sh | sh
-source ~/.zshrc
-luaver install 5.4.7
-
-### LSP SERVERS
-go:   `go install golang.org/x/tools/gopls@latest`
-lua: via nvim mason
-ruby: `gem install --user-install solargraph`
-
-### BLENDER
-curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.tar.xz | tar -xJ -C ~/.local
-ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
-which blender
-
-~### DRAW IO~
+## DRAW IO
+```
+curl -L https://github.com/jgraph/drawio-desktop/releases/download/v24.7.17/drawio-amd64-24.7.17.deb -o /tmp/drawio.deb
+sudo apt install /tmp/drawio.deb
+which drawio
+```
+or
+```
 cd ~/Downloads
 wget https://github.com/jgraph/drawio-desktop/releases/download/v28.0.6/drawio-x86_64-28.0.6.AppImage
 chmod +x drawio-x86_64-28.0.6.AppImage
 mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
+```
 
-### REAPER
+set theme to "sketch"
+
+## REAPER
 1. download x86_64 version from reaper.fm -> Download
 2. extract from tar file...
   * `cd Downloads`
@@ -224,6 +159,55 @@ setup -> interface -> find scarlett hw:USB -> save
 start
 4. open reaper, should be good
 
+## LAZYGIT
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+tar xf lazygit.tar.gz lazygit
+sudo install lazygit -D -t /usr/local/bin/
+
+## GIT CREDENTIAL MANAGER
+```
+curl -L https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.deb -o /tmp/gcm.deb
+sudo dpkg -i /tmp/gcm.deb
+git-credential-manager configure
+git config --global credential.credentialStore secretservice
+git clone https://Alidainc@dev.azure.com/Alidainc/AD/_git/ad_apps
+```
+
+## tmux sessionizer
+`curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer`
+
+
+
+
+### CLOUDFLARED
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt update
+sudo apt install cloudflared
+
+### NEO4J
+```
+curl -fsSL https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/neotechnology.gpg
+echo "deb [signed-by=/usr/share/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest" | sudo tee /etc/apt/sources.list.d/neo4j.list
+sudo apt update && sudo apt install neo4j
+```
+
+### LUA
+```
+curl https://raw.githubusercontent.com/DhavalKapil/luaver/master/install.sh | sh
+source ~/.zshrc
+luaver install 5.4.7
+```
+
+### BLENDER
+```
+curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.tar.xz | tar -xJ -C ~/.local
+ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
+which blender
+```
+
 ### SQLITE VECTOR EXTENSION
 `mkdir -p ~/.local/lib && cd ~/.local/lib`
 `curl -L https://github.com/asg017/sqlite-vec/releases/download/v0.1.3/sqlite-vec-0.1.3-loadable-linux-x86_64.tar.gz | tar -xz && chmod +x vec0.so`
@@ -234,25 +218,17 @@ verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version
 `az login`
 
 ### D2
+```
 curl -fsSL https://d2lang.com/install.sh | sh
 which d2
+```
 
 ### DBGATE
 *download dbgate appimage from https://dbgate.org/download/*
+```
 mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
 which dbgate && dbgate &
-
-### AST-GREP
-(installed via cargo)
-ln -s ~/.config/ast-grep/sgconfig.yml ~/.sgconfig.yml
-
-### TREE-SITTER GRAMMARS
-`for python`
-cd ~/.config/tree-sitter
-git clone https://github.com/tree-sitter/tree-sitter-python
-cd tree-sitter-python
-tree-sitter generate
-tree-sitter dump-languages
+```
 
 ### DOCKER
 `sudo apt update && sudo apt install docker.io docker-compose`
@@ -272,33 +248,15 @@ tree-sitter dump-languages
 * Status: `sudo systemctl status redis-server`
 * Test connection: `redis-cli ping` (should return PONG)
 
-### LAZYGIT
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-tar xf lazygit.tar.gz lazygit
-sudo install lazygit -D -t /usr/local/bin/
 
-### GIT CREDENTIAL MANAGER
-curl -L https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.deb -o /tmp/gcm.deb
-sudo dpkg -i /tmp/gcm.deb
-git-credential-manager configure
-git config --global credential.credentialStore secretservice
-git clone https://Alidainc@dev.azure.com/Alidainc/AD/_git/ad_apps
-
-### DRAWIO
-curl -L https://github.com/jgraph/drawio-desktop/releases/download/v24.7.17/drawio-amd64-24.7.17.deb -o /tmp/drawio.deb
-sudo apt install /tmp/drawio.deb
-which drawio
-
-set theme to "sketch"
-
-### tmux sessionizer
-curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer
 
 ### marp (markdown preview w. latex)
 wget -qO- https://github.com/marp-team/marp-cli/releases/latest/download/marp-cli-v4.2.3-linux.tar.gz \
   | sudo tar xz -C /usr/local/bin
 
+### localsend (airdrop alternative)
+on app store for iphone
+on web https://web.localsend.org/
 
 ### NGROK 
 [site](https://dashboard.ngrok.com/get-started/setup/linux)
@@ -371,6 +329,10 @@ Add to ~/.config/i3/config:
 
   Want me to help you set this up or check if you already have the necessary system dependencies?
 
+### DEFAULT APPLICATIONS
+```bash
+xdg-mime default org.pwmt.zathura.desktop application/pdf
+```
 
 #### DISABLE SLEEP/LOCK (PC)
 * linux mint GUI application "Power Manager" [SET]
@@ -389,5 +351,7 @@ Add to ~/.config/i3/config:
 
 ~sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target~
 
+
+##### ADDITIONAL INSTALLS
 
 
