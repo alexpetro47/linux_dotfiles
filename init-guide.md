@@ -68,21 +68,6 @@ google.com/chrome
 download the .deb or whatever, install via gui. 
 *login to google*
 
-
-## GITHUB
-*(may need to:) generate net Personal Access Token (classic w. all boxes checked, no expiration) (settings->developer settings-> classic token)* sudo apt install gh 
-sudo apt install git gh
-gh auth login
-
-
-gh auth setup-git
-git config --global user.name "Alex Petro"
-git config --global user.email "alexmpetro@gmail.com"
-git config --list | grep user
-git config --global push.autoSetupRemote true
-git config --global init.defaultBranch main
-git config --global credential.helper store
-
 ## DOTFILES
 cd ~ 
 git clone https://github.com/justatoaster47/linux_dotfiles

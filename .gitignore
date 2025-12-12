@@ -130,5 +130,5 @@ nerd-dictation/*
 !nerd-dictation/nerd-dictation-toggle
 
 .env
-
+!2025-12-11-thinkpadp14s-setup.txt
 .m/memory.db

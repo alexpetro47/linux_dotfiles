@@ -1,23 +1,67 @@
 
 # INSTALLS
 
+## BOOT (UBUNTU SERVER)
 
-## FONTS (NERD FONTS)
-*download from https://www.nerdfonts.com/font-downloads*
+### creating bootable usb
+1. download Ubuntu Server ISO LTS from https://ubuntu.com/download/server
+2. insert USB into current machine
+3. get usb name (assumes `/dev/sdb`)
+   - `sudo fdisk -l`
+4. write ISO to USB 
 ```bash
-mkdir -p ~/.local/share/fonts
-unzip ~/Downloads/FiraCode.zip -d ~/.local/share/fonts/FiraCode
-fc-cache -fv
+sudo dd if=<step-1-ubuntu-iso-path> of=<step-3-usb-path> bs=4M status=progress && sync
 ```
-font family names:
-- `FiraCode Nerd Font Mono` - monospace, use for terminals (alacritty, kitty, etc)
-- `FiraCode Nerd Font` - proportional, use for editors/IDEs
+- (may auto eject after step 4)
+5. verify 
+`sudo file -s /dev/sdb`
+  - should return something like
+  "/dev/sdb: ISO 9660 CD-ROM filesystem data (DOS/MBR boot sector) 'Ubuntu-Server 24.04.3 LTS amd64' (bootable)"
+6. eject `sudo eject /dev/sdb`
 
-set as system default (GTK3/4 apps, Chrome, etc):
+### installation
+1. insert USB into target machine, turn on, boot from USB 
+   - interrupt (spam press "enter" on Lenovo sign coming up)
+   - check BIOS (F1 or F2) for disabled secure boot or
+   allowed 3rd party booters, boot mode: UEFI 
+   - then Boot Menu (F12) select `UEFI: SanDisk` or whatever
+   usb type you have, to select the OS to boot from
+2. select "Install Ubuntu Server" [on problematic devices,
+   can edit boot commands here: e.g. 'e' to edit, then add
+'quiet splash nomodeset' on the 'linux' line just before
+'---']
+3. installation choices:
+   - keyboard: English (US)
+   - network: configure ethernet/wifi as needed
+   - proxy: leave blank
+   - mirror: default
+   - storage: use entire disk (or manual partitioning)
+   - profile: set username/password/hostname
+   - SSH: enable OpenSSH server (optional)
+   - snaps: skip all (we'll install manually)
+4. reboot, remove USB when prompted
+
+### post-install base setup
 ```bash
-gsettings set org.gnome.desktop.interface font-name 'FiraCode Nerd Font 11'
-gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 11'
+sudo apt update && sudo apt upgrade -y
 ```
+
+### wiping usb (after installation)
+```bash
+lsblk -f                        # identify USB (sda/sdb, not nvme0n1)
+sudo wipefs -a /dev/sdb         # wipe signatures
+sudo sgdisk --zap-all /dev/sdb  # wipe partitions
+```
+
+### wiping old os (DESTRUCTIVE - careful)
+```bash
+lsblk
+# sudo wipefs -a /dev/nvme0n1
+# sudo sgdisk --zap-all /dev/nvme0n1
+```
+
+---
+
 
 ## APT
 ```
@@ -65,6 +109,12 @@ sudo apt update && sudo apt install\
   texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
   sqlite-3\
   libsqlite3-dev\
+
+  xorg mesa-utils\
+  greetd\
+  pipewire pipewire-pulse pipewire-jack wireplumber pavucontrol\
+  network-manager\
+
 ```
 
 ## UV (PIP/PIPX ALTERNATIVE)
@@ -88,6 +138,8 @@ cargo binstall\
   xh\
   starship\
   fd-find\
+
+  tuigreet\
 ```
 
 ## NODE/NPM (or use `bun add -g` for modern stack)
@@ -132,10 +184,101 @@ wget https://github.com/jgraph/drawio-desktop/releases/download/v28.0.6/drawio-x
 chmod +x drawio-x86_64-28.0.6.AppImage
 mv drawio-x86_64-28.0.6.AppImage ~/.local/bin/drawio
 ```
+- set theme to "sketch"
 
-set theme to "sketch"
+## FONTS (NERD FONTS)
+*download from https://www.nerdfonts.com/font-downloads*
+```bash
+mkdir -p ~/.local/share/fonts
+unzip ~/Downloads/FiraCode.zip -d ~/.local/share/fonts/FiraCode
+fc-cache -fv
+```
+- font family names:
+  - `FiraCode Nerd Font Mono` - monospace, use for terminals (alacritty, kitty, etc)
+  - `FiraCode Nerd Font` - proportional, use for editors/IDEs
+- set as system default (GTK3/4 apps, Chrome, etc) via `gsettings`
+- used in alacritty.toml and chrome settings
 
-## REAPER
+## GIT 
+**GIT TUI - LAZYGIT**
+```
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
+curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+tar xf lazygit.tar.gz lazygit
+sudo install lazygit -D -t /usr/local/bin/
+```
+
+**GIT CREDENTIAL MANAGER**
+```
+curl -L https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.deb -o /tmp/gcm.deb
+sudo dpkg -i /tmp/gcm.deb
+git-credential-manager configure
+```
+- then attempt clone / actions of any auth-req'd repo
+
+**GIT GLOBAL CONFIGS**
+```
+git config --global user.name "Alex Petro"
+git config --global user.email "alexmpetro@gmail.com"
+git config --list | grep user
+git config --global push.autoSetupRemote true
+git config --global init.defaultBranch main
+# git config --global credential.helper store
+# git config --global credential.credentialStore secretservice
+git config --global credential.helper /usr/bin/git-credential-manager
+git config --global credential.credentialStore secretservice
+```
+
+## TMUX SESSIONIZER
+`curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer`
+
+## DOCKER
+```
+sudo apt update && sudo apt install docker.io docker-compose
+sudo usermod -aG docker $USER
+docker --version
+sudo systemctl start docker
+newgrp docker
+```
+
+---
+
+## POST-INSTALL CONFIG
+
+### greetd (tuigreet)
+configure `/etc/greetd/config.toml`:
+```toml
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --cmd i3 --time --remember --asterisks"
+user = "greeter"
+```
+
+### systemctl enables
+```bash
+sudo systemctl enable greetd
+sudo systemctl enable NetworkManager
+sudo systemctl enable docker
+```
+
+### verify
+```bash
+glxinfo | grep "OpenGL renderer"   # xorg/mesa
+pactl info | grep "Server Name"    # pipewire
+nmcli device status                # networkmanager
+```
+
+### DEFAULT APPLICATIONS
+```bash
+xdg-mime default org.pwmt.zathura.desktop application/pdf
+```
+---
+
+# EXTRAS
+
+### REAPER
 1. download x86_64 version from reaper.fm -> Download
 2. extract from tar file...
   * `cd Downloads`
@@ -159,33 +302,27 @@ setup -> interface -> find scarlett hw:USB -> save
 start
 4. open reaper, should be good
 
-## LAZYGIT
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | \grep -Po '"tag_name": *"v\K[^"]*')
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-tar xf lazygit.tar.gz lazygit
-sudo install lazygit -D -t /usr/local/bin/
-
-## GIT CREDENTIAL MANAGER
+### DBGATE
+*download dbgate appimage from https://dbgate.org/download/*
 ```
-curl -L https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.deb -o /tmp/gcm.deb
-sudo dpkg -i /tmp/gcm.deb
-git-credential-manager configure
-git config --global credential.credentialStore secretservice
-git clone https://Alidainc@dev.azure.com/Alidainc/AD/_git/ad_apps
+mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
+which dbgate && dbgate &
 ```
-
-## tmux sessionizer
-`curl -o ~/.local/bin/tmux-sessionizer https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer && chmod +x ~/.local/bin/tmux-sessionizer`
-
-
-
 
 ### CLOUDFLARED
+```
 sudo mkdir -p --mode=0755 /usr/share/keyrings
 curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
 echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
 sudo apt update
 sudo apt install cloudflared
+```
+
+### AZURE CLI
+```
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+az login
+```
 
 ### NEO4J
 ```
@@ -213,54 +350,20 @@ which blender
 `curl -L https://github.com/asg017/sqlite-vec/releases/download/v0.1.3/sqlite-vec-0.1.3-loadable-linux-x86_64.tar.gz | tar -xz && chmod +x vec0.so`
 verify: `sqlite3 :memory: -cmd ".load $HOME/.local/lib/vec0" "SELECT vec_version();"`
 
-### AZURE CLI
-`curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
-`az login`
-
 ### D2
 ```
 curl -fsSL https://d2lang.com/install.sh | sh
 which d2
 ```
 
-### DBGATE
-*download dbgate appimage from https://dbgate.org/download/*
-```
-mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
-which dbgate && dbgate &
-```
-
-### DOCKER
-`sudo apt update && sudo apt install docker.io docker-compose`
-`sudo usermod -aG docker $USER`
-`docker --version`
-`sudo systemctl start docker`
-`newgrp docker`
-
-#### FIREWALL
-*for redis local setup, using firewall to block any external access*
-*redis config at: `/etc/redis/redis.conf`*
-* enable firewall: `sudo ufw enable`
-* allow only local access to redis port: `sudo ufw allow from 127.0.0.1 to any port 6379`
-* check applied: `sudo ufw status numbered`
----
-* Enable auto-start: `sudo systemctl enable redis-server`
-* Status: `sudo systemctl status redis-server`
-* Test connection: `redis-cli ping` (should return PONG)
-
-
-
 ### marp (markdown preview w. latex)
+```
 wget -qO- https://github.com/marp-team/marp-cli/releases/latest/download/marp-cli-v4.2.3-linux.tar.gz \
-  | sudo tar xz -C /usr/local/bin
-
-### localsend (airdrop alternative)
-on app store for iphone
-on web https://web.localsend.org/
+| sudo tar xz -C /usr/local/bin
+```
 
 ### NGROK 
 [site](https://dashboard.ngrok.com/get-started/setup/linux)
-
 ```
 curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
@@ -268,7 +371,6 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
   | sudo tee /etc/apt/sources.list.d/ngrok.list \
   && sudo apt update \
   && sudo apt install ngrok```
-
 then get auth token 
 `ngrok config add-authtoken 2xA3Dec....`
 
@@ -302,38 +404,6 @@ Make it executable:
 Add to ~/.config/i3/config:
 `bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/nerd-dictation-toggle`
 
-  Reload i3: $mod+Shift+r
-
-  How It Works
-
-  - Press $mod+Shift+v → starts recording
-  - Speak your text
-  - After 1 second of silence → auto-transcribes and types at cursor
-  - Press $mod+Shift+v again while recording → manually end
-
-  Alternative: No Timeout (Manual Toggle)
-
-  If you prefer explicit start/stop without auto-timeout, change the wrapper to:
-
-  #!/bin/bash
-  NERD_DIR="$HOME/.config/nerd-dictation"
-
-  if pgrep -f "nerd-dictation begin" > /dev/null; then
-      cd "$NERD_DIR" && uv run ./nerd-dictation end
-  else
-      cd "$NERD_DIR" && uv run ./nerd-dictation begin \
-          --vosk-model-dir="$NERD_DIR/model"
-  fi
-
-  Then: press once to start, speak as long as you want, press again to type everything.
-
-  Want me to help you set this up or check if you already have the necessary system dependencies?
-
-### DEFAULT APPLICATIONS
-```bash
-xdg-mime default org.pwmt.zathura.desktop application/pdf
-```
-
 #### DISABLE SLEEP/LOCK (PC)
 * linux mint GUI application "Power Manager" [SET]
   * sleep mode inactive for: Never
@@ -348,10 +418,26 @@ xdg-mime default org.pwmt.zathura.desktop application/pdf
   - AllowHibernation=no - disable hibernation
   - AllowHybridSleep=no - disable hybrid sleep
   - AllowSuspendThenHibernate=no - disable suspend-then-hibernate
-
 ~sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target~
 
+#### FIREWALL
+*for redis local setup, using firewall to block any external access*
+*redis config at: `/etc/redis/redis.conf`*
+* enable firewall: `sudo ufw enable`
+* allow only local access to redis port: `sudo ufw allow from 127.0.0.1 to any port 6379`
+* check applied: `sudo ufw status numbered`
+---
+* Enable auto-start: `sudo systemctl enable redis-server`
+* Status: `sudo systemctl status redis-server`
+* Test connection: `redis-cli ping` (should return PONG)
 
-##### ADDITIONAL INSTALLS
-
+#### KEYCHRON CONFIG IN BROWSER
+https://launcher.keychron.com/#/keymap
+https://usevia.app/
+- generally linux permissions issues.
+   * check usevia logs
+   * check `chrome://device-log`
+- fixes found:
+   `echo 'KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3434", ATTRS{idProduct}=="0340", MODE="0666"' | sudo tee /etc/udev/rules.d/92-viia.rules`
+   `sudo udevadm control --reload-rules && sudo udevadm trigger`
 
