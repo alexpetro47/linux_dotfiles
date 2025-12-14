@@ -153,6 +153,7 @@ sudo apt-get install nodejs
 curl -fsSL https://claude.ai/install.sh | bash
 claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
 claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking
+npx claude-plugins skills install @anthropics/claude-code/frontend-design
 ```
 
 ## **GOOGLE CHROME**

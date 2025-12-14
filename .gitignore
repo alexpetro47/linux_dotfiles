@@ -1,6 +1,9 @@
 #ignore all 
 *
+#ignore all 
+
 !CLAUDE.md
+!i.md
 
 !README.md
 
