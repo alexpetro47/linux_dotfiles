@@ -3,10 +3,20 @@
 # Package installation script - idempotent, safe to re-run
 # Reference: ../installs.md
 #
+# Options (set before running or export):
+#   INSTALL_I3_GAPS=1    Install i3-gaps instead of standard i3 (default: 1)
+#
+# Example: INSTALL_I3_GAPS=0 ./install-packages.sh  # install regular i3
+#
 set -e
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 installed() { command -v "$1" &>/dev/null; }
+
+# =============================================================================
+# OPTIONS
+# =============================================================================
+INSTALL_I3_GAPS="${INSTALL_I3_GAPS:-1}"
 
 # =============================================================================
 # APT PACKAGES
@@ -19,7 +29,6 @@ sudo apt install -y \
     zsh \
     tmux \
     alacritty \
-    i3 \
     polybar \
     rofi \
     feh \
@@ -58,6 +67,46 @@ sudo apt install -y \
     greetd \
     pipewire-jack \
     pavucontrol
+
+# =============================================================================
+# I3 / I3-GAPS
+# =============================================================================
+if [ "$INSTALL_I3_GAPS" = "1" ]; then
+    if ! installed i3 || ! i3 --version 2>/dev/null | grep -q gaps; then
+        log "Installing i3-gaps..."
+        # Install build dependencies
+        sudo apt install -y \
+            libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev \
+            libxcb-util0-dev libxcb-icccm4-dev libyajl-dev \
+            libstartup-notification0-dev libxcb-randr0-dev \
+            libev-dev libxcb-cursor-dev libxcb-xinerama0-dev \
+            libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev \
+            autoconf libxcb-xrm0 libxcb-xrm-dev automake libxcb-shape0-dev \
+            meson ninja-build
+
+        # Clone and build i3-gaps
+        I3_GAPS_DIR="/tmp/i3-gaps-build"
+        rm -rf "$I3_GAPS_DIR"
+        git clone https://github.com/Airblader/i3 "$I3_GAPS_DIR"
+        cd "$I3_GAPS_DIR"
+        mkdir -p build && cd build
+        meson --prefix /usr/local ..
+        ninja
+        sudo ninja install
+        cd ~
+        rm -rf "$I3_GAPS_DIR"
+        log "i3-gaps installed"
+    else
+        log "i3-gaps already installed"
+    fi
+else
+    if ! installed i3; then
+        log "Installing standard i3..."
+        sudo apt install -y i3
+    else
+        log "i3 already installed"
+    fi
+fi
 
 # =============================================================================
 # UV (Python package manager)
