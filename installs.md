@@ -1,44 +1,44 @@
 
 # INSTALLS
 
-## BOOT (UBUNTU SERVER)
+## BOOT (UBUNTU DESKTOP MINIMAL)
 
 ### creating bootable usb
-1. download Ubuntu Server ISO LTS from https://ubuntu.com/download/server
+1. download Ubuntu Desktop ISO LTS from https://ubuntu.com/download/desktop
 2. insert USB into current machine
 3. get usb name (assumes `/dev/sdb`)
    - `sudo fdisk -l`
-4. write ISO to USB 
+4. write ISO to USB
 ```bash
 sudo dd if=<step-1-ubuntu-iso-path> of=<step-3-usb-path> bs=4M status=progress && sync
 ```
 - (may auto eject after step 4)
-5. verify 
+5. verify
 `sudo file -s /dev/sdb`
   - should return something like
-  "/dev/sdb: ISO 9660 CD-ROM filesystem data (DOS/MBR boot sector) 'Ubuntu-Server 24.04.3 LTS amd64' (bootable)"
+  "/dev/sdb: ISO 9660 CD-ROM filesystem data (DOS/MBR boot sector) 'Ubuntu 24.04.1 LTS amd64' (bootable)"
 6. eject `sudo eject /dev/sdb`
 
 ### installation
-1. insert USB into target machine, turn on, boot from USB 
+1. insert USB into target machine, turn on, boot from USB
    - interrupt (spam press "enter" on Lenovo sign coming up)
    - check BIOS (F1 or F2) for disabled secure boot or
-   allowed 3rd party booters, boot mode: UEFI 
+   allowed 3rd party booters, boot mode: UEFI
    - then Boot Menu (F12) select `UEFI: SanDisk` or whatever
    usb type you have, to select the OS to boot from
-2. select "Install Ubuntu Server" [on problematic devices,
+2. select "Try or Install Ubuntu" [on problematic devices,
    can edit boot commands here: e.g. 'e' to edit, then add
 'quiet splash nomodeset' on the 'linux' line just before
 '---']
 3. installation choices:
+   - language: English
    - keyboard: English (US)
-   - network: configure ethernet/wifi as needed
-   - proxy: leave blank
-   - mirror: default
-   - storage: use entire disk (or manual partitioning)
-   - profile: set username/password/hostname
-   - SSH: enable OpenSSH server (optional)
-   - snaps: skip all (we'll install manually)
+   - connect to wifi (optional, can do post-install)
+   - **install type: Minimal installation** (fewer default apps)
+   - updates: download updates while installing (optional)
+   - storage: erase disk and install (or manual partitioning)
+   - timezone: select your location
+   - profile: set name/username/password/hostname
 4. reboot, remove USB when prompted
 
 ### post-install base setup
@@ -76,7 +76,6 @@ sudo apt update && sudo apt install\
   rofi\
   feh\
   picom\
-  mintupgrade\
   fzf\
   nemo\
   ripgrep\
@@ -88,7 +87,6 @@ sudo apt update && sudo apt install\
   simplescreenrecorder\
   playerctl\
   cbonsai\
-  python3\
   xclip\
   xdotool\
   curl\
@@ -107,13 +105,11 @@ sudo apt update && sudo apt install\
   texlive-latex-recommended texlive-fonts-recommended texlive-xetex\
   texlive-latex-extra texlive-science texlive-pictures\
   texlive-bibtex-extra latexmk texlive-font-utils texlive-plain-generic\
-  sqlite-3\
+  sqlite3\
   libsqlite3-dev\
-
-  xorg mesa-utils\
   greetd\
-  pipewire pipewire-pulse pipewire-jack wireplumber pavucontrol\
-  network-manager\
+  pipewire-jack\
+  pavucontrol\
 
 ```
 
@@ -153,9 +149,11 @@ sudo apt-get install nodejs
 curl -fsSL https://claude.ai/install.sh | bash
 claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
 claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking
-claude mcp add chrome-devtools npx chrome-devtools-mcp@latest
+claude mcp add playwright -s user -- npx '@playwright/mcp@latest'
 npx claude-plugins skills install @anthropics/claude-code/frontend-design
 ```
+**deprecated**
+* claude mcp add chrome-devtools -s user -- npx chrome-devtools-mcp@latest
 
 ## **GOOGLE CHROME**
 ```
@@ -163,6 +161,14 @@ wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dear
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 sudo apt update
 sudo apt install google-chrome-stable
+```
+
+## BRAVE
+```
+sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+sudo apt update
+sudo apt install brave-browser
 ```
 
 ## SPOTIFY
@@ -303,6 +309,11 @@ xdg-mime default org.pwmt.zathura.desktop application/pdf
 setup -> interface -> find scarlett hw:USB -> save
 start
 4. open reaper, should be good
+
+---
+or use pulseaudio volume control (standard linux install) to
+only select hx stomp as output device e.g. for hearing
+songsterr tabs, youtube, etc
 
 ### DBGATE
 *download dbgate appimage from https://dbgate.org/download/*

@@ -132,6 +132,13 @@ memory-tools/*
 nerd-dictation/*
 !nerd-dictation/nerd-dictation-toggle
 
+!new-machine-setup/
+new-machine-setup/*
+!new-machine-setup/bootstrap.sh
+!new-machine-setup/install-packages.sh
+!new-machine-setup/link-configs.sh
+!new-machine-setup/configure-system.sh
+
 .env
 !2025-12-11-thinkpadp14s-setup.txt
 .m/memory.db
