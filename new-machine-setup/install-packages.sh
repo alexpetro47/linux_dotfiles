@@ -195,10 +195,6 @@ else
     log "Go already installed"
 fi
 
-log "Installing Go tools..."
-go install github.com/jorgerojas26/lazysql@latest || true
-go install github.com/xo/usql@latest || true
-
 # =============================================================================
 # NODE/NPM
 # =============================================================================
@@ -265,6 +261,18 @@ else
 fi
 
 # =============================================================================
+# TMUX SESSIONIZER
+# =============================================================================
+if [ ! -f "$HOME/.local/bin/tmux-sessionizer" ]; then
+    log "Installing tmux-sessionizer..."
+    mkdir -p "$HOME/.local/bin"
+    curl -o "$HOME/.local/bin/tmux-sessionizer" https://raw.githubusercontent.com/ThePrimeagen/tmux-sessionizer/master/tmux-sessionizer
+    chmod +x "$HOME/.local/bin/tmux-sessionizer"
+else
+    log "tmux-sessionizer already installed"
+fi
+
+# =============================================================================
 # GIT CREDENTIAL MANAGER
 # =============================================================================
 if ! installed git-credential-manager; then
@@ -290,6 +298,9 @@ log "Configuring Claude Code MCP servers..."
 claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
 claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
 claude mcp add playwright -s user -- npx '@playwright/mcp@latest' 2>/dev/null || true
+
+log "Installing Claude Code plugins..."
+npx claude-plugins skills install @anthropics/claude-code/frontend-design 2>/dev/null || true
 
 # =============================================================================
 # FONTS (FiraCode Nerd Font)
@@ -332,6 +343,20 @@ if [ "$INSTALL_EXTRAS" = "1" ]; then
         sudo apt install -y cloudflared
     else
         log "cloudflared already installed"
+    fi
+
+    # LAZYSQL + USQL (DB TUIs)
+    if ! installed lazysql; then
+        log "Installing lazysql..."
+        go install github.com/jorgerojas26/lazysql@latest || true
+    else
+        log "lazysql already installed"
+    fi
+    if ! installed usql; then
+        log "Installing usql..."
+        go install github.com/xo/usql@latest || true
+    else
+        log "usql already installed"
     fi
 
     # D2 (diagram language)
@@ -385,9 +410,22 @@ if [ "$INSTALL_EXTRAS" = "1" ]; then
         log "blender already installed"
     fi
 
+    # DRAW.IO (diagrams)
+    if ! installed drawio; then
+        log "Installing draw.io..."
+        DRAWIO_VERSION="28.0.6"
+        curl -fLo /tmp/drawio.AppImage "https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWIO_VERSION}/drawio-x86_64-${DRAWIO_VERSION}.AppImage"
+        chmod +x /tmp/drawio.AppImage
+        mkdir -p "$HOME/.local/bin"
+        mv /tmp/drawio.AppImage "$HOME/.local/bin/drawio"
+    else
+        log "draw.io already installed"
+    fi
+
     log "Extras installation complete!"
     log "Manual steps remaining:"
     log "  - ngrok: run 'ngrok config add-authtoken <token>'"
+    log "  - draw.io: set theme to 'sketch' in app preferences"
     log "  - See installs.md EXTRAS section for: REAPER, DBGATE, NEO4J, AZURE CLI, LUA, nerd-dictation"
 else
     log "Skipping extras (set INSTALL_EXTRAS=1 to include)"
