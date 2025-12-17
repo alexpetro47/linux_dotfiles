@@ -49,6 +49,8 @@ if [ "$NEW" = "light" ]; then
 else
     GTK_THEME="Adwaita-dark"
 fi
+# Update settings.ini (GTK3 apps read this)
+sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$GTK_THEME/" "$HOME/.config/gtk-3.0/settings.ini"
 # xfconf notifies running GTK apps (Thunar)
 xfconf-query -c xsettings -p /Net/ThemeName -s "$GTK_THEME"
 gsettings set org.gnome.desktop.interface color-scheme "prefer-$NEW" 2>/dev/null

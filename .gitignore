@@ -189,6 +189,10 @@ tinted-theming/*
 tinted-theming/tinty/*
 !tinted-theming/tinty/config.toml
 
+!gtk-3.0/
+gtk-3.0/*
+!gtk-3.0/settings.ini
+
 # Tinty-generated color files (not tracked - regenerated via `tinty apply`)
 alacritty/colors.toml
 tmux/colors.conf
