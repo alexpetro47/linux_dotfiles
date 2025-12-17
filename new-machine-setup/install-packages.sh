@@ -1,18 +1,12 @@
 #!/bin/bash
 #
 # Package installation script - idempotent, safe to re-run
-# Reference: ../installs.md
+# Optional/extras: see installs.md for manual install commands
 #
 # Options (set before running or export):
-#   INSTALL_I3_GAPS=1    Install i3-gaps instead of standard i3 (default: 1)
-#   INSTALL_EXTRAS=0     Install optional extras (cloudflared, ngrok, d2, etc.) (default: 0)
 #   SKIP_LATEX=1         Skip texlive packages (~500MB) (default: 0)
-#   SKIP_MEDIA=1         Skip media packages (vlc, ffmpeg, qjackctl, etc.) (default: 0)
-#   SKIP_BROWSERS=1      Skip browser installs (chrome, brave, spotify) (default: 0)
 #
-# Example: INSTALL_I3_GAPS=0 ./install-packages.sh       # install regular i3
-# Example: INSTALL_EXTRAS=1 ./install-packages.sh        # include optional extras
-# Example: SKIP_LATEX=1 SKIP_MEDIA=1 ./install-packages.sh  # minimal install
+# Example: SKIP_LATEX=1 ./install-packages.sh  # skip large LaTeX packages
 #
 set -e
 
@@ -22,11 +16,7 @@ installed() { command -v "$1" &>/dev/null; }
 # =============================================================================
 # OPTIONS
 # =============================================================================
-INSTALL_I3_GAPS="${INSTALL_I3_GAPS:-1}"
-INSTALL_EXTRAS="${INSTALL_EXTRAS:-0}"
 SKIP_LATEX="${SKIP_LATEX:-0}"
-SKIP_MEDIA="${SKIP_MEDIA:-0}"
-SKIP_BROWSERS="${SKIP_BROWSERS:-0}"
 
 # =============================================================================
 # APT PACKAGES
@@ -73,13 +63,6 @@ sudo apt install -y \
     pipewire-jack \
     pavucontrol
 
-# Media packages (skip with SKIP_MEDIA=1)
-if [ "$SKIP_MEDIA" != "1" ]; then
-    log "Installing media packages..."
-    sudo apt install -y vlc ffmpeg qjackctl openshot-qt simplescreenrecorder
-else
-    log "Skipping media packages (SKIP_MEDIA=1)"
-fi
 
 # LaTeX packages (skip with SKIP_LATEX=1)
 if [ "$SKIP_LATEX" != "1" ]; then
@@ -93,43 +76,13 @@ else
 fi
 
 # =============================================================================
-# I3 / I3-GAPS
+# I3
 # =============================================================================
-if [ "$INSTALL_I3_GAPS" = "1" ]; then
-    if ! installed i3 || ! i3 --version 2>/dev/null | grep -q gaps; then
-        log "Installing i3-gaps..."
-        # Install build dependencies
-        sudo apt install -y \
-            libxcb1-dev libxcb-keysyms1-dev libpango1.0-dev \
-            libxcb-util0-dev libxcb-icccm4-dev libyajl-dev \
-            libstartup-notification0-dev libxcb-randr0-dev \
-            libev-dev libxcb-cursor-dev libxcb-xinerama0-dev \
-            libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev \
-            autoconf libxcb-xrm0 libxcb-xrm-dev automake libxcb-shape0-dev \
-            meson ninja-build
-
-        # Clone and build i3-gaps
-        I3_GAPS_DIR="/tmp/i3-gaps-build"
-        rm -rf "$I3_GAPS_DIR"
-        git clone https://github.com/Airblader/i3 "$I3_GAPS_DIR"
-        cd "$I3_GAPS_DIR"
-        mkdir -p build && cd build
-        meson --prefix /usr/local ..
-        ninja
-        sudo ninja install
-        cd ~
-        rm -rf "$I3_GAPS_DIR"
-        log "i3-gaps installed"
-    else
-        log "i3-gaps already installed"
-    fi
+if ! installed i3; then
+    log "Installing i3..."
+    sudo apt install -y i3
 else
-    if ! installed i3; then
-        log "Installing standard i3..."
-        sudo apt install -y i3
-    else
-        log "i3 already installed"
-    fi
+    log "i3 already installed"
 fi
 
 # =============================================================================
@@ -207,43 +160,39 @@ else
 fi
 
 # =============================================================================
-# BROWSERS (skip with SKIP_BROWSERS=1)
+# BROWSERS
 # =============================================================================
-if [ "$SKIP_BROWSERS" != "1" ]; then
-    # GOOGLE CHROME
-    if ! installed google-chrome; then
-        log "Installing Google Chrome..."
-        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg 2>/dev/null || true
-        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-        sudo apt update
-        sudo apt install -y google-chrome-stable
-    else
-        log "Google Chrome already installed"
-    fi
-
-    # BRAVE
-    if ! installed brave-browser; then
-        log "Installing Brave..."
-        sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-        sudo apt update
-        sudo apt install -y brave-browser
-    else
-        log "Brave already installed"
-    fi
-
-    # SPOTIFY
-    if ! installed spotify; then
-        log "Installing Spotify..."
-        curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
-        echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
-        sudo apt update
-        sudo apt install -y spotify-client
-    else
-        log "Spotify already installed"
-    fi
+# GOOGLE CHROME
+if ! installed google-chrome; then
+    log "Installing Google Chrome..."
+    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg 2>/dev/null || true
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+    sudo apt update
+    sudo apt install -y google-chrome-stable
 else
-    log "Skipping browsers (SKIP_BROWSERS=1)"
+    log "Google Chrome already installed"
+fi
+
+# BRAVE
+if ! installed brave-browser; then
+    log "Installing Brave..."
+    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+    sudo apt update
+    sudo apt install -y brave-browser
+else
+    log "Brave already installed"
+fi
+
+# SPOTIFY
+if ! installed spotify; then
+    log "Installing Spotify..."
+    curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+    echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+    sudo apt update
+    sudo apt install -y spotify-client
+else
+    log "Spotify already installed"
 fi
 
 # =============================================================================
@@ -317,6 +266,43 @@ else
 fi
 
 # =============================================================================
+# CURSOR THEME (ComixCursors-White)
+# =============================================================================
+if [ ! -d /usr/share/icons/ComixCursors-White ]; then
+    log "Installing ComixCursors theme..."
+    sudo apt install -y comixcursors-righthanded
+else
+    log "ComixCursors theme already installed"
+fi
+
+# =============================================================================
+# NEOVIM (from source)
+# =============================================================================
+if ! installed nvim; then
+    log "Installing Neovim from source..."
+    sudo apt install -y ninja-build gettext cmake unzip curl build-essential
+    git clone --branch stable --depth 1 https://github.com/neovim/neovim.git /tmp/neovim-build
+    cd /tmp/neovim-build
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+    cd ~
+    rm -rf /tmp/neovim-build
+else
+    log "Neovim already installed"
+fi
+
+# =============================================================================
+# TPM (tmux plugin manager)
+# =============================================================================
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    log "Installing TPM..."
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    log "TPM installed - run 'prefix + I' in tmux to install plugins"
+else
+    log "TPM already installed"
+fi
+
+# =============================================================================
 # DOCKER
 # =============================================================================
 if ! installed docker; then
@@ -325,110 +311,6 @@ if ! installed docker; then
     sudo usermod -aG docker "$USER"
 else
     log "Docker already installed"
-fi
-
-# =============================================================================
-# EXTRAS (optional, set INSTALL_EXTRAS=1 to enable)
-# =============================================================================
-if [ "$INSTALL_EXTRAS" = "1" ]; then
-    log "Installing optional extras..."
-
-    # CLOUDFLARED
-    if ! installed cloudflared; then
-        log "Installing cloudflared..."
-        sudo mkdir -p --mode=0755 /usr/share/keyrings
-        curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-        echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
-        sudo apt update
-        sudo apt install -y cloudflared
-    else
-        log "cloudflared already installed"
-    fi
-
-    # LAZYSQL + USQL (DB TUIs)
-    if ! installed lazysql; then
-        log "Installing lazysql..."
-        go install github.com/jorgerojas26/lazysql@latest || true
-    else
-        log "lazysql already installed"
-    fi
-    if ! installed usql; then
-        log "Installing usql..."
-        go install github.com/xo/usql@latest || true
-    else
-        log "usql already installed"
-    fi
-
-    # D2 (diagram language)
-    if ! installed d2; then
-        log "Installing d2..."
-        curl -fsSL https://d2lang.com/install.sh | sh
-    else
-        log "d2 already installed"
-    fi
-
-    # MARP (markdown presentations)
-    if ! installed marp; then
-        log "Installing marp..."
-        wget -qO- https://github.com/marp-team/marp-cli/releases/latest/download/marp-cli-v4.2.3-linux.tar.gz \
-            | sudo tar xz -C /usr/local/bin
-    else
-        log "marp already installed"
-    fi
-
-    # NGROK
-    if ! installed ngrok; then
-        log "Installing ngrok..."
-        curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-            | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-        echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
-            | sudo tee /etc/apt/sources.list.d/ngrok.list
-        sudo apt update
-        sudo apt install -y ngrok
-        log "NOTE: Run 'ngrok config add-authtoken <token>' after to authenticate"
-    else
-        log "ngrok already installed"
-    fi
-
-    # SQLITE-VEC extension
-    if [ ! -f "$HOME/.local/lib/vec0.so" ]; then
-        log "Installing sqlite-vec extension..."
-        mkdir -p "$HOME/.local/lib"
-        curl -L https://github.com/asg017/sqlite-vec/releases/download/v0.1.3/sqlite-vec-0.1.3-loadable-linux-x86_64.tar.gz \
-            | tar -xz -C "$HOME/.local/lib"
-        chmod +x "$HOME/.local/lib/vec0.so"
-    else
-        log "sqlite-vec already installed"
-    fi
-
-    # BLENDER
-    if ! installed blender; then
-        log "Installing blender..."
-        curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.tar.xz | tar -xJ -C ~/.local
-        ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
-    else
-        log "blender already installed"
-    fi
-
-    # DRAW.IO (diagrams)
-    if ! installed drawio; then
-        log "Installing draw.io..."
-        DRAWIO_VERSION="28.0.6"
-        curl -fLo /tmp/drawio.AppImage "https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWIO_VERSION}/drawio-x86_64-${DRAWIO_VERSION}.AppImage"
-        chmod +x /tmp/drawio.AppImage
-        mkdir -p "$HOME/.local/bin"
-        mv /tmp/drawio.AppImage "$HOME/.local/bin/drawio"
-    else
-        log "draw.io already installed"
-    fi
-
-    log "Extras installation complete!"
-    log "Manual steps remaining:"
-    log "  - ngrok: run 'ngrok config add-authtoken <token>'"
-    log "  - draw.io: set theme to 'sketch' in app preferences"
-    log "  - See installs.md EXTRAS section for: REAPER, DBGATE, NEO4J, AZURE CLI, LUA, nerd-dictation"
-else
-    log "Skipping extras (set INSTALL_EXTRAS=1 to include)"
 fi
 
 log "Package installation complete!"
