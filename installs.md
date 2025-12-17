@@ -87,8 +87,10 @@ sudo apt update && sudo apt install\
   simplescreenrecorder\
   playerctl\
   cbonsai\
+  tty-clock\
   xclip\
   xdotool\
+  inotify-tools\
   curl\
   zip\
   unzip\
@@ -134,8 +136,29 @@ cargo binstall\
   xh\
   starship\
   fd-find\
-
+  tinty\
   tuigreet\
+```
+
+### tinty setup (centralized theming)
+```bash
+tinty install                              # download schemes + shell template
+tinty sync                                 # sync configured templates
+tinty apply base16-gruvbox-dark-medium     # apply default theme
+# Add to .zshrc: eval "$(tinty init zsh)"  # apply on shell start
+```
+- config: `~/.config/tinted-theming/tinty/config.toml`
+- usage: `tinty apply base16-everforest-dark-medium`
+- list schemes: `tinty list | grep everforest`
+
+## GO
+```bash
+# Install Go
+GO_VERSION="1.23.4"
+curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -o /tmp/go.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+rm /tmp/go.tar.gz
+# Add to PATH in .zshrc: export PATH="/usr/local/go/bin:$HOME/go/bin:$PATH"
 ```
 
 ## NODE/NPM (or use `bun add -g` for modern stack)
@@ -315,12 +338,22 @@ or use pulseaudio volume control (standard linux install) to
 only select hx stomp as output device e.g. for hearing
 songsterr tabs, youtube, etc
 
-### DBGATE
+### DBGATE (GUI)
 *download dbgate appimage from https://dbgate.org/download/*
 ```
 mv ~/Downloads/dbgate-*.AppImage ~/.local/bin/dbgate && chmod +x ~/.local/bin/dbgate
 which dbgate && dbgate &
 ```
+
+**TUI alternative: lazysql + usql**
+```bash
+# lazysql - TUI browser (postgres, mysql, sqlite, mssql, oracle)
+go install github.com/jorgerojas26/lazysql@latest
+
+# usql - CLI/scriptable (all DBs, pipe support)
+go install github.com/xo/usql@latest
+```
+*sync connections via env vars - see .zshrc DB_* exports*
 
 ### CLOUDFLARED
 ```
