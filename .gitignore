@@ -180,7 +180,7 @@ new-machine-setup/*
 
 !theme-mode
 !theme-schemes
-!focus-mode
+# focus-mode is transient state, not tracked
 !lazygit-keys.md
 
 !tinted-theming/
