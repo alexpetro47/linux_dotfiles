@@ -9,6 +9,21 @@
 
 !.gitignore
 
+# Bootstrap infrastructure
+!manifest.json
+!install.sh
+
+# Assets (cursors, wallpapers, keyboard layouts)
+!assets/
+!assets/cursors/
+!assets/cursors/ComixCursorWhite/
+!assets/cursors/ComixCursorWhite/**
+!assets/wallpapers/
+!assets/wallpapers/wallpaper.png
+!assets/keychron_v4_ansi.layout.json
+assets/fonts/
+# fonts downloaded via install.sh, not tracked
+
 !make_installs.sh
 !make_symlinks.sh
 
