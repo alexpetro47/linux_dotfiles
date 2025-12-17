@@ -43,6 +43,7 @@ log "Creating symlinks..."
 _link_config "$CONFIG_DIR/zsh/.zshrc" "$HOME/.zshrc"
 _link_config "$CONFIG_DIR/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
 _link_config "$CONFIG_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
+_link_config "$CONFIG_DIR/.xsessionrc" "$HOME/.xsessionrc"
 
 # =============================================================================
 # XDG_CONFIG_HOME SYMLINKS
@@ -78,6 +79,16 @@ fi
 # Nerd dictation toggle (if exists)
 if [ -f "$CONFIG_DIR/nerd-dictation/nerd-dictation-toggle" ]; then
     _link_config "$CONFIG_DIR/nerd-dictation/nerd-dictation-toggle" "$HOME/.local/bin/nerd-dictation-toggle"
+fi
+
+# Theme toggle (gruvbox dark/light)
+if [ -f "$CONFIG_DIR/new-machine-setup/toggle-theme" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/toggle-theme" "$HOME/.local/bin/toggle-theme"
+fi
+
+# Focus mode toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/focus-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/focus-toggle" "$HOME/.local/bin/focus-toggle"
 fi
 
 # =============================================================================
