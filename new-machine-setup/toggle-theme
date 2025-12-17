@@ -43,6 +43,16 @@ else
     pgrep picom >/dev/null || picom -b
 fi
 
+# Toggle GTK theme (Thunar, Brave when set to GTK+ theme)
+if [ "$NEW" = "light" ]; then
+    GTK_THEME="Adwaita"
+else
+    GTK_THEME="Adwaita-dark"
+fi
+# xfconf notifies running GTK apps (Thunar)
+xfconf-query -c xsettings -p /Net/ThemeName -s "$GTK_THEME"
+gsettings set org.gnome.desktop.interface color-scheme "prefer-$NEW" 2>/dev/null
+
 # Save new state
 echo "$NEW" > "$STATE_FILE"
 
