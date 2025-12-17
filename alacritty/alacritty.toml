@@ -1,3 +1,5 @@
+# Tinty-managed colors (tinty apply <scheme>)
+import = ["~/.config/alacritty/colors.toml"]
 
 [window]
 decorations = "Full"
@@ -15,7 +17,7 @@ hide_when_typing = true
 
 [font]
 # size = 22
-size = 13
+size = 16
 normal = {family = "FiraCode Nerd Font Mono", style = "Regular"}
 bold = {family = "FiraCode Nerd Font Mono", style = "Bold"}
 italic = {family = "FiraCode Nerd Font Mono", style = "Regular"}
