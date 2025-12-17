@@ -1,88 +1,53 @@
 # New Machine Setup
 
-Automated setup scripts for fresh Ubuntu installs. Idempotent - safe to re-run.
+Automated dotfiles bootstrap for fresh Ubuntu. Idempotent - safe to re-run.
 
 ## Quick Start
 
 ```bash
-# Full auto (i3-gaps, standard packages)
+# Full install (i3-gaps, all standard packages)
 curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/new-machine-setup/bootstrap.sh | bash
 
-# With standard i3 (no gaps)
-curl -fsSL ... | INSTALL_I3_GAPS=0 bash
-
-# With optional extras (cloudflared, ngrok, d2, marp, sqlite-vec, blender)
-curl -fsSL ... | INSTALL_EXTRAS=1 bash
-
-# Minimal (skip latex, media, browsers)
+# Minimal install
 curl -fsSL ... | SKIP_LATEX=1 SKIP_MEDIA=1 SKIP_BROWSERS=1 bash
+
+# With extras (cloudflared, ngrok, d2, blender, etc.)
+curl -fsSL ... | INSTALL_EXTRAS=1 bash
 ```
+
+## Flags
+
+| Flag | Effect |
+|------|--------|
+| `INSTALL_I3_GAPS=0` | Standard i3 instead of i3-gaps |
+| `INSTALL_EXTRAS=1` | Optional tools (cloudflared, ngrok, d2, marp, blender) |
+| `SKIP_LATEX=1` | Skip texlive (~500MB) |
+| `SKIP_MEDIA=1` | Skip vlc, ffmpeg, qjackctl |
+| `SKIP_BROWSERS=1` | Skip chrome, brave, spotify |
 
 ## Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `bootstrap.sh` | Entry point - clones repo, orchestrates phases |
-| `install-packages.sh` | APT, UV, Rust, Go, Node, browsers, fonts |
-| `link-configs.sh` | Symlinks dotfiles to home directory |
-| `configure-system.sh` | Git config, systemctl enables, greetd setup |
+| `bootstrap.sh` | Entry point - clones repo, runs all phases |
+| `install-packages.sh` | APT, UV, Cargo, Go, Node, browsers, fonts |
+| `link-configs.sh` | Symlinks dotfiles to home |
+| `configure-system.sh` | Git config, systemd, greetd |
 | `verify.sh` | Post-install verification |
 
-## Phases
+## After Install
 
-1. **Bootstrap** - Clone repo to `~/.config`
-2. **Packages** - Install all tooling
-3. **Symlinks** - Link configs (`~/.zshrc` → `~/.config/zsh/.zshrc`, etc.)
-4. **System config** - Git, systemd, greetd
-5. **Verify** - Check installation success
+1. Reboot
+2. `git-credential-manager configure`
+3. `rclone config`
+4. Import KeePassXC database
 
-## Options
-
-Set environment variables before running:
+## Re-run Individual Phases
 
 ```bash
-INSTALL_I3_GAPS=1    # Use i3-gaps (default: 1)
-INSTALL_EXTRAS=1     # Include optional extras (default: 0)
-SKIP_LATEX=1         # Skip texlive (~500MB)
-SKIP_MEDIA=1         # Skip vlc, ffmpeg, qjackctl, etc.
-SKIP_BROWSERS=1      # Skip chrome, brave, spotify
+cd ~/.config/new-machine-setup
+./install-packages.sh
+./verify.sh
 ```
 
-## Adding New Packages
-
-1. **APT package**: Add to `install-packages.sh` APT section
-2. **UV tool**: Add `uv tool install <pkg>` line
-3. **Cargo tool**: Add to `cargo binstall` line
-4. **Go tool**: Add `go install <pkg>@latest` line
-5. **Custom install**: Add new section with `if ! installed <cmd>` guard
-
-Always update `../installs.md` to match.
-
-## Post-Install Manual Steps
-
-- Reboot for shell/greetd changes
-- `git-credential-manager configure` + authenticate
-- `rclone config` for cloud sync
-- Import KeePassXC database
-
-## Logs
-
-Bootstrap logs to `~/bootstrap-<timestamp>.log`
-
-## Updating
-
-```bash
-cd ~/.config
-git pull
-./new-machine-setup/install-packages.sh  # re-run any phase
-```
-
-## File Locations
-
-| Config | Source | Target |
-|--------|--------|--------|
-| zsh | `~/.config/zsh/.zshrc` | `~/.zshrc` |
-| tmux | `~/.config/tmux/tmux.conf` | `~/.tmux.conf` |
-| nvim | `~/.config/nvim/` | (XDG default) |
-| i3 | `~/.config/i3/config` | (XDG default) |
-| alacritty | `~/.config/alacritty/` | (XDG default) |
+Logs: `~/bootstrap-<timestamp>.log`
