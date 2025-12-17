@@ -135,7 +135,7 @@ btop/*
 !.xsessionrc
 
 !init-guide.md
-!installs.md
+!installs_old.md
 
 !starship
 starship/*

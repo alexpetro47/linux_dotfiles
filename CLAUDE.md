@@ -3,14 +3,10 @@
   sudo apt update && sudo apt install -y curl && curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/new-machine-setup/bootstrap.sh | bash
   ```
 
-- on installation of new packages / libs / tools /
-applications, update @installs.md in apropriate section
-(e.g. apt / bun / cargo / uv) or create new entry (e.g. curl
-download)
-
-- on creation of new config files or scripts, add to
-@.gitignore with alternating whitelist pattern s.t. its
-tracked by git (e.g. `!installs.md` for installs.md doc)
+- on config changes, update the appropriate file:
+  - **new package**: add to `install-packages.sh` (idempotent pattern)
+  - **new config file**: add whitelist entry to `.gitignore`, add symlink to `link-configs.sh`
+  - **substituting tool**: update install script, aliases in `.zshrc`, any referencing configs
 
 - new machine setup:
   ```bash
@@ -38,32 +34,25 @@ tracked by git (e.g. `!installs.md` for installs.md doc)
   - verify.sh: auto-runs at end, re-run after reboot for full verification
   - manual after: reboot, git-credential-manager, rclone config, keepassxc
 
-- installs.md structure:
-  - everything above `# EXTRAS` = standard installation (automated via install-packages.sh)
-  - everything at/below `# EXTRAS` = optional/personal notes (requires `INSTALL_EXTRAS=1` or manual steps)
+## Package & Config Change Workflow
 
-## Adding New Packages
+| Change Type | Where to Update |
+|-------------|-----------------|
+| APT package | `install-packages.sh` → apt block |
+| UV/Cargo/Go tool | `install-packages.sh` → respective section |
+| Custom binary | `install-packages.sh` → new `if ! installed` block |
+| Claude MCP/plugin | `install-packages.sh` → claude section |
+| New config file | `.gitignore` whitelist + `link-configs.sh` symlink |
+| Tool substitution | install script + `.zshrc` aliases + referencing configs |
+| Optional/large tool | `install-packages.sh` EXTRAS section with `INSTALL_EXTRAS` guard |
 
-**Principle**: installs.md is documentation/reference, install-packages.sh is automation. Keep them in sync.
-
-| Package Type | Where to Add in install-packages.sh | installs.md Section |
-|--------------|-------------------------------------|---------------------|
-| APT package | `sudo apt install -y` block (lines ~37-74) | `## APT` |
-| UV tool | `uv tool install <pkg>` block (lines ~147-151) | `## UV` |
-| Cargo tool | `cargo binstall -y ... <pkg>` line (~173) | `## RUST/CARGO/BINSTALL` |
-| Go tool | Add `go install <pkg>@latest` in EXTRAS | `## EXTRAS > TUI alternative` |
-| Custom curl/binary | New `if ! installed <cmd>` section | New `## SECTION` |
-| Claude MCP server | `claude mcp add` block (lines ~301-304) | `## CLAUDE CODE` |
-| Claude plugin | `npx claude-plugins` block (line ~307) | `## CLAUDE CODE` |
-| Optional/large tool | Add to EXTRAS section with `INSTALL_EXTRAS` guard | `# EXTRAS` section |
-
-**Flags** (set before running `install-packages.sh`):
-- `INSTALL_EXTRAS=1` - include cloudflared, ngrok, d2, marp, sqlite-vec, blender, draw.io, lazysql, usql
-- `SKIP_LATEX=1` - skip ~500MB texlive packages
-- `SKIP_MEDIA=1` - skip vlc, ffmpeg, qjackctl, openshot, simplescreenrecorder
+**Flags** (env vars before running `install-packages.sh`):
+- `INSTALL_EXTRAS=1` - cloudflared, ngrok, d2, marp, sqlite-vec, blender, lazysql, usql
+- `SKIP_LATEX=1` - skip ~500MB texlive
+- `SKIP_MEDIA=1` - skip vlc, ffmpeg, qjackctl, openshot
 - `SKIP_BROWSERS=1` - skip chrome, brave, spotify
 
-**Idempotency pattern**:
+**Idempotency pattern** (for custom installs):
 ```bash
 if ! installed <cmd>; then
     log "Installing <pkg>..."
@@ -72,12 +61,6 @@ else
     log "<pkg> already installed"
 fi
 ```
-
-**Workflow**:
-1. Add to install-packages.sh using pattern above
-2. Add corresponding entry to installs.md (same section)
-3. Test: `./install-packages.sh` (idempotent, safe to re-run)
-4. Commit both files together
 
 - theme system (gruvbox dark/light):
   - `Alt+Shift+t` toggles between dark and light mode
