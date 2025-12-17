@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Toggle between dark and light themes using tinty
+# Configure schemes in ~/.config/theme-schemes
+#
+
+CONFIG_DIR="$HOME/.config"
+STATE_FILE="$CONFIG_DIR/theme-mode"
+SCHEMES_FILE="$CONFIG_DIR/theme-schemes"
+
+# Default schemes (can be overridden in theme-schemes file)
+DARK_SCHEME="base16-gruvbox-dark-medium"
+LIGHT_SCHEME="base16-gruvbox-light-medium"
+
+# Load custom schemes if file exists
+if [ -f "$SCHEMES_FILE" ]; then
+    source "$SCHEMES_FILE"
+fi
+
+# Initialize state file if missing
+[ ! -f "$STATE_FILE" ] && echo "dark" > "$STATE_FILE"
+
+CURRENT=$(cat "$STATE_FILE")
+
+if [ "$CURRENT" = "dark" ]; then
+    NEW="light"
+    SCHEME="$LIGHT_SCHEME"
+else
+    NEW="dark"
+    SCHEME="$DARK_SCHEME"
+fi
+
+# Apply theme via tinty (handles alacritty, polybar, i3)
+tinty apply "$SCHEME"
+
+# Refresh tmux (tinty hook may not reach server from i3 context)
+tmux source-file ~/.config/tmux/colors.conf 2>/dev/null || true
+
+# Toggle picom (transparency off in light mode)
+if [ "$NEW" = "light" ]; then
+    pkill picom 2>/dev/null
+else
+    pgrep picom >/dev/null || picom -b
+fi
+
+# Save new state
+echo "$NEW" > "$STATE_FILE"
+
+notify-send "Theme" "$NEW: $SCHEME" 2>/dev/null || echo "$NEW: $SCHEME"

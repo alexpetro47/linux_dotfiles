@@ -26,7 +26,7 @@ supported-systems = ["base16", "base24"]
 name = "tinted-tmux"
 path = "https://github.com/tinted-theming/tinted-tmux"
 themes-dir = "colors"
-hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/tmux/colors.conf && tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/tmux/colors.conf && tmux source-file ~/.config/tmux/colors.conf 2>/dev/null || true"
 supported-systems = ["base16", "base24"]
 
 # Polybar

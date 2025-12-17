@@ -1,0 +1,11 @@
+# Theme toggle configuration
+# Find schemes with: tinty list | grep <name>
+
+DARK_SCHEME="base16-gruvbox-dark-medium"
+LIGHT_SCHEME="base16-rose-pine-dawn"
+
+# Alternatives:
+# DARK_SCHEME="base16-nord"
+# LIGHT_SCHEME="base16-solarized-light"
+# DARK_SCHEME="base16-everforest-dark-medium"
+# LIGHT_SCHEME="base16-everforest-light-medium"

@@ -176,9 +176,10 @@ new-machine-setup/*
 !new-machine-setup/configure-system.sh
 !new-machine-setup/verify.sh
 !new-machine-setup/focus-toggle
-!new-machine-setup/README.md
+!new-machine-setup/toggle-theme
 
 !theme-mode
+!theme-schemes
 !focus-mode
 !lazygit-keys.md
 
