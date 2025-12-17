@@ -10,7 +10,7 @@ vim.o.swapfile = false
 vim.o.undofile = true
 vim.o.timeoutlen = 1000
 vim.o.updatetime = 50
-vim.wo.signcolumn = 'yes'
+vim.wo.signcolumn = 'no'
 vim.wo.number = true
 vim.o.scrolloff = 6
 vim.o.wrap = false
@@ -158,32 +158,8 @@ vim.keymap.set('n', '<leader>c8', ":!markmap % --offline <CR>", {desc = 'md -> m
 vim.keymap.set('n', '<leader>m', ':messages<CR>:horizontal resize 25<CR>', { desc = 'nvim messages'})
 vim.keymap.set('n', '<leader>L', ':Lazy<CR>', { desc = 'lazy package manager'})
 
--- Git
-vim.keymap.set('n', '<leader>gs', ':Git<CR><C-w>L<C-w>=4j0', { desc = 'git status' })
+-- Git (minimal - use lazygit via C-w g for full git TUI)
 vim.keymap.set('n', '<leader>gB', ':GBrowse<CR>', { desc = 'open git repo in browser' })
-vim.keymap.set('n', '<leader>gSs', ':Git stash <CR>', { desc = 'stash save' })
-vim.keymap.set('n', '<leader>gSp', ':Git stash pop <CR>', { desc = 'stash pop' })
-vim.keymap.set('n', '<leader>gl', ':Git log --all<CR><C-w>L<C-w>', { desc = 'log view' })
-
-vim.keymap.set('n', '<leader>gb', ':Git branch ', { desc = 'branch ' })
-vim.keymap.set('n', '<leader>gm', ':Git merge ', { desc = 'merge (changes -> current branch)' })
-
-vim.keymap.set('n', '<leader>gk', ':G checkout ', { desc = 'checkout' })
-vim.keymap.set('n', '<leader>gK', ':G switch ', { desc = 'switch (branch)' })
-vim.keymap.set('n', '<leader>ga', ':Gwrite<CR>', { desc = 'stage file changes' })
-vim.keymap.set('n', '<leader>gA', ':Glcd<CR> :Git add .<CR>', { desc = 'stage all changes' })
-vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'push' })
-vim.keymap.set('n', '<leader>gF', ':Git push --force-with-lease<CR>', { desc = 'force push (with lease)' })
-vim.keymap.set('n', '<leader>gP', ':Git pull <CR>', { desc = 'pull (rebase)' })
-vim.keymap.set('n', '<leader>gcm', ':Git commit -m ""<Left>', { desc = 'commit with message' })
-vim.keymap.set('n', '<leader>gcs', ":Git commit -m 'standard commit message'<CR>", { desc = 'commit with standard message' })
-vim.keymap.set('n', '<leader>gca', ":Git commit --amend <CR>", { desc = 'amend last commit with staged changes' })
-vim.keymap.set('n', '<leader>grs', ':Git reset %<CR>', { desc = 'unstage current file' })
-vim.keymap.set('n', '<leader>grS', ':Git reset .<CR>', { desc = 'unstage all files' })
-vim.keymap.set('n', '<leader>grX', ':! git checkout -- .<CR>:! git clean -fd<CR>', { desc = 'delete all unstaged changes'})
-vim.keymap.set('n', '<leader>grx', ':! git checkout -- %<CR>', { desc = "delete current file's unstaged changes"})
-vim.keymap.set('n', '<leader>grH', ':! git clean -fd && git reset --hard HEAD<CR> ', { desc = 'reset to HEAD (staged, unstaged, local changes, untracked)'})
-vim.keymap.set('n', '<leader>grR', ':Git reset ', { desc = 'delete git history back to <commit hash>, deleted history is staged, local state kept' })
        
 vim.keymap.set('n', '<leader>F', function()
  require('telescope.pickers').new({}, {
