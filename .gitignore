@@ -29,6 +29,7 @@ nvim/lua/main_plugin/*
 !tmux/
 tmux/*
 !tmux/tmux.conf
+!tmux/git-status.sh
 
 !tmux-sessionizer/
 tmux-sessionizer/*
@@ -42,6 +43,10 @@ zsh/*
 !alacritty/
 alacritty/*
 !alacritty/alacritty.toml
+!alacritty/themes/
+alacritty/themes/*
+!alacritty/themes/gruvbox-dark.toml
+!alacritty/themes/gruvbox-light.toml
 
 !i3/
 i3/*
@@ -52,6 +57,8 @@ i3/*
 polybar/*
 !polybar/launch.sh
 !polybar/config.ini
+!polybar/colors-dark.ini
+!polybar/colors-light.ini
 
 !wallpapers/
 wallpapers/*
@@ -77,6 +84,19 @@ lf/*
 !aider
 aider/*
 !aider/.aider.conf.yml
+
+!lazysql/
+lazysql/*
+!lazysql/config.toml
+
+!usql/
+usql/*
+!usql/config.yaml
+
+!keepassxc/
+keepassxc/*
+!keepassxc/sync-secrets.sh
+# secrets.kdbx synced to Google Drive, not git
 
 !rclone
 rclone/*
@@ -138,6 +158,25 @@ new-machine-setup/*
 !new-machine-setup/install-packages.sh
 !new-machine-setup/link-configs.sh
 !new-machine-setup/configure-system.sh
+!new-machine-setup/verify.sh
+!new-machine-setup/focus-toggle
+!new-machine-setup/README.md
+
+!theme-mode
+!focus-mode
+!lazygit-keys.md
+
+!tinted-theming/
+tinted-theming/*
+!tinted-theming/tinty/
+tinted-theming/tinty/*
+!tinted-theming/tinty/config.toml
+
+# Tinty-generated color files (not tracked - regenerated via `tinty apply`)
+alacritty/colors.toml
+tmux/colors.conf
+polybar/colors.ini
+i3/colors
 
 .env
 !2025-12-11-thinkpadp14s-setup.txt
