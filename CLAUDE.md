@@ -42,6 +42,43 @@ tracked by git (e.g. `!installs.md` for installs.md doc)
   - everything above `# EXTRAS` = standard installation (automated via install-packages.sh)
   - everything at/below `# EXTRAS` = optional/personal notes (requires `INSTALL_EXTRAS=1` or manual steps)
 
+## Adding New Packages
+
+**Principle**: installs.md is documentation/reference, install-packages.sh is automation. Keep them in sync.
+
+| Package Type | Where to Add in install-packages.sh | installs.md Section |
+|--------------|-------------------------------------|---------------------|
+| APT package | `sudo apt install -y` block (lines ~37-74) | `## APT` |
+| UV tool | `uv tool install <pkg>` block (lines ~147-151) | `## UV` |
+| Cargo tool | `cargo binstall -y ... <pkg>` line (~173) | `## RUST/CARGO/BINSTALL` |
+| Go tool | Add `go install <pkg>@latest` in EXTRAS | `## EXTRAS > TUI alternative` |
+| Custom curl/binary | New `if ! installed <cmd>` section | New `## SECTION` |
+| Claude MCP server | `claude mcp add` block (lines ~301-304) | `## CLAUDE CODE` |
+| Claude plugin | `npx claude-plugins` block (line ~307) | `## CLAUDE CODE` |
+| Optional/large tool | Add to EXTRAS section with `INSTALL_EXTRAS` guard | `# EXTRAS` section |
+
+**Flags** (set before running `install-packages.sh`):
+- `INSTALL_EXTRAS=1` - include cloudflared, ngrok, d2, marp, sqlite-vec, blender, draw.io, lazysql, usql
+- `SKIP_LATEX=1` - skip ~500MB texlive packages
+- `SKIP_MEDIA=1` - skip vlc, ffmpeg, qjackctl, openshot, simplescreenrecorder
+- `SKIP_BROWSERS=1` - skip chrome, brave, spotify
+
+**Idempotency pattern**:
+```bash
+if ! installed <cmd>; then
+    log "Installing <pkg>..."
+    # install commands
+else
+    log "<pkg> already installed"
+fi
+```
+
+**Workflow**:
+1. Add to install-packages.sh using pattern above
+2. Add corresponding entry to installs.md (same section)
+3. Test: `./install-packages.sh` (idempotent, safe to re-run)
+4. Commit both files together
+
 - theme system (gruvbox dark/light):
   - `Alt+Shift+t` toggles between dark and light mode
   - affects: alacritty, polybar, tmux (unified gruvbox palette)
