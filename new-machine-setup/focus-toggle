@@ -1,0 +1,17 @@
+#!/bin/bash
+# focus-toggle - Toggle notification suppression for focus mode
+# Manual setup:
+#   ln -s ~/.config/new-machine-setup/focus-toggle ~/.local/bin/focus-toggle
+#   i3 binding: bindsym $mod+z exec --no-startup-id ~/.local/bin/focus-toggle
+
+FOCUS_FILE="$HOME/.config/focus-mode"
+
+if [ -f "$FOCUS_FILE" ]; then
+    rm "$FOCUS_FILE"
+    dunstctl set-paused false
+    notify-send "Focus OFF"
+else
+    notify-send "Focus ON" && sleep 0.5
+    dunstctl set-paused true
+    touch "$FOCUS_FILE"
+fi

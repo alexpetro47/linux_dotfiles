@@ -1,0 +1,17 @@
+# lazysql config - connections sync with usql via env vars
+# Uncomment and set DB_* env vars in ~/.config/zsh/.zshrc
+
+# [[database]]
+# Name = "local-pg"
+# Provider = "postgres"
+# URL = "${DB_LOCAL_PG}"
+
+# [[database]]
+# Name = "local-mysql"
+# Provider = "mysql"
+# URL = "${DB_LOCAL_MYSQL}"
+
+# [[database]]
+# Name = "local-sqlite"
+# Provider = "sqlite"
+# URL = "${DB_LOCAL_SQLITE}"

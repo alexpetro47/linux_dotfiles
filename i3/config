@@ -104,17 +104,19 @@ bindsym XF86AudioPlay exec playerctl -p spotify play-pause
 bindsym XF86AudioNext exec playerctl -p spotify next
 bindsym XF86AudioPrev exec playerctl -p spotify previous
 
+# Tinty-managed colors (tinty apply <scheme>)
+include ~/.config/i3/colors
+
 font pango:JetBrains Mono NF
-gaps inner 20
-gaps top 26
 
 for_window [class="^.*"] border pixel 2
 # for_window [class="^.*"] title_format ""
 focus_on_window_activation focus
 
-client.focused          #FF0000 #FFFFFF #000000
-client.unfocused        #888888 #222222 #888888
-client.urgent           #FF0000 #FFFFFF #000000
+# Base16 colors: border, background, text, indicator, child_border
+client.focused          $base0D $base00 $base05 $base0D $base0D
+client.unfocused        $base01 $base00 $base03 $base01 $base01
+client.urgent           $base08 $base08 $base00 $base08 $base08
 
 bindsym Ctrl+j workspace 1
 bindsym Ctrl+k workspace 2
@@ -163,12 +165,23 @@ bindsym $mod+shift+d exec --no-startup-id drawio
 # bindsym $mod+shift+d exec --no-startup-id xdg-open "https://excalidraw.com"
 # bindsym $mod+shift+d exec --no-startup-id google-chrome --app=https://excalidraw.com
 bindsym $mod+shift+e exec --no-startup-id openshot-qt
-# bindsym $mod+b exec --no-startup-id dbgate
-bindsym $mod+b exec --no-startup-id polybar-msg cmd toggle
-bindsym $mod+p exec --no-startup-id keepassxc
+# App launchers
+bindsym $mod+b exec --no-startup-id brave-browser
+bindsym $mod+d exec --no-startup-id dbgate
+bindsym $mod+k exec --no-startup-id keepassxc
+
+# Transient TUI launchers (quit app = close window)
+bindsym $mod+g exec --no-startup-id alacritty -e lazygit
+bindsym $mod+p exec --no-startup-id "i3-msg 'workspace 8' && alacritty -e btop"
+
+# Polybar toggle
+bindsym $mod+Shift+b exec --no-startup-id polybar-msg cmd toggle
 
 # Voice dictation toggle (nerd-dictation with VOSK)
 bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-toggle
+
+# Theme toggle (gruvbox dark/light)
+bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle-theme
 
 # Scratchpad nvim - floating tmux session in /tmp
 for_window [instance="scratch_nvim"] sticky enable, resize set 40 ppt 90 ppt
@@ -196,6 +209,9 @@ exec --no-startup-id alacritty
 exec --no-startup-id google-chrome
 
 exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/null || true"
+
+# KeePassXC auto-sync to Google Drive
+exec --no-startup-id ~/.config/keepassxc/sync-secrets.sh &
 
 # Auto-assign applications to specific workspaces
 # assign [class="kitty"] 1

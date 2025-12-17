@@ -1,0 +1,7 @@
+# usql config - connections sync with lazysql via env vars
+# Uncomment and set DB_* env vars in ~/.config/zsh/.zshrc
+
+# connections:
+#   local-pg: ${DB_LOCAL_PG}
+#   local-mysql: ${DB_LOCAL_MYSQL}
+#   local-sqlite: ${DB_LOCAL_SQLITE}

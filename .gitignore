@@ -52,6 +52,7 @@ alacritty/themes/*
 i3/*
 !i3/load_screen_layout.sh
 !i3/config
+!i3/startup.sh
 
 !polybar/
 polybar/*

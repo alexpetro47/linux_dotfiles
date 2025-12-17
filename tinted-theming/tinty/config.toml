@@ -1,0 +1,46 @@
+# Tinty config - centralized theme management
+# Usage: tinty apply base16-gruvbox-dark-medium
+#        tinty apply base16-everforest-dark-medium
+
+shell = "zsh -c '{}'"
+default-scheme = "base16-gruvbox-dark-medium"
+
+# Shell colors (zsh)
+[[items]]
+name = "tinted-shell"
+path = "https://github.com/tinted-theming/tinted-shell"
+themes-dir = "scripts"
+hook = ". \"$TINTY_THEME_FILE_PATH\""
+supported-systems = ["base16", "base24"]
+
+# Alacritty terminal
+[[items]]
+name = "tinted-alacritty"
+path = "https://github.com/tinted-theming/tinted-alacritty"
+themes-dir = "colors-256"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/alacritty/colors.toml && touch ~/.config/alacritty/alacritty.toml"
+supported-systems = ["base16", "base24"]
+
+# Tmux
+[[items]]
+name = "tinted-tmux"
+path = "https://github.com/tinted-theming/tinted-tmux"
+themes-dir = "colors"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/tmux/colors.conf && tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true"
+supported-systems = ["base16", "base24"]
+
+# Polybar
+[[items]]
+name = "base16-polybar"
+path = "https://github.com/tinted-theming/base16-polybar"
+themes-dir = "colors"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/polybar/colors.ini && polybar-msg cmd restart 2>/dev/null || true"
+supported-systems = ["base16"]
+
+# i3 window manager
+[[items]]
+name = "base16-i3"
+path = "https://github.com/tinted-theming/base16-i3"
+themes-dir = "colors"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/i3/colors && i3-msg reload 2>/dev/null || true"
+supported-systems = ["base16"]

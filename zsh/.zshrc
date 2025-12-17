@@ -3,10 +3,15 @@ export EDITOR=nvim
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
+export PATH="/usr/local/go/bin:$HOME/go/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
+
+# Database connections (used by lazysql + usql)
+# export DB_LOCAL_PG="postgres://user:pass@localhost:5432/mydb"
+# export DB_LOCAL_MYSQL="mysql://user:pass@localhost:3306/mydb"
+# export DB_LOCAL_SQLITE="file:$HOME/data.db"
 export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 export PATH="$HOME/.config/memory-tools:$PATH"
 
@@ -58,8 +63,10 @@ bindkey '^F' forward-word
 bindkey '^B' backward-word
 bindkey '^D' kill-word
 
-eval "$(starship init zsh)"
+# Minimal prompt: ❯ (yellow success, red error) - matches Claude Code style
+PROMPT='%F{%(?.#b8bb26.#fb4934)}❯%f '
 eval "$(zoxide init zsh)"
+tinty init >/dev/null 2>&1  # centralized theming - tinty apply <scheme>
 
 alias s="source ~/.zshrc ~/.config/lf/lfrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship, lfrc'"
 alias v="nvim"
