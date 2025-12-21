@@ -21,12 +21,11 @@ for cmd in git uv cargo node claude lazygit docker; do
 done
 
 section "Symlinks"
-for link in ~/.zshrc ~/.tmux.conf ~/.config/starship.toml; do
+for link in ~/.zshrc ~/.tmux.conf; do
     [ -L "$link" ] && pass "$link" || fail "$link"
 done
 
 section "Services"
-systemctl is-enabled greetd &>/dev/null && pass "greetd" || fail "greetd"
 systemctl is-enabled docker &>/dev/null && pass "docker" || fail "docker"
 
 section "Post-reboot"

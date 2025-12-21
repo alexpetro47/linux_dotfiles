@@ -59,7 +59,6 @@ sudo apt install -y \
     caffeine \
     sqlite3 \
     libsqlite3-dev \
-    greetd \
     pipewire-jack \
     pavucontrol
 
@@ -123,7 +122,7 @@ if ! installed cargo-binstall; then
 fi
 
 log "Installing cargo packages..."
-cargo binstall -y xh starship fd-find tinty tuigreet || true
+cargo binstall -y xh fd-find tinty || true
 
 # Tinty setup (centralized theming)
 if installed tinty; then
@@ -162,17 +161,6 @@ fi
 # =============================================================================
 # BROWSERS
 # =============================================================================
-# GOOGLE CHROME
-if ! installed google-chrome; then
-    log "Installing Google Chrome..."
-    wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg 2>/dev/null || true
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-    sudo apt update
-    sudo apt install -y google-chrome-stable
-else
-    log "Google Chrome already installed"
-fi
-
 # BRAVE
 if ! installed brave-browser; then
     log "Installing Brave..."

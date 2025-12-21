@@ -38,28 +38,8 @@ fi
 # =============================================================================
 log "Enabling system services..."
 
-sudo systemctl enable greetd 2>/dev/null || log "WARN: greetd enable failed (may not be installed)"
 sudo systemctl enable NetworkManager 2>/dev/null || log "WARN: NetworkManager enable failed"
 sudo systemctl enable docker 2>/dev/null || log "WARN: docker enable failed"
-
-# =============================================================================
-# GREETD CONFIG (tuigreet)
-# =============================================================================
-GREETD_CONF="/etc/greetd/config.toml"
-if [ -f "$GREETD_CONF" ]; then
-    log "Configuring greetd..."
-    sudo tee "$GREETD_CONF" > /dev/null << 'EOF'
-[terminal]
-vt = 1
-
-[default_session]
-command = "tuigreet --cmd i3 --time --remember --asterisks"
-user = "greeter"
-EOF
-    log "greetd configured for tuigreet + i3"
-else
-    log "SKIP: greetd config not found (greetd may not be installed)"
-fi
 
 # =============================================================================
 # DEFAULT APPLICATIONS
