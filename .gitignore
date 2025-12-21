@@ -183,6 +183,12 @@ tinted-theming/tinty/*
 gtk-3.0/*
 !gtk-3.0/settings.ini
 
+!mimeapps.list
+
+!lazygit/
+lazygit/*
+!lazygit/config.yml
+
 # Tinty-generated color files (not tracked - regenerated via `tinty apply`)
 alacritty/colors.toml
 tmux/colors.conf
