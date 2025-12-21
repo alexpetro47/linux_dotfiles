@@ -8,8 +8,8 @@ Automated dotfiles bootstrap for fresh Ubuntu. Idempotent - safe to re-run.
 # Full install
 curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/new-machine-setup/bootstrap.sh | bash
 
-# Minimal (skip large packages)
-curl -fsSL ... | SKIP_LATEX=1 SKIP_MEDIA=1 bash
+# Minimal (skip LaTeX)
+curl -fsSL ... | SKIP_LATEX=1 bash
 
 # With extras (cloudflared, ngrok, d2, blender, etc.)
 curl -fsSL ... | INSTALL_EXTRAS=1 bash
@@ -19,10 +19,8 @@ curl -fsSL ... | INSTALL_EXTRAS=1 bash
 
 | Flag | Effect |
 |------|--------|
-| `INSTALL_EXTRAS=1` | Optional tools (cloudflared, ngrok, d2, marp, blender, lazysql, usql) |
 | `SKIP_LATEX=1` | Skip texlive (~500MB) |
-| `SKIP_MEDIA=1` | Skip vlc, ffmpeg, qjackctl |
-| `SKIP_BROWSERS=1` | Skip chrome, brave, spotify |
+| `INSTALL_EXTRAS=1` | Optional tools (cloudflared, ngrok, d2, marp, blender, lazysql, usql) |
 
 ## Scripts
 
@@ -31,7 +29,7 @@ curl -fsSL ... | INSTALL_EXTRAS=1 bash
 | `bootstrap.sh` | Entry point - clones repo, runs all phases |
 | `install-packages.sh` | APT, UV, Cargo, Go, Node, browsers, fonts |
 | `link-configs.sh` | Symlinks dotfiles to home |
-| `configure-system.sh` | Git config, systemd, greetd |
+| `configure-system.sh` | Git config, systemd, defaults |
 | `verify.sh` | Post-install verification |
 
 ## After Install

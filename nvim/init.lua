@@ -11,6 +11,7 @@ vim.o.undofile = true
 vim.o.timeoutlen = 1000
 vim.o.updatetime = 50
 vim.wo.signcolumn = 'no'
+-- vim.wo.signcolumn = 'yes:1'
 vim.wo.number = true
 vim.o.scrolloff = 6
 vim.o.wrap = false

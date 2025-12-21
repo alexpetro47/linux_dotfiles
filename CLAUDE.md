@@ -11,16 +11,12 @@ See `README.md` for setup instructions.
 | Tool substitution | install script + `.zshrc` aliases |
 | Optional tool | `README.md` → Extras section |
 
-## Idempotency Pattern
+## Idempotency
 
-```bash
-if ! installed <cmd>; then
-    log "Installing <pkg>..."
-    # install commands
-else
-    log "<pkg> already installed"
-fi
-```
+Scripts are designed for safe re-runs:
+- **APT packages**: Always runs `apt install` (apt handles already-installed)
+- **Custom binaries**: `if ! installed <cmd>` check before install
+- **Symlinks**: Checks if already linked correctly before creating
 
 ## Keybindings
 
