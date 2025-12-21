@@ -58,7 +58,6 @@ _link_config "$CONFIG_DIR/.xsessionrc" "$HOME/.xsessionrc"
 # _link_config "$REPO_DIR/polybar" "$CONFIG_DIR/polybar"
 # _link_config "$REPO_DIR/rofi" "$CONFIG_DIR/rofi"
 # _link_config "$REPO_DIR/picom" "$CONFIG_DIR/picom"
-# _link_config "$REPO_DIR/starship" "$CONFIG_DIR/starship"
 # _link_config "$REPO_DIR/btop" "$CONFIG_DIR/btop"
 # _link_config "$REPO_DIR/kitty" "$CONFIG_DIR/kitty"
 # _link_config "$REPO_DIR/lf" "$CONFIG_DIR/lf"
@@ -89,15 +88,6 @@ fi
 # Focus mode toggle
 if [ -f "$CONFIG_DIR/new-machine-setup/focus-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/focus-toggle" "$HOME/.local/bin/focus-toggle"
-fi
-
-# =============================================================================
-# STARSHIP CONFIG
-# Starship looks for config in ~/.config/starship.toml by default
-# =============================================================================
-
-if [ -f "$CONFIG_DIR/starship/starship.toml" ]; then
-    _link_config "$CONFIG_DIR/starship/starship.toml" "$CONFIG_DIR/starship.toml"
 fi
 
 log "Symlink creation complete!"

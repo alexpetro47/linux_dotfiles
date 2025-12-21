@@ -5,7 +5,6 @@ export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 export PATH="/usr/local/go/bin:$HOME/go/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
 
 # Database connections (used by lazysql + usql)
@@ -68,7 +67,7 @@ PROMPT='%F{%(?.#b8bb26.#fb4934)}❯%f '
 eval "$(zoxide init zsh)"
 tinty init >/dev/null 2>&1  # centralized theming - tinty apply <scheme>
 
-alias s="source ~/.zshrc ~/.config/lf/lfrc ~/.config/starship/starship.conf ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, starship, lfrc'"
+alias s="source ~/.zshrc ~/.config/lf/lfrc ~/.config/tmux/tmux.conf ~/.config/nvim/init.lua && setxkbmap -option ctrl:nocaps -layout us && i3-msg restart >/dev/null 2>&1 && echo 'Sourced zsh, tmux, nvim, i3, xkbmap, lfrc'"
 alias v="nvim"
 alias lg="lazygit"
 alias c="clear"

@@ -137,10 +137,6 @@ btop/*
 !init-guide.md
 !installs_old.md
 
-!starship
-starship/*
-!starship/starship.toml
-
 !flameshot
 flameshot/*
 !flameshot/flameshot.ini
