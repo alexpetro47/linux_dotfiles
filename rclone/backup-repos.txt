@@ -1,0 +1,12 @@
+# Backup repos manifest
+# Format: /absolute/path:mode
+# Modes: git (non-gitignored files only), full (all files)
+#
+# Examples:
+# /home/alexpetro/Documents/code/myproject:git
+# /home/alexpetro/Documents/notes:full
+
+/home/alexpetro/.claude:git
+/home/alexpetro/.config:git
+/home/alexpetro/Documents/notes3:git
+/home/alexpetro/Documents/media:full

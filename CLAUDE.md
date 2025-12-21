@@ -1,5 +1,10 @@
 See `README.md` for setup instructions.
 
+**Reproducibility**: All changes must be reproducible on a fresh machine. Either:
+1. Install script (`install-packages.sh`, `link-configs.sh`, `configure-system.sh`)
+2. Passive config (tracked file, symlinked or in XDG path)
+3. Documented manual step (`additional-installs.md`)
+
 ## Config Changes
 
 | Change | Where |
@@ -33,6 +38,13 @@ Scripts are designed for safe re-runs:
 - `tinty apply <scheme>` - apply any base16 scheme
 - `tinty list | grep <name>` - find schemes
 - Config: `~/.config/theme-schemes` (dark/light toggle preferences)
+
+## Backup
+
+- `backup-repos` - sync to `gdrive:BACKUPS/` (rclone)
+- `backup-repos --dry-run` - preview without syncing
+- Manifest: `rclone/backup-repos.txt` (format: `/path:git` or `/path:full`)
+- Setup: `rclone config` → create remote named `gdrive` (see `additional-installs.md`)
 
 
 

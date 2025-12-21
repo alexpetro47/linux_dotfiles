@@ -1,6 +1,14 @@
 
 # ADDITIONAL INSTALLS
 
+rclone gdrive remote - for backup-repos script
+```
+rclone config
+# n (new remote) → gdrive → drive → leave client_id/secret blank
+# → 1 (full access) → n (no advanced) → n (no auto config on headless)
+# → paste auth URL in browser, copy code back → n (not team drive) → y (confirm)
+```
+
 simplenote-local - sync simplenote to local markdown files
 ```
 git clone git@github.com:alexpetro/notes3.git ~/Documents/notes3

@@ -116,10 +116,15 @@ keepassxc/*
 !rclone
 rclone/*
 # rclone conf has sensitive data
-rclone/rclone.conf 
+rclone/rclone.conf
 !rclone/documents-backup-exclude.txt
 !rclone/config-backup-filter.txt
 !rclone/claude-backup-exclude.txt
+!rclone/backup-repos.txt
+
+!scripts/
+scripts/*
+!scripts/backup-repos
 
 !picom
 picom/*

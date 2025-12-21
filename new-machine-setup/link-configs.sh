@@ -89,4 +89,9 @@ if [ -f "$CONFIG_DIR/new-machine-setup/ssr-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/ssr-toggle" "$HOME/.local/bin/ssr-toggle"
 fi
 
+# Backup repos to Google Drive
+if [ -f "$CONFIG_DIR/scripts/backup-repos" ]; then
+    _link_config "$CONFIG_DIR/scripts/backup-repos" "$HOME/.local/bin/backup-repos"
+fi
+
 log "Symlink creation complete!"

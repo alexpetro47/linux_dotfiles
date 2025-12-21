@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+MANIFEST="$HOME/.config/rclone/backup-repos.txt"
+REMOTE="gdrive:BACKUPS"
+DRY_RUN=""
+
+log() { echo "[$(date +%H:%M:%S)] $*"; }
+
+_path_from_home() {
+    # /home/user/Documents/foo → Documents/foo
+    echo "${1#$HOME/}"
+}
+
+_sync_full() {
+    local path="$1" remote_path="$2"
+    log "Syncing (full): $path → $REMOTE/$remote_path"
+    rclone sync "$path" "$REMOTE/$remote_path" $DRY_RUN --progress
+}
+
+_sync_git() {
+    local path="$1" remote_path="$2"
+    local tmpfile=$(mktemp)
+
+    log "Syncing (git): $path → $REMOTE/$remote_path"
+    (cd "$path" && git ls-files && git ls-files --others --exclude-standard) | sort -u > "$tmpfile"
+    rclone sync "$path" "$REMOTE/$remote_path" --files-from "$tmpfile" $DRY_RUN --progress
+    rm "$tmpfile"
+}
+
+# Parse args
+[[ "$1" == "--dry-run" ]] && DRY_RUN="--dry-run" && log "DRY RUN MODE"
+
+# Process manifest
+while IFS=: read -r path mode; do
+    [[ "$path" =~ ^#.*$ || -z "$path" ]] && continue
+    path="${path%/}"  # trim trailing slash
+    remote_path=$(_path_from_home "$path")
+
+    case "$mode" in
+        git)  _sync_git "$path" "$remote_path" ;;
+        full) _sync_full "$path" "$remote_path" ;;
+        *)    log "ERROR: Unknown mode '$mode' for $path" ;;
+    esac
+done < "$MANIFEST"
+
+log "Backup complete"
