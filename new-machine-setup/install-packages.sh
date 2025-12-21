@@ -35,7 +35,6 @@ sudo apt install -y \
     feh \
     picom \
     fzf \
-    nemo \
     ripgrep \
     btop \
     trash-cli \
@@ -58,7 +57,9 @@ sudo apt install -y \
     sqlite3 \
     libsqlite3-dev \
     pipewire-jack \
-    pavucontrol
+    pavucontrol \
+    thunar \
+
 
 
 # LaTeX packages (skip with SKIP_LATEX=1)

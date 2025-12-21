@@ -94,7 +94,7 @@ bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle-theme
 bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 
 # Screen recording toggle (SimpleScreenRecorder)
-bindsym $mod+Shift+c exec --no-startup-id ~/.local/bin/ssr-toggle
+bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
 
 # Voice dictation toggle (nerd-dictation with VOSK)
 # bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-toggle
