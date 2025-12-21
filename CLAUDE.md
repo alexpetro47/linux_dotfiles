@@ -8,6 +8,7 @@ See `README.md` for setup instructions.
 | UV/Cargo/Go tool | `install-packages.sh` → respective section |
 | Custom binary | `install-packages.sh` → `if ! installed` block |
 | New config file | `.gitignore` whitelist + `link-configs.sh` symlink |
+| New script | `new-machine-setup/<script>` + `.gitignore` whitelist + `link-configs.sh` symlink to `~/.local/bin/` |
 | Tool substitution | install script + `.zshrc` aliases |
 | Optional tool | `README.md` → Extras section |
 
@@ -23,8 +24,9 @@ Scripts are designed for safe re-runs:
 | Key | Action |
 |-----|--------|
 | `Alt+Shift+t` | Toggle theme (dark/light) |
-| `Alt+Shift+s` | Toggle focus mode (notifications) |
+| `Alt+Shift+n` | Toggle focus mode (notifications) |
 | `Alt+Shift+b` | Toggle polybar |
+| `Alt+Shift+c` | Toggle screen recording (SSR) |
 
 ## Theme
 

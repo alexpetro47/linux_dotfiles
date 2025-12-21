@@ -41,7 +41,6 @@ log "Creating symlinks..."
 # =============================================================================
 
 _link_config "$CONFIG_DIR/zsh/.zshrc" "$HOME/.zshrc"
-_link_config "$CONFIG_DIR/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
 _link_config "$CONFIG_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 _link_config "$CONFIG_DIR/.xsessionrc" "$HOME/.xsessionrc"
 
@@ -70,11 +69,6 @@ _link_config "$CONFIG_DIR/.xsessionrc" "$HOME/.xsessionrc"
 
 mkdir -p "$HOME/.local/bin"
 
-# Memory tools
-if [ -f "$CONFIG_DIR/memory-tools/m" ]; then
-    _link_config "$CONFIG_DIR/memory-tools/m" "$HOME/.local/bin/m"
-fi
-
 # Nerd dictation toggle (if exists)
 if [ -f "$CONFIG_DIR/nerd-dictation/nerd-dictation-toggle" ]; then
     _link_config "$CONFIG_DIR/nerd-dictation/nerd-dictation-toggle" "$HOME/.local/bin/nerd-dictation-toggle"
@@ -88,6 +82,11 @@ fi
 # Focus mode toggle
 if [ -f "$CONFIG_DIR/new-machine-setup/focus-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/focus-toggle" "$HOME/.local/bin/focus-toggle"
+fi
+
+# Screen recording toggle (SimpleScreenRecorder)
+if [ -f "$CONFIG_DIR/new-machine-setup/ssr-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/ssr-toggle" "$HOME/.local/bin/ssr-toggle"
 fi
 
 log "Symlink creation complete!"

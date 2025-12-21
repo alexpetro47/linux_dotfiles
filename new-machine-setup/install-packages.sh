@@ -43,7 +43,6 @@ sudo apt install -y \
     flameshot \
     playerctl \
     cbonsai \
-    tty-clock \
     xclip \
     xdotool \
     inotify-tools \
@@ -55,7 +54,6 @@ sudo apt install -y \
     eza \
     pandoc \
     rclone \
-    keepassxc \
     caffeine \
     sqlite3 \
     libsqlite3-dev \

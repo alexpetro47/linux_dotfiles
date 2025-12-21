@@ -12,7 +12,6 @@ export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
 # export DB_LOCAL_MYSQL="mysql://user:pass@localhost:3306/mydb"
 # export DB_LOCAL_SQLITE="file:$HOME/data.db"
 export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
-export PATH="$HOME/.config/memory-tools:$PATH"
 
 HISTORY=5000
 HISTSIZE=5000

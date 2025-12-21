@@ -53,7 +53,6 @@ tmux-sessionizer/*
 !zsh/
 zsh/*
 !zsh/.zshrc
-!zsh/.p10k.zsh
 
 !alacritty/
 alacritty/*
@@ -153,13 +152,6 @@ pandoc/*
 kitty/*
 !kitty/kitty.conf
 
-!memory-tools/
-memory-tools/*
-!memory-tools/core.sh
-!memory-tools/find.sh
-!memory-tools/m
-!memory-tools/info.md
-
 !nerd-dictation/
 nerd-dictation/*
 !nerd-dictation/nerd-dictation-toggle
@@ -172,6 +164,7 @@ new-machine-setup/*
 !new-machine-setup/configure-system.sh
 !new-machine-setup/verify.sh
 !new-machine-setup/focus-toggle
+!new-machine-setup/screen-record-toggle
 !new-machine-setup/toggle-theme
 
 !theme-mode

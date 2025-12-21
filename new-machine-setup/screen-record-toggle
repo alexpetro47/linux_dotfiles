@@ -1,0 +1,24 @@
+#!/bin/bash
+# Toggle screen recording using ffmpeg (no external config needed)
+
+PIDFILE="/tmp/screenrec.pid"
+OUTPUT_DIR="$HOME/Downloads"
+
+_notify() {
+    dunstify -a "screenrec" -t 2000 -r 99999 -u low "$1" "$2"
+}
+
+if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    # Running - stop recording
+    kill -INT "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+    # Find most recent recording
+    latest=$(ls -t "$OUTPUT_DIR"/screenrec_*.mp4 2>/dev/null | head -1)
+    _notify "Recording Saved" "$latest"
+else
+    # Start recording
+    output_file="$OUTPUT_DIR/screenrec_$(date +%Y-%m-%d_%H-%M-%S).mp4"
+    ffmpeg -y -f x11grab -framerate 30 -i :0 -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p "$output_file" &>/dev/null &
+    echo $! > "$PIDFILE"
+    _notify "Recording Started" "$(basename "$output_file")"
+fi
