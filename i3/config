@@ -109,7 +109,7 @@ include ~/.config/i3/colors
 
 font pango:JetBrains Mono NF
 
-for_window [class="^.*"] border pixel 2
+for_window [class="^.*"] border pixel 1
 # for_window [class="^.*"] title_format ""
 focus_on_window_activation focus
 
@@ -181,14 +181,14 @@ bindsym $mod+Shift+b exec --no-startup-id polybar-msg cmd toggle
 bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle-theme
 
 # Focus mode (disable notifications)
-bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/focus-toggle
+bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 
 # Voice dictation toggle (nerd-dictation with VOSK)
 # bindsym $mod+v exec --no-startup-id ~/.config/nerd-dictation/nerd-dictation-toggle
 
 
 # Scratchpad nvim (disabled - $mod+Shift+s used for focus mode)
-# for_window [instance="scratch_nvim"] sticky enable, resize set 40 ppt 90 ppt
+for_window [instance="scratch_nvim"] sticky enable, resize set 40 ppt 90 ppt
 
 # bindsym $mod+Shift+a exec --no-startup-id "/home/alexpetro/Documents/code/THE-AGENT/scripts/run_agent.sh"
 
@@ -196,7 +196,7 @@ bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/focus-toggle
 # bindsym $mod+f exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=12G firefox
 # bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome 
 # bindsym $mod+h exec --no-startup-id systemd-run --user --scope --property=CPUQuota=400% --property=MemoryMax=4G google-chrome --remote-debugging-port=9222
-bindsym $mod+s exec --no-startup-id "brave-browser --new-window https://google.com/aimode & sleep 0.3 && i3-msg '[id='$(xdotool getactivewindow)'] move container to workspace 6, workspace 6, fullscreen enable'"
+bindsym $mod+s workspace 6; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 # bindsym $mod+shift+a exec --no-startup-id antigravity
 # bindsym $mod+k exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G kitty
@@ -208,7 +208,7 @@ exec --no-startup-id picom -b
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
-exec --no-startup-id ~/.config/i3/startup.sh
+# exec --no-startup-id ~/.config/i3/startup.sh
 
 exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/null || true"
 
@@ -217,8 +217,8 @@ exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/
 
 # Auto-assign applications to specific workspaces
 # assign [class="kitty"] 1
-assign [class="alacritty"] 1
-assign [class="brave"] 2
+# assign [class="alacritty"] 1
+# assign [class="brave-browser"] 2
 # assign [class="Google-chrome"] 2
 # assign [class="REAPER"] 4
 assign [class="Spotify"] 5
