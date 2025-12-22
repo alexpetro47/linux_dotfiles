@@ -80,7 +80,7 @@ bindsym $mod+f exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspace 5; exec nemo ~/Documents/prod' &"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
-bindsym $mod+d exec --no-startup-id brave-browser --app=https://excalidraw.com
+bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
 bindsym $mod+b exec --no-startup-id brave-browser
 
 
