@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+BACKUP_DIR="$HOME/.local/share/bitwarden-backup"
+REMOTE_DIR="gdrive:BACKUPS/bitwarden"
+EXPORT_FILE="$BACKUP_DIR/vault-$(date +%Y%m%d).json"
+KEEP_COUNT=7
+
+log() { echo "[bw] $*"; }
+err() { echo "[bw] ERROR: $*" >&2; }
+
+mkdir -p "$BACKUP_DIR"
+
+# Check if bw CLI is available
+if ! command -v bw &>/dev/null; then
+    err "Bitwarden CLI not installed"
+    exit 1
+fi
+
+# Get current status
+STATUS=$(bw status 2>/dev/null | jq -r '.status' 2>/dev/null || echo "unauthenticated")
+
+case "$STATUS" in
+    unauthenticated)
+        err "Not logged in. Run: bw login"
+        exit 1
+        ;;
+    locked)
+        log "Vault is locked. Unlocking..."
+        read -sp "Bitwarden master password: " BW_MASTER
+        echo
+        if ! BW_SESSION=$(printf '%s' "$BW_MASTER" | bw unlock --raw 2>/dev/null); then
+            err "Failed to unlock vault"
+            exit 1
+        fi
+        unset BW_MASTER
+        export BW_SESSION
+        ;;
+    unlocked)
+        log "Vault already unlocked"
+        if [ -z "$BW_SESSION" ]; then
+            err "Vault unlocked but BW_SESSION not set. Run: export BW_SESSION=\$(bw unlock --raw)"
+            exit 1
+        fi
+        ;;
+    *)
+        err "Unknown status: $STATUS"
+        exit 1
+        ;;
+esac
+
+# Sync vault
+log "Syncing vault..."
+bw sync --session "$BW_SESSION" >/dev/null
+
+# Prompt for backup encryption PIN
+read -sp "Backup encryption PIN: " BACKUP_PIN
+echo
+
+# Export (encrypted with PIN via Bitwarden native format)
+log "Exporting to $EXPORT_FILE..."
+bw export --format encrypted_json --output "$EXPORT_FILE" --password "$BACKUP_PIN" --session "$BW_SESSION"
+
+# Clear secrets from memory
+unset BACKUP_PIN
+
+# Cleanup old exports
+REMOVED=$(ls -t "$BACKUP_DIR"/vault-*.json 2>/dev/null | tail -n +$((KEEP_COUNT + 1)) | wc -l)
+ls -t "$BACKUP_DIR"/vault-*.json 2>/dev/null | tail -n +$((KEEP_COUNT + 1)) | xargs -r rm
+[ "$REMOVED" -gt 0 ] && log "Removed $REMOVED old export(s)"
+
+# Sync to remote
+log "Syncing to $REMOTE_DIR..."
+rclone sync "$BACKUP_DIR" "$REMOTE_DIR" --progress
+
+log "Done. Kept last $KEEP_COUNT exports."

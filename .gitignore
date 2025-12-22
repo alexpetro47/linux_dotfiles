@@ -124,6 +124,8 @@ rclone/rclone.conf
 
 !scripts/
 scripts/*
+!scripts/backup
+!scripts/backup-bitwarden
 !scripts/backup-repos
 
 !picom

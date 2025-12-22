@@ -41,10 +41,19 @@ Scripts are designed for safe re-runs:
 
 ## Backup
 
-- `backup-repos` - sync to `gdrive:BACKUPS/` (rclone)
-- `backup-repos --dry-run` - preview without syncing
-- Manifest: `rclone/backup-repos.txt` (format: `/path:git` or `/path:full`)
+```bash
+backup              # interactive menu (repos, bitwarden, or both)
+backup --all        # bitwarden passwords + repos
+backup --repos      # repos only
+backup --bitwarden  # passwords only
+backup --dry-run    # preview repo sync
+```
+
+- Repos sync to `gdrive:BACKUPS/` via rclone
+- Bitwarden: exports to `~/.local/share/bitwarden-backup/`, syncs to `gdrive:BACKUPS/bitwarden/`
+- Repos manifest: `rclone/backup-repos.txt` (format: `/path:git` or `/path:full`)
 - Setup: `rclone config` → create remote named `gdrive` (see `additional-installs.md`)
+- First run: `bw login` to authenticate CLI
 
 
 

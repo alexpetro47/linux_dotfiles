@@ -300,4 +300,18 @@ else
     log "Docker already installed"
 fi
 
+# =============================================================================
+# BITWARDEN CLI (native binary)
+# =============================================================================
+if ! installed bw; then
+    log "Installing Bitwarden CLI..."
+    BW_VERSION=$(curl -s "https://api.github.com/repos/bitwarden/clients/releases?per_page=50" | grep -Po '"tag_name": *"cli-v\K[^"]*' | head -1)
+    curl -fLo /tmp/bw.zip "https://github.com/bitwarden/clients/releases/download/cli-v${BW_VERSION}/bw-linux-${BW_VERSION}.zip"
+    unzip -o /tmp/bw.zip -d /tmp
+    sudo install /tmp/bw /usr/local/bin/
+    rm /tmp/bw.zip /tmp/bw
+else
+    log "Bitwarden CLI already installed"
+fi
+
 log "Package installation complete!"
