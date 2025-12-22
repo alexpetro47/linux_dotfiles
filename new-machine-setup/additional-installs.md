@@ -1,6 +1,17 @@
 
 # ADDITIONAL INSTALLS
 
+demongrep
+```
+sudo apt-get update
+sudo apt-get install -y build-essential protobuf-compiler libssl-dev pkg-config
+cd /tmp/
+git clone https://github.com/yxanul/demongrep.git
+cd demongrep
+cargo build --release
+sudo cp target/release/demongrep ~/.local/bin 
+```
+
 rclone gdrive remote - for backup-repos script
 ```
 rclone config
