@@ -115,4 +115,6 @@ exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/
 
 # Auto-assign applications to specific workspaces
 assign [class="Spotify"] 5
+assign [class="google-chrome"] 7
+assign [class="Google-chrome"] 7
 
