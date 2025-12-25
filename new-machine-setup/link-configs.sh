@@ -100,4 +100,9 @@ if [ -f "$CONFIG_DIR/scripts/backup-bitwarden" ]; then
     _link_config "$CONFIG_DIR/scripts/backup-bitwarden" "$HOME/.local/bin/backup-bitwarden"
 fi
 
+# Tmux sessionizer
+if [ -f "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" ]; then
+    _link_config "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
+fi
+
 log "Symlink creation complete!"

@@ -55,6 +55,14 @@ backup --dry-run    # preview repo sync
 - Setup: `rclone config` → create remote named `gdrive` (see `additional-installs.md`)
 - First run: `bw login` to authenticate CLI
 
+## Tmux Sessionizer
+
+Source: `~/.config/tmux-sessionizer/tmux-sessionizer` (symlinked to `~/.local/bin/`)
+
+Config: `~/.config/tmux-sessionizer/tmux-sessionizer.conf`
+- `TS_EXTRA_SEARCH_PATHS` - directories to search (format: `"path:depth"`)
+- `TS_BLACKLIST` - regex patterns to exclude from results
+
 
 
 
