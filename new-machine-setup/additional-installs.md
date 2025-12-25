@@ -1,6 +1,11 @@
 
 # ADDITIONAL INSTALLS
 
+c qa libs
+```
+sudo apt install clang-format clang-tidy cppcheck
+```
+
 demongrep
 ```
 sudo apt-get update

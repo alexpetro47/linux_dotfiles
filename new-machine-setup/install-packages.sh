@@ -160,6 +160,17 @@ fi
 # =============================================================================
 # BROWSERS
 # =============================================================================
+# GOOGLE CHROME
+if ! installed google-chrome; then
+    log "Installing Google Chrome..."
+    curl -fsSLo /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo dpkg -i /tmp/google-chrome.deb
+    sudo apt-get install -f -y
+    rm /tmp/google-chrome.deb
+else
+    log "Google Chrome already installed"
+fi
+
 # BRAVE
 if ! installed brave-browser; then
     log "Installing Brave..."
@@ -231,9 +242,9 @@ else
 fi
 
 log "Configuring Claude Code MCP servers..."
-claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
+claude mcp add context7 -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
 claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
-claude mcp add playwright -s user -- npx '@playwright/mcp@latest' 2>/dev/null || true
+claude mcp add playwright -- npx '@playwright/mcp@latest' 2>/dev/null || true
 
 log "Installing Claude Code plugins..."
 npx claude-plugins skills install @anthropics/claude-code/frontend-design 2>/dev/null || true
