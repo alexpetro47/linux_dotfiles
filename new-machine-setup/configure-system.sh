@@ -16,7 +16,7 @@ git config --global user.name "Alex Petro"
 git config --global user.email "alexmpetro@gmail.com"
 git config --global push.autoSetupRemote true
 git config --global init.defaultBranch main
-git config --global credential.helper /usr/bin/git-credential-manager
+git config --global --replace-all credential.helper /usr/bin/git-credential-manager
 git config --global credential.credentialStore secretservice
 
 log "Git config set:"
