@@ -15,7 +15,7 @@ curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/
   - sync account (sync everything opt)
   - login to bitwarden, add browser extension, add pin,
   signout of browser ext: never
-  - login to google
+  - login to google, github
   - right click on popups on start page to hide
   - right click on menubar 
     - show bookmarks: never
@@ -25,16 +25,21 @@ curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/
     - new page page: homepage
     - theme: gtk
     - autocomplete suggestions: bookmarks (only)
-- `git-credential-manager configure`
+- first git push will have you authenticate in browser
 - spotify login
 - `bw login` - authenticate bitwarden CLI (for password backups)
+- (in alacritty) `<C-w>I` to install tmux plugins
 
 ## Re-run Individual Phases
 
+All scripts are idempotent - safe to re-run anytime.
+
 ```bash
 cd ~/.config/new-machine-setup
-./install-packages.sh
-./verify.sh
+./link-configs.sh      # symlinks (.zshrc, .tmux.conf, scripts to ~/.local/bin)
+./install-packages.sh  # apt, cargo, uv, custom binaries
+./configure-system.sh  # git config, default shell, services, clone repos
+./verify.sh            # check everything is installed correctly
 ```
 
 Logs: `~/bootstrap-<timestamp>.log`

@@ -29,7 +29,7 @@ section "Services"
 systemctl is-enabled docker &>/dev/null && pass "docker" || fail "docker"
 
 section "Post-reboot"
-[ "$SHELL" = "$(which zsh)" ] && pass "shell=zsh" || warn "shell=zsh"
+[[ "$SHELL" == */zsh ]] && pass "shell=zsh" || warn "shell=zsh"
 groups | grep -q docker && pass "docker group" || warn "docker group"
 
 section "Fonts"

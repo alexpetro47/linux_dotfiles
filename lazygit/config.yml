@@ -1,2 +1,4 @@
 gui:
   skipDiscardChangeWarning: true
+os:
+  editPreset: 'nvim'
