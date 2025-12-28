@@ -49,6 +49,25 @@ log "Enabling system services..."
 sudo systemctl enable NetworkManager 2>/dev/null || log "WARN: NetworkManager enable failed"
 sudo systemctl enable docker 2>/dev/null || log "WARN: docker enable failed"
 
+# TLP power management
+if command -v tlp &>/dev/null; then
+    log "Enabling TLP power management..."
+    sudo systemctl enable tlp
+    sudo systemctl start tlp
+    # Disable conflicting power-profiles-daemon if present
+    sudo systemctl disable --now power-profiles-daemon 2>/dev/null || true
+    sudo systemctl mask power-profiles-daemon 2>/dev/null || true
+
+    # ThinkPad battery thresholds (40-85% for balanced plugged/unplugged usage)
+    if [ -f /etc/tlp.conf ]; then
+        log "Configuring battery charge thresholds (40-85%)..."
+        sudo sed -i 's/^#\?START_CHARGE_THRESH_BAT0=.*/START_CHARGE_THRESH_BAT0=40/' /etc/tlp.conf
+        sudo sed -i 's/^#\?STOP_CHARGE_THRESH_BAT0=.*/STOP_CHARGE_THRESH_BAT0=85/' /etc/tlp.conf
+        # Apply immediately
+        sudo tlp start
+    fi
+fi
+
 # =============================================================================
 # DEFAULT APPLICATIONS
 # =============================================================================

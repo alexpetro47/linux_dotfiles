@@ -41,6 +41,7 @@ sudo apt install -y \
     zathura zathura-pdf-poppler \
     flameshot \
     playerctl \
+    brightnessctl \
     cbonsai \
     xclip \
     xdotool \
@@ -59,6 +60,9 @@ sudo apt install -y \
     pipewire-jack \
     pavucontrol \
     thunar \
+    tlp \
+    tlp-rdw \
+    acpi-call-dkms \
 
 # =============================================================================
 # BROWSERS
@@ -105,6 +109,16 @@ if ! installed i3; then
     sudo apt install -y i3
 else
     log "i3 already installed"
+fi
+
+# Backlight permissions (for brightness keys without root)
+if [ ! -f /etc/udev/rules.d/90-backlight.rules ]; then
+    log "Setting up backlight permissions..."
+    echo 'ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness", RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"' | sudo tee /etc/udev/rules.d/90-backlight.rules
+    sudo usermod -aG video "$USER"
+    sudo udevadm control --reload-rules && sudo udevadm trigger
+else
+    log "Backlight udev rule already exists"
 fi
 
 # Ensure i3 session file exists for login screen
