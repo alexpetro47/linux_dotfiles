@@ -6,6 +6,7 @@ Automated dotfiles bootstrap for fresh Ubuntu. Idempotent - safe to re-run.
 
 ```bash
 # Full install
+sudo apt install curl
 curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/new-machine-setup/bootstrap.sh | bash
 ```
 
