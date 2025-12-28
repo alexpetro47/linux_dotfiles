@@ -60,6 +60,30 @@ sudo apt install -y \
     pavucontrol \
     thunar \
 
+# =============================================================================
+# BROWSERS
+# =============================================================================
+# GOOGLE CHROME
+if ! installed google-chrome; then
+    log "Installing Google Chrome..."
+    curl -fsSLo /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo dpkg -i /tmp/google-chrome.deb
+    sudo apt-get install -f -y
+    rm /tmp/google-chrome.deb
+else
+    log "Google Chrome already installed"
+fi
+
+# BRAVE
+if ! installed brave-browser; then
+    log "Installing Brave..."
+    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+    sudo apt update
+    sudo apt install -y brave-browser
+else
+    log "Brave already installed"
+fi
 
 
 # LaTeX packages (skip with SKIP_LATEX=1)
@@ -81,6 +105,24 @@ if ! installed i3; then
     sudo apt install -y i3
 else
     log "i3 already installed"
+fi
+
+# Ensure i3 session file exists for login screen
+if [ ! -f /usr/share/xsessions/i3.desktop ]; then
+    log "Creating i3 session file..."
+    sudo tee /usr/share/xsessions/i3.desktop > /dev/null << 'EOF'
+[Desktop Entry]
+Name=i3
+Comment=improved dynamic tiling window manager
+Exec=i3
+TryExec=i3
+Type=Application
+X-LightDM-DesktopName=i3
+DesktopNames=i3
+Keywords=tiling;wm;windowmanager;window;manager;
+EOF
+else
+    log "i3 session file already exists"
 fi
 
 # =============================================================================
@@ -157,30 +199,6 @@ else
     log "Node.js already installed"
 fi
 
-# =============================================================================
-# BROWSERS
-# =============================================================================
-# GOOGLE CHROME
-if ! installed google-chrome; then
-    log "Installing Google Chrome..."
-    curl -fsSLo /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    sudo dpkg -i /tmp/google-chrome.deb
-    sudo apt-get install -f -y
-    rm /tmp/google-chrome.deb
-else
-    log "Google Chrome already installed"
-fi
-
-# BRAVE
-if ! installed brave-browser; then
-    log "Installing Brave..."
-    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-    sudo apt update
-    sudo apt install -y brave-browser
-else
-    log "Brave already installed"
-fi
 
 # SPOTIFY
 if ! installed spotify; then
@@ -326,3 +344,20 @@ else
 fi
 
 log "Package installation complete!"
+
+# =============================================================================
+# AUTO-LOGOUT (to select i3 at login)
+# =============================================================================
+if [ -f /usr/share/xsessions/i3.desktop ] && [ -n "$DISPLAY" ]; then
+    log "i3 session available. Logging out in 5 seconds to switch session..."
+    log "Press Ctrl+C to cancel"
+    sleep 5
+    # Try various logout methods
+    if installed gnome-session-quit; then
+        gnome-session-quit --no-prompt --logout
+    elif installed loginctl; then
+        loginctl terminate-user "$USER"
+    else
+        pkill -KILL -u "$USER"
+    fi
+fi
