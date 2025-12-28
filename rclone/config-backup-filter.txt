@@ -10,7 +10,6 @@
 + i3/*
 + polybar/*
 + wallpapers/*
-+ screenlayout/*
 + rofi/*
 + lf/*
 + aider/*

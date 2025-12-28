@@ -77,7 +77,7 @@ curl -L https://download.blender.org/release/Blender4.2/blender-4.2.1-linux-x64.
 ln -sf ~/.local/blender-4.2.1-linux-x64/blender ~/.local/bin/blender
 ```
 
-sqlite-vec - vector extension for sqlite
+~sqlite-vec - vector extension for sqlite~
 ```
 mkdir -p ~/.local/lib
 curl -L https://github.com/asg017/sqlite-vec/releases/download/v0.1.3/sqlite-vec-0.1.3-loadable-linux-x86_64.tar.gz | tar -xz -C ~/.local/lib

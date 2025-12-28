@@ -84,9 +84,9 @@ if [ -f "$CONFIG_DIR/new-machine-setup/focus-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/focus-toggle" "$HOME/.local/bin/focus-toggle"
 fi
 
-# Screen recording toggle (SimpleScreenRecorder)
-if [ -f "$CONFIG_DIR/new-machine-setup/ssr-toggle" ]; then
-    _link_config "$CONFIG_DIR/new-machine-setup/ssr-toggle" "$HOME/.local/bin/ssr-toggle"
+# Screen recording toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/screen-record-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/screen-record-toggle" "$HOME/.local/bin/screen-record-toggle"
 fi
 
 # Backup scripts
