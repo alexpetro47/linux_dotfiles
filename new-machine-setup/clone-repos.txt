@@ -1,0 +1,6 @@
+# Git repos to clone on new machine setup
+# Format: REPO_URL DESTINATION
+# Lines starting with # are comments
+# ~ is expanded to $HOME
+
+https://github.com/alexpetro47/claude_code ~/.claude

@@ -16,11 +16,19 @@ git config --global user.name "Alex Petro"
 git config --global user.email "alexmpetro@gmail.com"
 git config --global push.autoSetupRemote true
 git config --global init.defaultBranch main
-git config --global --replace-all credential.helper /usr/bin/git-credential-manager
+git config --global --replace-all credential.helper /usr/local/bin/git-credential-manager
 git config --global credential.credentialStore secretservice
 
 log "Git config set:"
 git config --global --list | grep -E "^(user\.|push\.|init\.|credential\.)" | sed 's/^/  /'
+
+# =============================================================================
+# CLONE REPOS
+# =============================================================================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/clone-repos.sh" ]; then
+    bash "$SCRIPT_DIR/clone-repos.sh"
+fi
 
 # =============================================================================
 # DEFAULT SHELL
