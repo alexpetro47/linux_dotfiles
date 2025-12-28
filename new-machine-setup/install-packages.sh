@@ -313,9 +313,14 @@ fi
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     log "Installing TPM..."
     git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-    log "TPM installed - run 'prefix + I' in tmux to install plugins"
 else
     log "TPM already installed"
+fi
+
+# Install tmux plugins non-interactively (requires tmux.conf to be linked)
+if [ -f "$HOME/.tmux.conf" ] && [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
+    log "Installing tmux plugins..."
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins" || log "WARN: tmux plugin install failed (may need tmux running)"
 fi
 
 # =============================================================================
@@ -342,6 +347,12 @@ if ! installed bw; then
 else
     log "Bitwarden CLI already installed"
 fi
+
+# =============================================================================
+# CLEANUP
+# =============================================================================
+log "Cleaning up orphaned packages..."
+sudo apt autoremove -y
 
 log "Package installation complete!"
 
