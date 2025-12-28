@@ -48,11 +48,11 @@ cd "$SETUP_DIR"
 export INSTALL_I3_GAPS="${INSTALL_I3_GAPS:-1}"
 export INSTALL_EXTRAS="${INSTALL_EXTRAS:-0}"
 
-log "Phase 2: Installing packages (I3_GAPS=$INSTALL_I3_GAPS, EXTRAS=$INSTALL_EXTRAS)..."
-bash install-packages.sh 2>&1 | tee -a "$LOG_FILE"
-
-log "Phase 3: Creating symlinks..."
+log "Phase 2: Creating symlinks..."
 bash link-configs.sh 2>&1 | tee -a "$LOG_FILE"
+
+log "Phase 3: Installing packages (I3_GAPS=$INSTALL_I3_GAPS, EXTRAS=$INSTALL_EXTRAS)..."
+bash install-packages.sh 2>&1 | tee -a "$LOG_FILE"
 
 log "Phase 4: System configuration..."
 bash configure-system.sh 2>&1 | tee -a "$LOG_FILE"
