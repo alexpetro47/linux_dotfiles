@@ -68,7 +68,7 @@ bindsym $mod+7 move container to workspace 7
 bindsym $mod+8 move container to workspace 8
 
 bindsym $mod+Shift+r restart
-bindsym $mod+n focus next
+# bindsym $mod+n focus next
 bindsym $mod+Shift+f exec --no-startup-id "i3-msg fullscreen toggle"
 bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
@@ -81,6 +81,7 @@ bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspa
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
+bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
 bindsym $mod+b exec --no-startup-id brave-browser
 
 
@@ -112,6 +113,9 @@ exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
 
 exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/null || true"
 
+# Floating dialog size constraints (fixes massive file picker dialogs)
+for_window [window_role="GtkFileChooserDialog"] floating enable, resize set 900 700, move position center
+for_window [window_type="dialog"] floating enable
 
 # Auto-assign applications to specific workspaces
 assign [class="Spotify"] 5
