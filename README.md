@@ -13,7 +13,8 @@ curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/
 ### Post-install steps
 - brave
   - sync account (sync everything opt)
-  - login to bitwarden, add browser extension, add pin 
+  - login to bitwarden, add browser extension, add pin,
+  signout of browser ext: never
   - login to google
   - right click on popups on start page to hide
   - right click on menubar 
