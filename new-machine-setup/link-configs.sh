@@ -40,6 +40,7 @@ log "Creating symlinks..."
 # Files that expect to be in ~ rather than ~/.config
 # =============================================================================
 
+rm -f "$HOME/.zshrc"
 _link_config "$CONFIG_DIR/zsh/.zshrc" "$HOME/.zshrc"
 _link_config "$CONFIG_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 _link_config "$CONFIG_DIR/.xsessionrc" "$HOME/.xsessionrc"
