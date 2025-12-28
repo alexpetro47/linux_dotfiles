@@ -11,9 +11,20 @@ curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/
 ```
 
 ### Post-install steps
-
+- brave
+  - sync account (sync everything opt)
+  - login to bitwarden, add browser extension, add pin 
+  - login to google
+  - right click on popups on start page to hide
+  - right click on menubar 
+    - show bookmarks: never
+    - use vertical tabs
+    - hide brave rewards icon
+  - settings
+    - new page page: homepage
+    - theme: gtk
+    - autocomplete suggestions: bookmarks (only)
 - `git-credential-manager configure`
-- brave: sync account, login to bitwarden browser extension
 - spotify login
 - `bw login` - authenticate bitwarden CLI (for password backups)
 
