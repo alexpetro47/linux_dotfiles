@@ -29,6 +29,14 @@ curl -fsSL https://raw.githubusercontent.com/justatoaster47/linux_dotfiles/main/
 - spotify login
 - `bw login` - authenticate bitwarden CLI (for password backups)
 - (in alacritty) `<C-w>I` to install tmux plugins
+- `rclone config` - create `gdrive` remote for `backup` script
+- simplenote backup credentials:
+  ```bash
+  mkdir -p ~/.config/simplenote
+  echo 'your@email.com' > ~/.config/simplenote/credentials
+  echo 'your-password' >> ~/.config/simplenote/credentials
+  chmod 600 ~/.config/simplenote/credentials
+  ```
 
 ## Re-run Individual Phases
 
@@ -41,17 +49,5 @@ cd ~/.config/new-machine-setup
 ./configure-system.sh  # git config, default shell, services, clone repos
 ./verify.sh            # check everything is installed correctly
 ```
-
 Logs: `~/bootstrap-<timestamp>.log`
-
-## Backup
-
-```bash
-backup              # interactive menu
-backup --all        # bitwarden + repos
-backup --repos      # repos only
-backup --bitwarden  # passwords only
-```
-
-Backups sync to `gdrive:BACKUPS/` via rclone. Requires rclone gdrive remote (see `additional-installs.md`).
 

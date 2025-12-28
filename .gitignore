@@ -122,6 +122,7 @@ scripts/*
 !scripts/backup
 !scripts/backup-bitwarden
 !scripts/backup-repos
+!scripts/backup-simplenote
 
 !picom
 picom/*

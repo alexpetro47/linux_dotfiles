@@ -15,21 +15,28 @@ _backup_bitwarden() {
     "$SCRIPT_DIR/backup-bitwarden"
 }
 
+_backup_simplenote() {
+    log "=== Simplenote Backup ==="
+    "$SCRIPT_DIR/backup-simplenote"
+}
+
 _show_menu() {
     echo ""
     echo "Backup Menu"
     echo "-----------"
-    echo "1. Include Bitwarden (master password required)"
+    echo "1. All (Bitwarden + Simplenote + Repos)"
     echo "2. Repos only"
-    echo "3. Exit"
+    echo "3. Simplenote only"
+    echo "4. Exit"
     echo ""
-    read -p "Choice [1-3]: " choice
+    read -p "Choice [1-4]: " choice
     echo ""
 
     case "$choice" in
-        1) _backup_bitwarden && echo && _backup_repos ;;
+        1) _backup_bitwarden && echo && _backup_simplenote && echo && _backup_repos ;;
         2) _backup_repos ;;
-        3) exit 0 ;;
+        3) _backup_simplenote ;;
+        4) exit 0 ;;
         *) echo "Invalid choice"; exit 1 ;;
     esac
 }
@@ -48,8 +55,12 @@ for arg in "$@"; do
             _backup_bitwarden
             exit 0
             ;;
+        --simplenote)
+            _backup_simplenote
+            exit 0
+            ;;
         --all)
-            _backup_bitwarden && echo && _backup_repos $DRY_RUN
+            _backup_bitwarden && echo && _backup_simplenote && echo && _backup_repos $DRY_RUN
             exit 0
             ;;
         --help|-h)
@@ -58,7 +69,8 @@ for arg in "$@"; do
             echo "Options:"
             echo "  --repos       Backup repos only"
             echo "  --bitwarden   Backup Bitwarden only"
-            echo "  --all         Backup both"
+            echo "  --simplenote  Backup Simplenote only"
+            echo "  --all         Backup all (Bitwarden + Simplenote + Repos)"
             echo "  --dry-run     Preview repo sync without changes"
             echo "  -h, --help    Show this help"
             echo ""

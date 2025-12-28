@@ -1,5 +1,7 @@
 See `README.md` for setup instructions.
 
+**New files**: When creating new files in this repo, ask user if they want them whitelisted in `.gitignore`.
+
 **Reproducibility**: All changes must be reproducible on a fresh machine. Either:
 1. Install script (`install-packages.sh`, `link-configs.sh`, `configure-system.sh`)
 2. Passive config (tracked file, symlinked or in XDG path)
@@ -42,18 +44,20 @@ Scripts are designed for safe re-runs:
 ## Backup
 
 ```bash
-backup              # interactive menu (repos, bitwarden, or both)
-backup --all        # bitwarden passwords + repos
+backup              # interactive menu
+backup --all        # bitwarden + simplenote + repos
 backup --repos      # repos only
 backup --bitwarden  # passwords only
+backup --simplenote # notes only
 backup --dry-run    # preview repo sync
 ```
 
 - Repos sync to `gdrive:BACKUPS/` via rclone
 - Bitwarden: exports to `~/.local/share/bitwarden-backup/`, syncs to `gdrive:BACKUPS/bitwarden/`
+- Simplenote: exports to `~/.local/share/simplenote-backup/`, syncs to `gdrive:BACKUPS/SIMPLENOTE/`
 - Repos manifest: `rclone/backup-repos.txt` (format: `/path:git` or `/path:full`)
 - Setup: `rclone config` → create remote named `gdrive` (see `additional-installs.md`)
-- First run: `bw login` to authenticate CLI
+- First run: `bw login` for Bitwarden, create `~/.config/simplenote/credentials` (email + password lines)
 
 ## Tmux Sessionizer
 

@@ -8,5 +8,4 @@
 
 /home/alexpetro/.claude:git
 /home/alexpetro/.config:git
-/home/alexpetro/Documents/notes3:git
 /home/alexpetro/Documents/media:full
