@@ -45,6 +45,7 @@ nvim/lua/main_plugin/*
 tmux/*
 !tmux/tmux.conf
 !tmux/git-status.sh
+!tmux/zen-mode.sh
 
 !tmux-sessionizer/
 tmux-sessionizer/*
@@ -123,6 +124,7 @@ scripts/*
 !scripts/backup-bitwarden
 !scripts/backup-repos
 !scripts/backup-simplenote
+!scripts/lock
 
 !picom
 picom/*

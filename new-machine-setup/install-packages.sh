@@ -273,13 +273,13 @@ else
     log "Claude Code already installed"
 fi
 
-log "Configuring Claude Code MCP servers..."
-claude mcp add context7 -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
-claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
-claude mcp add playwright -- npx '@playwright/mcp@latest' 2>/dev/null || true
+# log "Configuring Claude Code MCP servers..."
+# claude mcp add context7 -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
+# claude mcp add sequential-thinking -s user -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
+# claude mcp add playwright -- npx '@playwright/mcp@latest' 2>/dev/null || true
 
-log "Installing Claude Code plugins..."
-npx claude-plugins skills install @anthropics/claude-code/frontend-design 2>/dev/null || true
+# log "Installing Claude Code plugins..."
+# npx claude-plugins skills install @anthropics/claude-code/frontend-design 2>/dev/null || true
 
 # =============================================================================
 # FONTS (FiraCode Nerd Font)
@@ -335,6 +335,23 @@ fi
 if [ -f "$HOME/.tmux.conf" ] && [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
     log "Installing tmux plugins..."
     "$HOME/.tmux/plugins/tpm/bin/install_plugins" || log "WARN: tmux plugin install failed (may need tmux running)"
+fi
+
+# =============================================================================
+# ASCIIQUARIUM (terminal aquarium for zen-mode)
+# =============================================================================
+if ! installed asciiquarium; then
+    log "Installing asciiquarium..."
+    sudo apt install -y libcurses-perl
+    # Install Term::Animation from CPAN (required dependency)
+    sudo cpan -T Term::Animation 2>/dev/null || log "WARN: Term::Animation install may need manual CPAN config"
+    # Download and install asciiquarium
+    curl -fLo /tmp/asciiquarium.tar.gz https://robobunny.com/projects/asciiquarium/asciiquarium.tar.gz
+    tar -xzf /tmp/asciiquarium.tar.gz -C /tmp
+    sudo install /tmp/asciiquarium_1.1/asciiquarium /usr/local/bin/
+    rm -rf /tmp/asciiquarium.tar.gz /tmp/asciiquarium_1.1
+else
+    log "asciiquarium already installed"
 fi
 
 # =============================================================================
