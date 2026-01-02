@@ -79,9 +79,10 @@ alias gdp='git --no-pager diff HEAD'
 alias cl="claude"
 alias clc="claude -c"
 alias clr="claude --resume"
+alias cli="curl -fsSL https://claude.ai/install.sh"
 alias trashList="trash-list | sort -r | head -25"
 alias marpp="marp --watch --preview "
-alias fullcharge="sudo tlp fullcharge"
+# alias fullcharge="sudo tlp fullcharge"  # DEPRECATED: TLP disabled
 
 alias musicExport="rclone copy -v ~/Documents/prod/drive_workspace/ google_drive:music/workspace/"
 alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/drive_workspace"

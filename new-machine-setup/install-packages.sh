@@ -60,9 +60,10 @@ sudo apt install -y \
     pipewire-jack \
     pavucontrol \
     thunar \
-    tlp \
-    tlp-rdw \
-    acpi-call-dkms \
+    # TLP - DEPRECATED: disabled due to conflicts with modern power management
+    # tlp \
+    # tlp-rdw \
+    # acpi-call-dkms \
 
 # =============================================================================
 # BROWSERS
