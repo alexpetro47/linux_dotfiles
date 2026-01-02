@@ -37,6 +37,11 @@ while IFS=: read -r path mode; do
     path="${path%/}"  # trim trailing slash
     remote_path=$(_path_from_home "$path")
 
+    if [[ ! -d "$path" ]]; then
+        log "SKIP: Directory not found: $path"
+        continue
+    fi
+
     case "$mode" in
         git)  _sync_git "$path" "$remote_path" ;;
         full) _sync_full "$path" "$remote_path" ;;
