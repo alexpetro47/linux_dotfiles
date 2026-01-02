@@ -91,3 +91,10 @@ https://www.reaper.fm/download.php
 
 dbgate - database gui (manual)
 https://dbgate.org/download/
+
+amdgpu PSR fix - ThinkPad P14s Gen 6 / Ryzen AI 9 HX 370 / Radeon 890M
+```
+# Fixes input freezes, screen not updating (PSR regression in kernel 6.11+)
+sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 amdgpu.dcdebugmask=0x10"/' /etc/default/grub
+sudo update-grub && sudo reboot
+```

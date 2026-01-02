@@ -86,7 +86,7 @@ alias marpp="marp --watch --preview "
 
 alias musicExport="rclone copy -v ~/Documents/prod/drive_workspace/ google_drive:music/workspace/"
 alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/drive_workspace"
-alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_sync.py"
+# alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_sync.py"  # DEPRECATED: script doesn't exist
 
 # alias sd="cd ~ && cd \$(find * -type d | fzf)"
 # alias lc="git ls-files -z | xargs -0 wc -l 2>/dev/null"
