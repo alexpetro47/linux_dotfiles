@@ -77,6 +77,7 @@ bindsym $mod+Shift+f exec --no-startup-id "i3-msg fullscreen toggle"
 bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
+bindsym --whole-window button2 kill
 bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
@@ -110,7 +111,7 @@ bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuo
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
-exec --no-startup-id picom -b
+# exec --no-startup-id picom -b  # disabled - causes idle crashes
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us

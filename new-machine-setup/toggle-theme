@@ -36,13 +36,6 @@ tinty apply "$SCHEME"
 # Refresh tmux (tinty hook may not reach server from i3 context)
 tmux source-file ~/.config/tmux/colors.conf 2>/dev/null || true
 
-# Toggle picom (transparency off in light mode)
-if [ "$NEW" = "light" ]; then
-    pkill picom 2>/dev/null
-else
-    pgrep picom >/dev/null || picom -b
-fi
-
 # Toggle GTK theme (Thunar, Brave when set to GTK+ theme)
 if [ "$NEW" = "light" ]; then
     GTK_THEME="Adwaita"

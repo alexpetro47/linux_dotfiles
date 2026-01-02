@@ -1,11 +1,3 @@
 #!/bin/bash
-# Lock screen wrapper - disables picom during lock
-
-# Kill picom before locking
-pkill -x picom
-
 # Lock the screen (--nofork keeps xss-lock happy)
 i3lock --nofork "$@"
-
-# Restart picom after unlock
-picom -b
