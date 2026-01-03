@@ -4,6 +4,7 @@ set -e
 MANIFEST="$HOME/.config/rclone/backup-repos.txt"
 REMOTE="gdrive:BACKUPS"
 DRY_RUN=""
+KEEP_VERSIONS=3
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -12,20 +13,45 @@ _path_from_home() {
     echo "${1#$HOME/}"
 }
 
+_prune_versions() {
+    local remote_path="$1"
+
+    local versions=$(rclone lsf "$REMOTE/$remote_path" --dirs-only 2>/dev/null | \
+        grep -E "^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}/$" | \
+        sort -r)
+
+    local count=0
+    while IFS= read -r ver; do
+        [[ -z "$ver" ]] && continue
+        ((++count))
+        if [[ $count -gt $KEEP_VERSIONS ]]; then
+            log "Pruning old version: $remote_path/$ver"
+            [[ -z "$DRY_RUN" ]] && rclone purge "$REMOTE/$remote_path/$ver"
+        fi
+    done <<< "$versions"
+}
+
 _sync_full() {
     local path="$1" remote_path="$2"
-    log "Syncing (full): $path → $REMOTE/$remote_path"
-    rclone sync "$path" "$REMOTE/$remote_path" $DRY_RUN --progress
+    local version_dir="$REMOTE/$remote_path/$(date +%Y-%m-%d_%H-%M)"
+
+    log "Copying (full): $path → $version_dir"
+    rclone copy "$path" "$version_dir" $DRY_RUN --progress
+
+    _prune_versions "$remote_path"
 }
 
 _sync_git() {
     local path="$1" remote_path="$2"
+    local version_dir="$REMOTE/$remote_path/$(date +%Y-%m-%d_%H-%M)"
     local tmpfile=$(mktemp)
 
-    log "Syncing (git): $path → $REMOTE/$remote_path"
+    log "Copying (git): $path → $version_dir"
     (cd "$path" && git ls-files && git ls-files --others --exclude-standard) | sort -u > "$tmpfile"
-    rclone sync "$path" "$REMOTE/$remote_path" --files-from "$tmpfile" $DRY_RUN --progress
+    rclone copy "$path" "$version_dir" --files-from "$tmpfile" $DRY_RUN --progress
     rm "$tmpfile"
+
+    _prune_versions "$remote_path"
 }
 
 # Parse args

@@ -52,9 +52,10 @@ backup --simplenote # notes only
 backup --dry-run    # preview repo sync
 ```
 
-- Repos sync to `gdrive:BACKUPS/` via rclone
-- Bitwarden: exports to `~/.local/share/bitwarden-backup/`, syncs to `gdrive:BACKUPS/bitwarden/`
-- Simplenote: exports to `~/.local/share/simplenote-backup/`, syncs to `gdrive:BACKUPS/SIMPLENOTE/`
+- All syncs are versioned: changed/deleted files go to `<name>.YYYY-MM-DD_HH-MM/`, keeps 3 most recent
+- Repos: `gdrive:BACKUPS/` (versions like `.config/2025-01-03_14-30/`)
+- Bitwarden: local `~/.local/share/bitwarden-backup/` (keeps 7 exports), remote `gdrive:BACKUPS/bitwarden/`
+- Simplenote: local `~/.local/share/simplenote-backup/`, remote `gdrive:BACKUPS/SIMPLENOTE/` (versions like `SIMPLENOTE/2025-01-03_14-30/`)
 - Repos manifest: `rclone/backup-repos.txt` (format: `/path:git` or `/path:full`)
 - Setup: `rclone config` → create remote named `gdrive` (see `additional-installs.md`)
 - First run: `bw login` for Bitwarden, create `~/.config/simplenote/credentials` (email + password lines)
