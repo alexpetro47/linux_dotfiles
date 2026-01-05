@@ -60,6 +60,8 @@ sudo apt install -y \
     pipewire-jack \
     pavucontrol \
     thunar \
+    sox \
+    libsox-fmt-all \
     # TLP - DEPRECATED: disabled due to conflicts with modern power management
     # tlp \
     # tlp-rdw \
@@ -157,6 +159,7 @@ uv tool install ruff || true
 uv tool install pytest || true
 uv tool install pyright || true
 uv tool install pre-commit || true
+uv tool install whisper-ctranslate2 || true
 
 # =============================================================================
 # RUST/CARGO

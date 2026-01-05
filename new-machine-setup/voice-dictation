@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+# Voice dictation toggle - Alt+V to start/stop recording and transcribe
+# Uses faster-whisper (large-v3-turbo) for high-quality offline transcription
+#
+
+set -e
+
+AUDIO_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
+AUDIO_FILE="$AUDIO_DIR/recording.wav"
+PID_FILE="$AUDIO_DIR/recording.pid"
+MODEL="${WHISPER_MODEL:-large-v3-turbo}"
+COMPUTE_TYPE="${WHISPER_COMPUTE:-int8}"
+
+mkdir -p "$AUDIO_DIR"
+
+notify() {
+    notify-send -t 2000 -u normal "Voice Dictation" "$1" 2>/dev/null || true
+}
+
+start_recording() {
+    # Clean up any previous recording
+    rm -f "$AUDIO_FILE" "$PID_FILE"
+
+    # Start recording in background (16kHz mono - optimal for Whisper)
+    rec -q -c 1 -r 16000 -b 16 "$AUDIO_FILE" &
+    echo $! > "$PID_FILE"
+
+    notify "Recording started... Alt+V to stop"
+}
+
+stop_and_transcribe() {
+    if [ ! -f "$PID_FILE" ]; then
+        notify "No recording in progress"
+        exit 1
+    fi
+
+    # Stop recording
+    kill "$(cat "$PID_FILE")" 2>/dev/null || true
+    rm -f "$PID_FILE"
+
+    # Wait for file to be written
+    sleep 0.3
+
+    if [ ! -f "$AUDIO_FILE" ] || [ ! -s "$AUDIO_FILE" ]; then
+        notify "No audio recorded"
+        exit 1
+    fi
+
+    notify "Transcribing..."
+
+    # Transcribe with faster-whisper
+    # Output to stdout in plain text format
+    TRANSCRIPT=$(whisper-ctranslate2 "$AUDIO_FILE" \
+        --model "$MODEL" \
+        --compute_type "$COMPUTE_TYPE" \
+        --output_format txt \
+        --output_dir "$AUDIO_DIR" \
+        --language en \
+        --task transcribe \
+        --vad_filter True \
+        --word_timestamps False \
+        2>/dev/null)
+
+    # Read the transcript file
+    TRANSCRIPT_FILE="$AUDIO_DIR/recording.txt"
+    if [ -f "$TRANSCRIPT_FILE" ]; then
+        TEXT=$(cat "$TRANSCRIPT_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
+
+        if [ -n "$TEXT" ]; then
+            # Type the text at cursor position
+            # Use xdotool with a small delay for reliability
+            sleep 0.1
+            xdotool type --delay 10 -- "$TEXT"
+            notify "Transcribed: ${TEXT:0:50}..."
+        else
+            notify "No speech detected"
+        fi
+    else
+        notify "Transcription failed"
+    fi
+
+    # Cleanup
+    rm -f "$AUDIO_FILE" "$TRANSCRIPT_FILE" "$AUDIO_DIR"/*.json 2>/dev/null || true
+}
+
+# Toggle logic
+if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+    stop_and_transcribe
+else
+    start_recording
+fi
