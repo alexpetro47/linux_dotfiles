@@ -77,6 +77,7 @@ alias gd='echo -e "\033[1mStaged changes:\033[0m" && git diff --cached --numstat
 alias gdp='git --no-pager diff HEAD'
 # alias gi='git init && touch .gitignore && git add .gitignore && git commit -m "init" && git remote add origin https://github.com/alexpetro47/$(basename $(pwd)).git && gh repo create $(basename $(pwd)) --private && git push && git status'
 alias cl="claude"
+alias C="claude --dangerously-skip-permissions"
 alias clc="claude -c"
 alias clr="claude --resume"
 alias clu="curl -fsSL https://claude.ai/install.sh | bash -s -- --force"
