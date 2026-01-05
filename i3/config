@@ -106,6 +106,7 @@ bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-rec
 bindsym $mod+v exec --no-startup-id ~/.config/new-machine-setup/voice-dictation
 
 bindsym $mod+s workspace 6; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
+bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 
 exec --no-startup-id ~/.xsessionrc
