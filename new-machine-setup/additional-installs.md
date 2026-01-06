@@ -98,3 +98,34 @@ amdgpu PSR fix - ThinkPad P14s Gen 6 / Ryzen AI 9 HX 370 / Radeon 890M
 sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 amdgpu.dcdebugmask=0x10"/' /etc/default/grub
 sudo update-grub && sudo reboot
 ```
+
+## ML/Media Processing (for ~/.claude/skills media toolkits)
+
+PyTorch + CUDA (required for GPU acceleration)
+```
+# Check CUDA version first: nvidia-smi
+# Then install matching PyTorch: https://pytorch.org/get-started/locally/
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+HuggingFace Transformers - Florence-2, SigLIP
+`pip install transformers accelerate`
+
+faster-whisper - audio transcription
+`pip install faster-whisper`
+
+pyannote-audio - speaker diarization (requires HF token)
+```
+pip install pyannote-audio
+# Get token from: https://huggingface.co/pyannote/speaker-diarization
+# Then: export HF_TOKEN="your_token"
+```
+
+ultralytics - YOLO object detection
+`pip install ultralytics`
+
+ffmpeg - required for audio/video processing
+`sudo apt install ffmpeg`
+
+ImageMagick - image processing
+`sudo apt install imagemagick`
