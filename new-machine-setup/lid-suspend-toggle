@@ -1,0 +1,23 @@
+#!/bin/bash
+# lid-suspend-toggle - Toggle lid suspend inhibitor for portable operation
+
+INHIBIT_FILE="$HOME/.config/lid-suspend-inhibit"
+INHIBIT_PID_FILE="$HOME/.config/lid-suspend-inhibit.pid"
+
+if [ -f "$INHIBIT_FILE" ]; then
+    # Currently inhibited - re-enable lid suspend
+    if [ -f "$INHIBIT_PID_FILE" ]; then
+        kill "$(cat "$INHIBIT_PID_FILE")" 2>/dev/null
+        rm "$INHIBIT_PID_FILE"
+    fi
+    rm "$INHIBIT_FILE"
+    notify-send -u low "Lid Suspend" "Enabled - closing lid will suspend"
+    polybar-msg action lid-suspend hook 0 2>/dev/null
+else
+    # Not inhibited - disable lid suspend
+    systemd-inhibit --what=handle-lid-switch --who="lid-suspend-toggle" --why="Portable operation mode" sleep infinity &
+    echo $! > "$INHIBIT_PID_FILE"
+    touch "$INHIBIT_FILE"
+    notify-send -u low "Lid Suspend" "Disabled - laptop stays awake when closed"
+    polybar-msg action lid-suspend hook 1 2>/dev/null
+fi

@@ -172,6 +172,7 @@ new-machine-setup/*
 !new-machine-setup/screen-record-toggle
 !new-machine-setup/toggle-theme
 !new-machine-setup/voice-dictation
+!new-machine-setup/lid-suspend-toggle
 !new-machine-setup/additional-installs.md
 !new-machine-setup/clone-repos.sh
 !new-machine-setup/clone-repos.txt

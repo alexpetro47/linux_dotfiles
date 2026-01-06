@@ -34,6 +34,7 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+n` | Toggle focus mode (notifications) |
 | `Alt+Shift+b` | Toggle polybar |
 | `Alt+Shift+c` | Toggle screen recording (SSR) |
+| `Alt+Shift+a` | Toggle lid suspend (stay awake when closed) |
 
 ## Theme
 

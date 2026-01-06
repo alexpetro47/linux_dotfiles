@@ -90,6 +90,11 @@ if [ -f "$CONFIG_DIR/new-machine-setup/screen-record-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/screen-record-toggle" "$HOME/.local/bin/screen-record-toggle"
 fi
 
+# Lid suspend toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/lid-suspend-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/lid-suspend-toggle" "$HOME/.local/bin/lid-suspend-toggle"
+fi
+
 # Backup scripts
 if [ -f "$CONFIG_DIR/scripts/backup" ]; then
     _link_config "$CONFIG_DIR/scripts/backup" "$HOME/.local/bin/backup"

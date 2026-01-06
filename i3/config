@@ -102,6 +102,9 @@ bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 # Screen recording toggle (SimpleScreenRecorder)
 bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
 
+# Lid suspend toggle (keep laptop awake when closed)
+bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
+
 # Voice dictation toggle (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.config/new-machine-setup/voice-dictation
 
