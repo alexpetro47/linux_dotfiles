@@ -62,10 +62,9 @@ sudo apt install -y \
     thunar \
     sox \
     libsox-fmt-all \
-    # TLP - DEPRECATED: disabled due to conflicts with modern power management
-    # tlp \
-    # tlp-rdw \
-    # acpi-call-dkms \
+    # TLP power management for battery optimization
+    tlp \
+    tlp-rdw \
 
 # =============================================================================
 # BROWSERS

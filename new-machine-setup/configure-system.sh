@@ -49,24 +49,35 @@ log "Enabling system services..."
 sudo systemctl enable NetworkManager 2>/dev/null || log "WARN: NetworkManager enable failed"
 sudo systemctl enable docker 2>/dev/null || log "WARN: docker enable failed"
 
-# TLP power management - DEPRECATED: disabled due to conflicts with modern power management
-# if command -v tlp &>/dev/null; then
-#     log "Enabling TLP power management..."
-#     sudo systemctl enable tlp
-#     sudo systemctl start tlp
-#     # Disable conflicting power-profiles-daemon if present
-#     sudo systemctl disable --now power-profiles-daemon 2>/dev/null || true
-#     sudo systemctl mask power-profiles-daemon 2>/dev/null || true
-#
-#     # ThinkPad battery thresholds (40-85% for balanced plugged/unplugged usage)
-#     if [ -f /etc/tlp.conf ]; then
-#         log "Configuring battery charge thresholds (40-85%)..."
-#         sudo sed -i 's/^#\?START_CHARGE_THRESH_BAT0=.*/START_CHARGE_THRESH_BAT0=40/' /etc/tlp.conf
-#         sudo sed -i 's/^#\?STOP_CHARGE_THRESH_BAT0=.*/STOP_CHARGE_THRESH_BAT0=85/' /etc/tlp.conf
-#         # Apply immediately
-#         sudo tlp start
-#     fi
-# fi
+# TLP power management - optimized for unplugged laptop use
+if command -v tlp &>/dev/null; then
+    log "Enabling TLP power management..."
+    sudo systemctl enable tlp
+    sudo systemctl start tlp
+    # Disable conflicting power-profiles-daemon if present
+    sudo systemctl disable --now power-profiles-daemon 2>/dev/null || true
+    sudo systemctl mask power-profiles-daemon 2>/dev/null || true
+
+    # Configure CPU power management
+    if [ -f /etc/tlp.conf ]; then
+        scaling_driver=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver 2>/dev/null)
+        if [[ "$scaling_driver" == "amd-pstate"* ]]; then
+            # AMD pstate uses EPP for power control, governor is always powersave
+            log "Configuring TLP for AMD pstate-epp (EPP: power on battery, balance_performance on AC)..."
+            sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_AC=.*/CPU_SCALING_GOVERNOR_ON_AC=powersave/' /etc/tlp.conf
+            sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_BAT=.*/CPU_SCALING_GOVERNOR_ON_BAT=powersave/' /etc/tlp.conf
+            sudo sed -i 's/^#\?CPU_ENERGY_PERF_POLICY_ON_AC=.*/CPU_ENERGY_PERF_POLICY_ON_AC=balance_performance/' /etc/tlp.conf
+            sudo sed -i 's/^#\?CPU_ENERGY_PERF_POLICY_ON_BAT=.*/CPU_ENERGY_PERF_POLICY_ON_BAT=power/' /etc/tlp.conf
+        else
+            # Intel/legacy: use traditional governors
+            log "Configuring TLP governors (conservative on battery, ondemand on AC)..."
+            sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_AC=.*/CPU_SCALING_GOVERNOR_ON_AC=ondemand/' /etc/tlp.conf
+            sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_BAT=.*/CPU_SCALING_GOVERNOR_ON_BAT=conservative/' /etc/tlp.conf
+        fi
+        # Apply immediately
+        sudo tlp start
+    fi
+fi
 
 # =============================================================================
 # DEFAULT APPLICATIONS
