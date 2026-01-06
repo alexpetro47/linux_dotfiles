@@ -213,3 +213,7 @@ i3/colors
 !.github/workflows/
 .github/workflows/*
 !.github/workflows/claude.yml
+
+!applications/
+applications/*
+!applications/jupyter-lab.desktop

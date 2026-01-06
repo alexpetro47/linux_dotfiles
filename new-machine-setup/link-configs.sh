@@ -116,4 +116,15 @@ if [ -f "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" ]; then
     _link_config "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
 fi
 
+# =============================================================================
+# DESKTOP ENTRIES
+# =============================================================================
+
+mkdir -p "$HOME/.local/share/applications"
+
+# Jupyter Lab
+if [ -f "$CONFIG_DIR/applications/jupyter-lab.desktop" ]; then
+    _link_config "$CONFIG_DIR/applications/jupyter-lab.desktop" "$HOME/.local/share/applications/jupyter-lab.desktop"
+fi
+
 log "Symlink creation complete!"
