@@ -80,9 +80,10 @@ alias cl="claude"
 alias C="claude --dangerously-skip-permissions"
 alias clc="claude -c"
 alias clr="claude --resume"
-alias clu="curl -fsSL https://claude.ai/install.sh | bash -s -- --force"
+alias clu="curl -fsSL https://claude.ai/install.sh | bash"
 alias trashList="trash-list | sort -r | head -25"
 alias marpp="marp --watch --preview "
+alias c7="markserv"  # markdown live preview in browser
 # alias fullcharge="sudo tlp fullcharge"  # DEPRECATED: TLP disabled
 
 alias musicExport="rclone copy -v ~/Documents/prod/drive_workspace/ google_drive:music/workspace/"
