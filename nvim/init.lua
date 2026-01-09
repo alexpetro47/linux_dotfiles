@@ -69,8 +69,21 @@ vim.keymap.set('n', 'Q', ':q!<CR>', {desc="quit buffer without write", noremap =
 vim.keymap.set("n", "<leader>x", "$x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set("n", "<leader>X", "_x", { silent = true, desc = 'x at end of line'})
 vim.keymap.set('n', '<leader>y', ':%y+<CR>', {desc = 'copy all to sys clipboard'})
-vim.keymap.set('n', '<leader>I', 'A![]()<esc>h"+pBla', {desc = 'insert image'})
--- notetaking workflow: flameshot (auto copy path) -> leader F move files into cwd .media/ dir -> nvim-tree 'y' local path -> insert image
+-- <leader>I: move clipboard path to .media/, insert markdown image
+vim.keymap.set('n', '<leader>I', function()
+  local path = vim.fn.getreg('+'):gsub('%s+$', '')
+  if path == '' or vim.fn.filereadable(path) ~= 1 then
+    print('No valid file path in clipboard')
+    return
+  end
+  local fname = vim.fn.fnamemodify(path, ':t')
+  local result = vim.fn.system('mkdir -p .media && mv ' .. vim.fn.shellescape(path) .. ' .media/')
+  if vim.v.shell_error ~= 0 then
+    print('Failed to move file: ' .. result)
+    return
+  end
+  vim.api.nvim_put({'![](.media/' .. fname .. ')'}, 'c', true, true)
+end, {desc = 'move clipboard image to .media/ and insert'})
 vim.keymap.set('n', '<leader>=', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
 vim.keymap.set('n', '<leader><', ':cd ..<CR>:pwd<CR>', {noremap=true, silent=true, desc="cd back 1 dir"})
 vim.keymap.set('n', '<leader>r', ':e!<CR>', {desc = 'reload buffer'})
@@ -155,7 +168,7 @@ vim.keymap.set('n', '<leader>St', ':vs<CR><C-w>l :DistantShell<CR>a' , { desc = 
 --file conversions
 vim.keymap.set('n', '<leader>c9', ':!pandoc % -o %:r.pdf -d /home/alexpetro/.config/pandoc/defaults.yaml<CR>:! xdg-open %:r.pdf &<CR>', { desc = 'md -> pdf' })
 vim.keymap.set('n', '<leader>c8', ":!markmap % --offline <CR>", {desc = 'md -> mind-map (html)'})
-vim.keymap.set('n', '<leader>c7', ':!markserv % &<CR>', { desc = 'md -> browser live preview' })
+vim.keymap.set('n', '<leader>c7', ':silent !markserv % > /dev/null 2>&1 &<CR>', { desc = 'md -> browser live preview' })
 
 --Nvim Management
 vim.keymap.set('n', '<leader>m', ':messages<CR>:horizontal resize 25<CR>', { desc = 'nvim messages'})
