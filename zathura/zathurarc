@@ -1,0 +1,2 @@
+# Copy to system clipboard (Ctrl+V) instead of primary selection (middle-click)
+set selection-clipboard clipboard
