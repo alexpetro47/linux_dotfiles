@@ -33,6 +33,7 @@ sudo apt install -y \
     polybar \
     rofi \
     feh \
+    nsxiv \
     picom \
     fzf \
     ripgrep \

@@ -87,6 +87,12 @@ log "Setting default applications..."
 xdg-mime default org.pwmt.zathura.desktop application/pdf 2>/dev/null || true
 log "PDF viewer set to zathura"
 
+# Set nsxiv as default image viewer
+for mime in image/png image/jpeg image/gif image/webp image/bmp image/tiff; do
+    xdg-mime default nsxiv.desktop "$mime" 2>/dev/null || true
+done
+log "Image viewer set to nsxiv"
+
 # =============================================================================
 # ENSURE ~/.local/bin IN PATH
 # =============================================================================

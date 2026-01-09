@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# nsxiv key handler - invoked via Ctrl+x then <key>
+# Receives image path(s) via stdin
+
+case "$1" in
+"y")      # yank path to clipboard
+    xclip -selection clipboard ;;
+"Y")      # yank absolute path
+    xargs -I{} realpath "{}" | xclip -selection clipboard ;;
+"C-c")    # copy image to clipboard
+    while read file; do xclip -selection clipboard -target image/png "$file"; done ;;
+"d")      # trash image (requires trash-cli)
+    while read file; do trash "$file"; done ;;
+"g")      # open in gimp
+    tr '\n' '\0' | xargs -0 gimp & ;;
+esac

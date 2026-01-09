@@ -221,3 +221,9 @@ applications/*
 !zathura/
 zathura/*
 !zathura/zathurarc
+
+!nsxiv/
+nsxiv/*
+!nsxiv/exec/
+nsxiv/exec/*
+!nsxiv/exec/key-handler
