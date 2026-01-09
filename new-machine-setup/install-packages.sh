@@ -216,6 +216,11 @@ else
     log "Node.js already installed"
 fi
 
+# Configure npm to use user directory (avoids sudo for global installs)
+npm config set prefix ~/.local
+
+log "Installing npm global packages..."
+npm install -g markserv
 
 # SPOTIFY
 if ! installed spotify; then
