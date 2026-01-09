@@ -1,2 +1,5 @@
 # Copy to system clipboard (Ctrl+V) instead of primary selection (middle-click)
 set selection-clipboard clipboard
+
+# Enter also yanks selection to clipboard
+map <Return> feedkeys "y"

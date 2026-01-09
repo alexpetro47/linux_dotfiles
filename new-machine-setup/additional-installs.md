@@ -129,3 +129,6 @@ ffmpeg - required for audio/video processing
 
 ImageMagick - image processing
 `sudo apt install imagemagick`
+
+openjdk - java compiler and runtime (headless)
+`sudo apt install openjdk-21-jdk-headless`
