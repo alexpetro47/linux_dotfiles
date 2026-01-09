@@ -2,6 +2,10 @@ See `README.md` for setup instructions.
 
 **New files**: When creating new files in this repo, ask user if they want them whitelisted in `.gitignore`.
 
+**New tools**: When suggesting tool installations, offer both options:
+1. `install-packages.sh` - automated, runs on every fresh machine
+2. `additional-installs.md` - documented manual step, for optional/situational tools
+
 **Reproducibility**: All changes must be reproducible on a fresh machine. Either:
 1. Install script (`install-packages.sh`, `link-configs.sh`, `configure-system.sh`)
 2. Passive config (tracked file, symlinked or in XDG path)

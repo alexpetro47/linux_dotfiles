@@ -99,6 +99,18 @@ sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\
 sudo update-grub && sudo reboot
 ```
 
+## ML/Data Science
+
+Miniforge3 - conda distribution using conda-forge (avoids Anaconda licensing)
+```
+wget -qO /tmp/miniforge.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+bash /tmp/miniforge.sh -b -p ~/.local/miniforge3
+~/.local/miniforge3/bin/conda init zsh
+# Restart shell, then:
+conda config --set auto_activate_base false
+conda config --set channel_priority strict
+```
+
 ## ML/Media Processing (for ~/.claude/skills media toolkits)
 
 PyTorch + CUDA (required for GPU acceleration)
