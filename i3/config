@@ -82,7 +82,7 @@ bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
 bindsym $mod+f exec --no-startup-id rofi -show drun
-bindsym $mod+r exec --no-startup-id "qjackctl --start & reaper & i3-msg 'workspace 5; exec nemo ~/Documents/prod' &"
+bindsym $mod+r exec --no-startup-id "reaper & i3-msg 'workspace 4'"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com

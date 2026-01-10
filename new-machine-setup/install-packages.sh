@@ -389,6 +389,33 @@ else
 fi
 
 # =============================================================================
+# REAPER DAW (manual download required)
+# =============================================================================
+if [ ! -f "$HOME/.local/opt/reaper/reaper" ]; then
+    log "Reaper not found. Download from https://www.reaper.fm/download.php"
+    log "Then extract to ~/.local/opt/reaper/"
+else
+    log "Reaper already installed"
+fi
+
+# Create reaper wrapper with PipeWire low-latency settings
+if [ ! -f "$HOME/.local/bin/reaper" ]; then
+    log "Creating Reaper launcher wrapper..."
+    mkdir -p "$HOME/.local/bin"
+    cat > "$HOME/.local/bin/reaper" << 'EOF'
+#!/bin/bash
+# Launch Reaper with PipeWire low-latency settings
+# 256 samples at 48kHz = ~5.3ms latency
+# Audio setup: Preferences → Audio → Device → ALSA, pick hw:Stomp from dropdown
+export PIPEWIRE_LATENCY="256/48000"
+exec ~/.local/opt/reaper/reaper "$@"
+EOF
+    chmod +x "$HOME/.local/bin/reaper"
+else
+    log "Reaper wrapper already exists"
+fi
+
+# =============================================================================
 # CLEANUP
 # =============================================================================
 log "Cleaning up orphaned packages..."
