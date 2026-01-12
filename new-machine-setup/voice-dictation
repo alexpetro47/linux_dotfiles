@@ -9,6 +9,7 @@ set -e
 AUDIO_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
 AUDIO_FILE="$AUDIO_DIR/recording.wav"
 PID_FILE="$AUDIO_DIR/recording.pid"
+WINDOW_FILE="$AUDIO_DIR/window.id"
 MODEL="${WHISPER_MODEL:-large-v3-turbo}"
 COMPUTE_TYPE="${WHISPER_COMPUTE:-int8}"
 
@@ -20,7 +21,10 @@ notify() {
 
 start_recording() {
     # Clean up any previous recording
-    rm -f "$AUDIO_FILE" "$PID_FILE"
+    rm -f "$AUDIO_FILE" "$PID_FILE" "$WINDOW_FILE"
+
+    # Save current focused window to restore later
+    xdotool getactivewindow > "$WINDOW_FILE" 2>/dev/null || true
 
     # Start recording in background (16kHz mono - optimal for Whisper)
     rec -q -c 1 -r 16000 -b 16 "$AUDIO_FILE" &
@@ -68,6 +72,12 @@ stop_and_transcribe() {
         TEXT=$(cat "$TRANSCRIPT_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
 
         if [ -n "$TEXT" ]; then
+            # Restore focus to original window if saved
+            if [ -f "$WINDOW_FILE" ]; then
+                ORIG_WINDOW=$(cat "$WINDOW_FILE")
+                xdotool windowactivate --sync "$ORIG_WINDOW" 2>/dev/null || true
+            fi
+
             # Type the text at cursor position
             # Use xdotool with a small delay for reliability
             sleep 0.1
@@ -83,7 +93,7 @@ stop_and_transcribe() {
     fi
 
     # Cleanup
-    rm -f "$AUDIO_FILE" "$TRANSCRIPT_FILE" "$AUDIO_DIR"/*.json 2>/dev/null || true
+    rm -f "$AUDIO_FILE" "$TRANSCRIPT_FILE" "$WINDOW_FILE" "$AUDIO_DIR"/*.json 2>/dev/null || true
 }
 
 # Toggle logic
