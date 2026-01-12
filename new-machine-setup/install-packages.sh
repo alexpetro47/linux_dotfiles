@@ -300,17 +300,17 @@ fi
 # npx claude-plugins skills install @anthropics/claude-code/frontend-design 2>/dev/null || true
 
 # =============================================================================
-# FONTS (FiraCode Nerd Font)
+# FONTS (Nerd Fonts)
 # =============================================================================
-if [ ! -d "$HOME/.local/share/fonts/FiraCode" ]; then
-    log "Installing FiraCode Nerd Font..."
+if [ ! -d "$HOME/.local/share/fonts/JetBrainsMono" ]; then
+    log "Installing JetBrains Mono Nerd Font..."
     mkdir -p "$HOME/.local/share/fonts"
-    curl -fLo /tmp/FiraCode.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
-    unzip -o /tmp/FiraCode.zip -d "$HOME/.local/share/fonts/FiraCode"
+    curl -fLo /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+    unzip -o /tmp/JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMono"
     fc-cache -fv
-    rm /tmp/FiraCode.zip
+    rm /tmp/JetBrainsMono.zip
 else
-    log "FiraCode Nerd Font already installed"
+    log "JetBrains Mono Nerd Font already installed"
 fi
 
 # =============================================================================

@@ -4,8 +4,8 @@ export ELECTRON_FORCE_SCALE_FACTOR=1.8
 export GDK_SCALE=1.5
 export XCURSOR_THEME="ComixCursors-White"
 export XCURSOR_SIZE=60
-export GTK_FONT_NAME="FiraCode Nerd Font"
-export GTK_MONOSPACE_FONT_NAME="FiraCode Nerd Font"
+export GTK_FONT_NAME="JetBrainsMono Nerd Font"
+export GTK_MONOSPACE_FONT_NAME="JetBrainsMono Nerd Font"
 export QT_AUTO_SCREEN_SCALE_FACTOR=0 
 export QT_ENABLE_HIGHDPI_SCALING=1
 export MOZ_ENABLE_WAYLAND=0 
@@ -28,7 +28,7 @@ export QT_FONT_DPI=125
 mkdir -p ~/.config/gtk-3.0
 cat > ~/.config/gtk-3.0/settings.ini << 'EOF'
 [Settings]
-gtk-font-name=FiraCode Nerd Font
+gtk-font-name=JetBrainsMono Nerd Font
 gtk-cursor-theme-name=ComixCursors-White
 gtk-cursor-theme-size=60
 gtk-xft-antialias=1
@@ -38,7 +38,7 @@ gtk-xft-rgba=rgb
 EOF
 
 cat > ~/.gtkrc-2.0 << 'EOF'
-gtk-font-name="FiraCode Nerd Font"
+gtk-font-name="JetBrainsMono Nerd Font"
 gtk-cursor-theme-name="ComixCursors-White"
 gtk-cursor-theme-size=60
 EOF

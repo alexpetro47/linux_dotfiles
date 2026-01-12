@@ -33,7 +33,7 @@ section "Post-reboot"
 groups | grep -q docker && pass "docker group" || warn "docker group"
 
 section "Fonts"
-fc-list | grep -qi firacode && pass "FiraCode" || fail "FiraCode"
+fc-list | grep -qi jetbrainsmono && pass "JetBrainsMono" || fail "JetBrainsMono"
 
 echo -e "\n─────────────────────────"
 echo -e "Pass: ${GREEN}$PASS${NC}  Fail: ${RED}$FAIL${NC}  Warn: ${YELLOW}$WARN${NC}"

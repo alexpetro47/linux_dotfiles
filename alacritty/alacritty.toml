@@ -18,10 +18,10 @@ hide_when_typing = true
 [font]
 # size = 22
 size = 15
-normal = {family = "FiraCode Nerd Font Mono", style = "Regular"}
-bold = {family = "FiraCode Nerd Font Mono", style = "Bold"}
-italic = {family = "FiraCode Nerd Font Mono", style = "Regular"}
-bold_italic = {family = "FiraCode Nerd Font Mono", style = "Bold"}
+normal = {family = "JetBrainsMono Nerd Font Mono", style = "Regular"}
+bold = {family = "JetBrainsMono Nerd Font Mono", style = "Bold"}
+italic = {family = "JetBrainsMono Nerd Font Mono", style = "Italic"}
+bold_italic = {family = "JetBrainsMono Nerd Font Mono", style = "Bold Italic"}
 
 [terminal]
 osc52 = "CopyPaste"
