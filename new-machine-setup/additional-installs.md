@@ -1,6 +1,19 @@
 
 # ADDITIONAL INSTALLS
 
+## Fonts
+
+FiraCode Nerd Font - alternative monospace font (ligatures)
+```
+mkdir -p ~/.local/share/fonts
+curl -fLo /tmp/FiraCode.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+unzip -o /tmp/FiraCode.zip -d ~/.local/share/fonts/FiraCode
+fc-cache -fv
+rm /tmp/FiraCode.zip
+```
+
+## Development
+
 c qa libs
 ```
 sudo apt install clang-format clang-tidy cppcheck
