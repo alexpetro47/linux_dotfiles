@@ -99,6 +99,9 @@ sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\
 sudo update-grub && sudo reboot
 ```
 
+alacritty - terminal emulator (alternative to kitty, no image support)
+`sudo apt install alacritty`
+
 ## ML/Data Science
 
 Miniforge3 - conda distribution using conda-forge (avoids Anaconda licensing)

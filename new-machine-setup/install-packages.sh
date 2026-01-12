@@ -29,7 +29,6 @@ sudo apt install -y \
     cmake \
     zsh \
     tmux \
-    alacritty \
     polybar \
     rofi \
     feh \
@@ -235,6 +234,16 @@ else
 fi
 
 # =============================================================================
+# D2 (Diagram scripting language)
+# =============================================================================
+if ! installed d2; then
+    log "Installing D2..."
+    curl -fsSL https://d2lang.com/install.sh | sh -s --
+else
+    log "D2 already installed"
+fi
+
+# =============================================================================
 # LAZYGIT
 # =============================================================================
 if ! installed lazygit; then
@@ -312,6 +321,27 @@ if [ ! -d /usr/share/icons/ComixCursors-White ]; then
     sudo apt install -y comixcursors-righthanded
 else
     log "ComixCursors theme already installed"
+fi
+
+# =============================================================================
+# KITTY TERMINAL (for image.nvim support)
+# =============================================================================
+if ! installed kitty; then
+    log "Installing Kitty terminal..."
+    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$HOME/.local/kitty.app/bin/kitty" "$HOME/.local/bin/kitty"
+    ln -sf "$HOME/.local/kitty.app/bin/kitten" "$HOME/.local/bin/kitten"
+else
+    log "Kitty already installed"
+fi
+
+# ImageMagick (required for image.nvim)
+if ! installed magick && ! installed convert; then
+    log "Installing ImageMagick..."
+    sudo apt install -y imagemagick
+else
+    log "ImageMagick already installed"
 fi
 
 # =============================================================================
