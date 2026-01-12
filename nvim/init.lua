@@ -347,9 +347,11 @@ require('lazy').setup({
             add = { "```\n", "\n```" },
           },
           -- 'i' wraps with italic (single *)
-          -- ["i"] = {
-          --   add = { "*", "*" },
-          -- },
+          ["i"] = {
+            add = { "*", "*" },
+            find = "%*.-%*",
+            delete = "^(%*)().-(%*)()$",
+          },
           -- 'b' wraps with bold (double **) - overrides default 'b' = )
           ["b"] = {
             add = { "**", "**" },
