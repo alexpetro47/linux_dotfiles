@@ -74,6 +74,11 @@ if command -v tlp &>/dev/null; then
             sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_AC=.*/CPU_SCALING_GOVERNOR_ON_AC=ondemand/' /etc/tlp.conf
             sudo sed -i 's/^#\?CPU_SCALING_GOVERNOR_ON_BAT=.*/CPU_SCALING_GOVERNOR_ON_BAT=conservative/' /etc/tlp.conf
         fi
+        # Disable battery charge thresholds - always charge to 100% when plugged in
+        log "Disabling battery charge thresholds (charge immediately to 100%)..."
+        sudo sed -i 's/^#\?START_CHARGE_THRESH_BAT0=.*/START_CHARGE_THRESH_BAT0=0/' /etc/tlp.conf
+        sudo sed -i 's/^#\?STOP_CHARGE_THRESH_BAT0=.*/STOP_CHARGE_THRESH_BAT0=100/' /etc/tlp.conf
+
         # Apply immediately
         sudo tlp start
     fi
