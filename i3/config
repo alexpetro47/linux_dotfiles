@@ -86,6 +86,7 @@ bindsym $mod+r exec --no-startup-id "reaper & i3-msg 'workspace 4'"
 bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
+bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
 bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
 bindsym $mod+b exec --no-startup-id brave-browser
 
@@ -100,7 +101,7 @@ bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle-theme
 bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 
 # Screen recording toggle (SimpleScreenRecorder)
-bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
+# bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
 
 # Lid suspend toggle (keep laptop awake when closed)
 bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
@@ -108,15 +109,14 @@ bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
 # Voice dictation toggle (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.config/new-machine-setup/voice-dictation
 
-bindsym $mod+s workspace 6; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
-bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
+bindsym $mod+s workspace 4; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
+# bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 # bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+k exec --no-startup-id ~/.local/bin/kitty
 
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
-# exec --no-startup-id picom -b  # disabled - causes idle crashes
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
