@@ -11,7 +11,7 @@ warn() { ((WARN++)); echo -e "${YELLOW}!${NC} $1 (needs reboot)"; }
 section() { echo -e "\n=== $1 ==="; }
 
 section "Core"
-for cmd in i3 zsh alacritty tmux nvim rofi polybar picom; do
+for cmd in i3 zsh alacritty tmux nvim rofi polybar; do
     command -v "$cmd" &>/dev/null && pass "$cmd" || fail "$cmd"
 done
 

@@ -33,7 +33,6 @@ sudo apt install -y \
     rofi \
     feh \
     nsxiv \
-    picom \
     fzf \
     ripgrep \
     btop \

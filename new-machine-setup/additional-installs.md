@@ -1,6 +1,11 @@
 
 # ADDITIONAL INSTALLS
 
+## Desktop
+
+picom - compositor for transparency/shadows (disabled - causes idle crashes)
+`sudo apt install picom`
+
 ## Fonts
 
 FiraCode Nerd Font - alternative monospace font (ligatures)
