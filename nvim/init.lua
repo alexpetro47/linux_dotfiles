@@ -733,59 +733,47 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
+      { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' },
     },
     build = ':TSUpdate',
     config = function()
-      vim.defer_fn(function()
-        require('nvim-treesitter.configs').setup {
-          ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline'},
-          auto_install = true,
-          highlight = { enable = true },
-          indent = { enable = true },
-          modules = {},
-          sync_install = true,
-          ignore_install = {},
+      -- Install parsers
+      local parsers = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline' }
+      require("nvim-treesitter").setup({})
+      require("nvim-treesitter").install(parsers)
 
-          textobjects = {
-            select = {
-              enable = true,
-              lookahead = true,
-              keymaps = {
-                -- Functions
-                ["af"] = "@function.outer",
-                ["if"] = "@function.inner",
-                -- Classes
-                ["aC"] = "@class.outer",
-                ["iC"] = "@class.inner",
-                -- Blocks/conditionals
-                -- ["ab"] = "@block.outer",
-                -- ["ib"] = "@block.inner",
-                -- Parameters/arguments
-                -- ["aa"] = "@parameter.outer",
-                -- ["ia"] = "@parameter.inner",
-                -- Code blocks (markdown ``` ```)
-                ["ac"] = { query = "@code_block.outer", desc = "around code block" },
-                ["ic"] = { query = "@code_block.inner", desc = "inside code block" },
-              },
-            },
-            move = {
-              enable = true,
-              set_jumps = true,
-              goto_next_start = {
-                ["]f"] = "@function.outer",
-                ["]c"] = "@class.outer",
-                ["]b"] = "@block.outer",
-              },
-              goto_previous_start = {
-                ["[f"] = "@function.outer",
-                ["[c"] = "@class.outer",
-                ["[b"] = "@block.outer",
-              },
-            },
-          },
-        }
-      end, 0)
+      -- Enable highlight and indent for filetypes with parsers
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function()
+          if pcall(vim.treesitter.start) then
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+
+      -- Textobjects configuration
+      require("nvim-treesitter-textobjects").setup({
+        select = { lookahead = true },
+        move = { set_jumps = true },
+      })
+
+      -- Textobjects select keymaps
+      local ts_select = require("nvim-treesitter-textobjects.select")
+      vim.keymap.set({ "x", "o" }, "af", function() ts_select.select_textobject("@function.outer", "textobjects") end, { desc = "around function" })
+      vim.keymap.set({ "x", "o" }, "if", function() ts_select.select_textobject("@function.inner", "textobjects") end, { desc = "inside function" })
+      vim.keymap.set({ "x", "o" }, "aC", function() ts_select.select_textobject("@class.outer", "textobjects") end, { desc = "around class" })
+      vim.keymap.set({ "x", "o" }, "iC", function() ts_select.select_textobject("@class.inner", "textobjects") end, { desc = "inside class" })
+      vim.keymap.set({ "x", "o" }, "ac", function() ts_select.select_textobject("@code_block.outer", "textobjects") end, { desc = "around code block" })
+      vim.keymap.set({ "x", "o" }, "ic", function() ts_select.select_textobject("@code_block.inner", "textobjects") end, { desc = "inside code block" })
+
+      -- Textobjects move keymaps
+      local ts_move = require("nvim-treesitter-textobjects.move")
+      vim.keymap.set({ "n", "x", "o" }, "]f", function() ts_move.goto_next_start("@function.outer", "textobjects") end, { desc = "Next function start" })
+      vim.keymap.set({ "n", "x", "o" }, "]c", function() ts_move.goto_next_start("@class.outer", "textobjects") end, { desc = "Next class start" })
+      vim.keymap.set({ "n", "x", "o" }, "]b", function() ts_move.goto_next_start("@block.outer", "textobjects") end, { desc = "Next block start" })
+      vim.keymap.set({ "n", "x", "o" }, "[f", function() ts_move.goto_previous_start("@function.outer", "textobjects") end, { desc = "Previous function start" })
+      vim.keymap.set({ "n", "x", "o" }, "[c", function() ts_move.goto_previous_start("@class.outer", "textobjects") end, { desc = "Previous class start" })
+      vim.keymap.set({ "n", "x", "o" }, "[b", function() ts_move.goto_previous_start("@block.outer", "textobjects") end, { desc = "Previous block start" })
 
       -- Define custom markdown code block queries for treesitter textobjects
       vim.treesitter.query.set("markdown", "textobjects", [[
