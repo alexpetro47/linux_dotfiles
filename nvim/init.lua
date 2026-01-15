@@ -688,7 +688,7 @@ require('lazy').setup({
   -- Fuzzy Finder (files, lsp, etc)
   {
     'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
+    branch = 'master',
     dependencies = {
       'nvim-lua/plenary.nvim',
       {
@@ -737,16 +737,31 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
     config = function()
-      -- Install parsers
+      -- Add nvim-treesitter runtime to runtimepath (required for queries in 1.0)
+      vim.opt.rtp:prepend(vim.fn.stdpath('data') .. '/lazy/nvim-treesitter/runtime')
+
+      -- Install only missing parsers
       local parsers = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'sql', 'markdown', 'markdown_inline' }
       require("nvim-treesitter").setup({})
-      require("nvim-treesitter").install(parsers)
+      local parser_dir = vim.fn.stdpath('data') .. '/lazy/nvim-treesitter/parser/'
+      local to_install = vim.tbl_filter(function(p)
+        return vim.fn.filereadable(parser_dir .. p .. '.so') == 0
+      end, parsers)
+      if #to_install > 0 then
+        require("nvim-treesitter").install(to_install)
+      end
 
-      -- Enable highlight and indent for filetypes with parsers
+      -- Enable treesitter highlighting for all buffers
       vim.api.nvim_create_autocmd('FileType', {
-        callback = function()
-          if pcall(vim.treesitter.start) then
-            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        callback = function(args)
+          local buf = args.buf
+          local ft = vim.bo[buf].filetype
+          if ft == '' then return end
+          -- Map filetype to language and try to start treesitter
+          local lang = vim.treesitter.language.get_lang(ft) or ft
+          local ok = pcall(vim.treesitter.start, buf, lang)
+          if ok then
+            vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
       })
