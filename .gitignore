@@ -128,6 +128,7 @@ scripts/*
 !scripts/speedread-keys
 !scripts/speedread-tui
 !scripts/speedread-popup
+!scripts/speedread-clipboard
 
 !picom
 picom/*

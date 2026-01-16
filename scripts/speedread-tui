@@ -52,11 +52,11 @@ done
 
 # If no file provided, use fzf to select
 if [[ -z "$FILE" ]]; then
-	# Use fd if available, else fall back to find
+	# Use fd if available, else fall back to find (max depth 2)
 	if command -v fd >/dev/null 2>&1; then
-		FILE=$(fd -e md -e txt -e org --type f 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
+		FILE=$(fd -e md -e txt -e org --type f --max-depth 2 --no-ignore 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
 	else
-		FILE=$(find . -type f \( -name '*.md' -o -name '*.txt' -o -name '*.org' \) 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
+		FILE=$(find . -maxdepth 2 -type f \( -name '*.md' -o -name '*.txt' -o -name '*.org' \) 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
 	fi
 fi
 

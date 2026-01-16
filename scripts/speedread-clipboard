@@ -1,0 +1,43 @@
+#!/bin/bash
+# speedread-clipboard - RSVP speed read clipboard contents
+#
+# Usage: speedread-clipboard
+#
+# Reads clipboard, writes to temp file, runs speedread-keys
+
+set -e
+
+TMPFILE=""
+
+_cleanup() {
+	[[ -n "$TMPFILE" && -f "$TMPFILE" ]] && rm -f "$TMPFILE"
+}
+trap _cleanup EXIT
+
+# Check dependencies
+command -v xclip >/dev/null 2>&1 || {
+	echo "Required: xclip not found" >&2
+	exit 1
+}
+command -v speedread-keys >/dev/null 2>&1 || {
+	echo "Required: speedread-keys not found" >&2
+	exit 1
+}
+
+# Get clipboard contents
+CONTENT=$(xclip -selection clipboard -o 2>/dev/null) || {
+	echo "Failed to read clipboard" >&2
+	exit 1
+}
+
+if [[ -z "$CONTENT" ]]; then
+	echo "Clipboard is empty" >&2
+	exit 1
+fi
+
+# Write to temp file
+TMPFILE=$(mktemp /tmp/speedread-clipboard.XXXXXX)
+echo "$CONTENT" >"$TMPFILE"
+
+# Run speedread-keys
+speedread-keys "$TMPFILE" 350

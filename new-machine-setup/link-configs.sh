@@ -134,6 +134,9 @@ fi
 if [ -f "$CONFIG_DIR/scripts/speedread-popup" ]; then
     _link_config "$CONFIG_DIR/scripts/speedread-popup" "$HOME/.local/bin/speedread-popup"
 fi
+if [ -f "$CONFIG_DIR/scripts/speedread-clipboard" ]; then
+    _link_config "$CONFIG_DIR/scripts/speedread-clipboard" "$HOME/.local/bin/speedread-clipboard"
+fi
 
 # =============================================================================
 # DESKTOP ENTRIES

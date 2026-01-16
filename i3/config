@@ -131,6 +131,7 @@ for_window [window_type="dialog"] floating enable
 # Speedread popup (RSVP speed reading)
 for_window [class="speedread-popup"] floating enable, resize set 85 ppt 85 ppt, move position center
 bindsym $mod+p exec --no-startup-id ~/.local/bin/speedread-popup
+bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread-popup -e ~/.local/bin/speedread-clipboard
 
 # Auto-assign applications to specific workspaces
 assign [class="Spotify"] 5

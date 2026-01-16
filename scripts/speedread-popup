@@ -3,14 +3,55 @@
 #
 # For i3 keybind: bindsym $mod+shift+r exec --no-startup-id ~/.local/bin/speedread-popup
 
-# Get focused window PID
-WIN_PID=$(xdotool getactivewindow getwindowpid 2>/dev/null)
+CWD=""
 
-# Try to get cwd from /proc
-CWD="$HOME"
-if [[ -n "$WIN_PID" ]] && [[ -d "/proc/$WIN_PID/cwd" ]]; then
-    CWD=$(readlink -f "/proc/$WIN_PID/cwd" 2>/dev/null) || CWD="$HOME"
+# Method 1: Kitty remote control (most reliable for kitty terminals)
+_try_kitty() {
+    command -v kitty >/dev/null 2>&1 || return 1
+    # Get cwd of foreground process in active kitty window
+    local cwd
+    cwd=$(kitty @ ls 2>/dev/null | jq -r '.[].tabs[].windows[] | select(.is_focused==true) | .foreground_processes[0].cwd' 2>/dev/null | head -1)
+    [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
+}
+
+# Method 2: Walk child processes to find deepest shell's cwd
+_try_child_walk() {
+    local win_pid=$1
+    [[ -z "$win_pid" ]] && return 1
+
+    # Find deepest child process (usually the shell)
+    local pid=$win_pid
+    while true; do
+        local children
+        children=$(pgrep -P "$pid" 2>/dev/null | head -1)
+        [[ -z "$children" ]] && break
+        pid=$children
+    done
+
+    local cwd
+    cwd=$(readlink -f "/proc/$pid/cwd" 2>/dev/null)
+    [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
+}
+
+# Method 3: Direct window PID (fallback)
+_try_window_pid() {
+    local win_pid=$1
+    [[ -z "$win_pid" ]] && return 1
+    local cwd
+    cwd=$(readlink -f "/proc/$win_pid/cwd" 2>/dev/null)
+    [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
+}
+
+# Try methods in order of reliability
+CWD=$(_try_kitty)
+if [[ -z "$CWD" ]]; then
+    WIN_PID=$(xdotool getactivewindow getwindowpid 2>/dev/null)
+    CWD=$(_try_child_walk "$WIN_PID")
 fi
+if [[ -z "$CWD" ]]; then
+    CWD=$(_try_window_pid "$WIN_PID")
+fi
+CWD="${CWD:-$HOME}"
 
 # Launch kitty with speedread-tui (kitty class set for i3 floating rule)
 exec kitty --class speedread-popup --directory "$CWD" -e speedread-tui
