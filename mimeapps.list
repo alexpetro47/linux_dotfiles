@@ -17,5 +17,5 @@ image/bmp=nsxiv.desktop
 image/tiff=nsxiv.desktop
 
 [Added Associations]
-application/pdf=org.pwmt.zathura-pdf-poppler.desktop;libreoffice-draw.desktop;
+application/pdf=libreoffice-draw.desktop;org.pwmt.zathura-pdf-poppler.desktop;
 image/jpeg=gimp.desktop;
