@@ -4,8 +4,10 @@
 Centers words on screen with ORP (Optimal Recognition Point) highlight.
 
 Keys:
-  j, [, ↓   - slow down
-  k, ], ↑   - speed up
+  h         - skip back 5 words
+  l         - skip forward 5 words
+  j, [, ↓   - slow down (±10 WPM)
+  k, ], ↑   - speed up (±10 WPM)
   space     - pause/resume
   q, Esc    - quit
 """
@@ -120,9 +122,22 @@ def main(stdscr, filepath, initial_wpm):
 
         # Help hint
         if height > 2:
-            hint = "j/k: speed | space: pause | q: quit"
+            hint = "h/l: ±5 words | j/k: speed | space: pause | q: quit"
             hint_x = max(0, (width - len(hint)) // 2)
             stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
+
+        # # Preview: last 10 words (positioned above the reading area)
+        # if height > 6 and word_idx > 0:
+        #     start = max(0, word_idx - 10)
+        #     preview_words = words[start:word_idx]
+        #     preview_text = " ".join(preview_words)
+        #     # Truncate if too wide
+        #     if len(preview_text) > width - 4:
+        #         preview_text = "..." + preview_text[-(width - 7):]
+        #     preview_x = max(0, (width - len(preview_text)) // 2)
+        #     preview_y = center_y - 10
+        #     if preview_y > 1:  # Don't overlap with hint
+        #         stdscr.addstr(preview_y, preview_x, preview_text, curses.color_pair(3) | curses.A_DIM)
 
         stdscr.refresh()
 
@@ -138,9 +153,15 @@ def main(stdscr, filepath, initial_wpm):
             elif key == ord(' '):
                 paused = not paused
             elif key in (ord('j'), ord('['), curses.KEY_DOWN):
-                wpm = max(50, wpm - 25)
+                wpm = max(50, wpm - 10)
             elif key in (ord('k'), ord(']'), curses.KEY_UP):
-                wpm = min(1500, wpm + 25)
+                wpm = min(1500, wpm + 10)
+            elif key == ord('h'):
+                word_idx = max(0, word_idx - 5)
+                last_word_time = time.time()
+            elif key == ord('l'):
+                word_idx = min(len(words) - 1, word_idx + 5)
+                last_word_time = time.time()
             elif key == curses.KEY_RESIZE:
                 stdscr.clear()
 
@@ -164,7 +185,7 @@ def run():
         sys.exit(1)
 
     filepath = sys.argv[1]
-    wpm = int(sys.argv[2]) if len(sys.argv) > 2 else 350
+    wpm = int(sys.argv[2]) if len(sys.argv) > 2 else 400
 
     if not os.path.isfile(filepath):
         print(f"File not found: {filepath}", file=sys.stderr)

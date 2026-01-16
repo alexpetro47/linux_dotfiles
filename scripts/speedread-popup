@@ -5,7 +5,17 @@
 
 CWD=""
 
-# Method 1: Kitty remote control (most reliable for kitty terminals)
+# Method 1: Tmux active pane (most reliable when in tmux)
+_try_tmux() {
+    command -v tmux >/dev/null 2>&1 || return 1
+    # Check if tmux server is running and has sessions
+    tmux list-sessions &>/dev/null || return 1
+    local cwd
+    cwd=$(tmux display-message -p '#{pane_current_path}' 2>/dev/null)
+    [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
+}
+
+# Method 2: Kitty remote control (for kitty without tmux)
 _try_kitty() {
     command -v kitty >/dev/null 2>&1 || return 1
     # Get cwd of foreground process in active kitty window
@@ -14,7 +24,7 @@ _try_kitty() {
     [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
 }
 
-# Method 2: Walk child processes to find deepest shell's cwd
+# Method 3: Walk child processes to find deepest shell's cwd
 _try_child_walk() {
     local win_pid=$1
     [[ -z "$win_pid" ]] && return 1
@@ -33,7 +43,7 @@ _try_child_walk() {
     [[ -n "$cwd" && -d "$cwd" ]] && echo "$cwd"
 }
 
-# Method 3: Direct window PID (fallback)
+# Method 4: Direct window PID (fallback)
 _try_window_pid() {
     local win_pid=$1
     [[ -z "$win_pid" ]] && return 1
@@ -43,7 +53,10 @@ _try_window_pid() {
 }
 
 # Try methods in order of reliability
-CWD=$(_try_kitty)
+CWD=$(_try_tmux)
+if [[ -z "$CWD" ]]; then
+    CWD=$(_try_kitty)
+fi
 if [[ -z "$CWD" ]]; then
     WIN_PID=$(xdotool getactivewindow getwindowpid 2>/dev/null)
     CWD=$(_try_child_walk "$WIN_PID")
@@ -53,5 +66,5 @@ if [[ -z "$CWD" ]]; then
 fi
 CWD="${CWD:-$HOME}"
 
-# Launch kitty with speedread-tui (kitty class set for i3 floating rule)
-exec kitty --class speedread-popup --directory "$CWD" -e speedread-tui
+# Launch kitty with speedread-tui (normal tiled window)
+exec kitty --class speedread --directory "$CWD" -e speedread-tui

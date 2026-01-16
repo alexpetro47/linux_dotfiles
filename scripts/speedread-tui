@@ -1,16 +1,16 @@
 #!/bin/bash
-# speedread-tui - RSVP speed reading with fzf selection and tmux popup
+# speedread-tui - RSVP speed reading with fzf file selection
 #
 # Usage:
 #   speedread-tui           # fzf select file in cwd
 #   speedread-tui file.md   # open specific file
 #   speedread-tui -w 500 file.md  # with custom WPM
 #
-# Keys: j/↓ slower, k/↑ faster, space pause, q/Esc quit
+# Keys: h/l ±5 words, j/↓ slower, k/↑ faster, space pause, q/Esc quit
 
 set -e
 
-WPM=350
+WPM=400
 FILE=""
 
 # Check dependencies
@@ -34,11 +34,13 @@ while [[ $# -gt 0 ]]; do
 		echo "Usage: speedread-tui [-w WPM] [file]"
 		echo ""
 		echo "Options:"
-		echo "  -w, --wpm WPM   Words per minute (default: 350)"
+		echo "  -w, --wpm WPM   Words per minute (default: 400)"
 		echo ""
 		echo "Keys:"
-		echo "  j, [, ↓   Slow down"
-		echo "  k, ], ↑   Speed up"
+		echo "  h         Skip back 5 words"
+		echo "  l         Skip forward 5 words"
+		echo "  j, [, ↓   Slow down (±10 WPM)"
+		echo "  k, ], ↑   Speed up (±10 WPM)"
 		echo "  space     Pause/resume"
 		echo "  q, Esc    Quit"
 		exit 0
@@ -65,15 +67,8 @@ if [[ ! -f "$FILE" ]]; then
 	exit 1
 fi
 
-# Get absolute path for tmux popup
+# Get absolute path
 FILE=$(readlink -f "$FILE")
 
-# Check if in tmux
-if [[ -n "$TMUX" ]]; then
-	# Use printf %q for safe quoting (handles special chars in filename)
-	QUOTED_FILE=$(printf '%q' "$FILE")
-	tmux display-popup -w 80% -h 60% -E "speedread-keys $QUOTED_FILE $WPM"
-else
-	# Not in tmux, run directly
-	speedread-keys "$FILE" "$WPM"
-fi
+# Run directly (no popup)
+speedread-keys "$FILE" "$WPM"
