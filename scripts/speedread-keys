@@ -10,6 +10,7 @@ Keys:
   k, ], ↑   - speed up (±10 WPM)
   space     - pause/resume
   e         - open in nvim
+  p         - toggle preview (±10 words)
   q, Esc    - quit
 """
 import curses
@@ -20,9 +21,17 @@ import sys
 import time
 
 def _tokenize(text):
-    """Split text into words, preserving some punctuation context."""
-    # Split on whitespace, filter empty
-    return [w for w in re.split(r'\s+', text) if w]
+    """Split text into words with line numbers."""
+    words = []
+    line_nums = []
+    line_num = 1
+    for line in text.splitlines():
+        for word in re.split(r'\s+', line):
+            if word:
+                words.append(word)
+                line_nums.append(line_num)
+        line_num += 1
+    return words, line_nums
 
 def _orp_index(word):
     """Calculate Optimal Recognition Point (slightly left of center)."""
@@ -75,7 +84,7 @@ def main(stdscr, filepath, initial_wpm):
     # Read and tokenize file
     with open(filepath, 'r') as f:
         text = f.read()
-    words = _tokenize(text)
+    words, line_nums = _tokenize(text)
 
     if not words:
         stdscr.addstr(0, 0, "No words found in file")
@@ -88,6 +97,7 @@ def main(stdscr, filepath, initial_wpm):
     word_idx = 0
     paused = False
     last_word_time = time.time()
+    show_preview = False
 
     while True:
         height, width = stdscr.getmaxyx()
@@ -131,22 +141,35 @@ def main(stdscr, filepath, initial_wpm):
 
         # Help hint
         if height > 2:
-            hint = "h/l: ±5 words | j/k: speed | space: pause | e: edit | q: quit"
+            hint = "h/l: ±5 | j/k: speed | space: pause | p: preview | e: edit | q: quit"
             hint_x = max(0, (width - len(hint)) // 2)
             stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
 
-        # # Preview: last 10 words (positioned above the reading area)
-        # if height > 6 and word_idx > 0:
-        #     start = max(0, word_idx - 10)
-        #     preview_words = words[start:word_idx]
-        #     preview_text = " ".join(preview_words)
-        #     # Truncate if too wide
-        #     if len(preview_text) > width - 4:
-        #         preview_text = "..." + preview_text[-(width - 7):]
-        #     preview_x = max(0, (width - len(preview_text)) // 2)
-        #     preview_y = center_y - 10
-        #     if preview_y > 1:  # Don't overlap with hint
-        #         stdscr.addstr(preview_y, preview_x, preview_text, curses.color_pair(3) | curses.A_DIM)
+        # Preview: last 10 words above, next 10 words below
+        if show_preview and height > 14:
+            # Previous 10 words (above)
+            if word_idx > 0:
+                start = max(0, word_idx - 10)
+                prev_words = words[start:word_idx]
+                prev_text = " ".join(prev_words)
+                if len(prev_text) > width - 4:
+                    prev_text = "..." + prev_text[-(width - 7):]
+                prev_x = max(0, (width - len(prev_text)) // 2)
+                prev_y = center_y - 6
+                if prev_y > 1:
+                    stdscr.addstr(prev_y, prev_x, prev_text, curses.color_pair(3) | curses.A_DIM)
+
+            # Next 10 words (below)
+            if word_idx < len(words) - 1:
+                end = min(len(words), word_idx + 11)
+                next_words = words[word_idx + 1:end]
+                next_text = " ".join(next_words)
+                if len(next_text) > width - 4:
+                    next_text = next_text[:width - 7] + "..."
+                next_x = max(0, (width - len(next_text)) // 2)
+                next_y = center_y + 6
+                if next_y < height - 2:
+                    stdscr.addstr(next_y, next_x, next_text, curses.color_pair(3) | curses.A_DIM)
 
         stdscr.refresh()
 
@@ -171,6 +194,8 @@ def main(stdscr, filepath, initial_wpm):
             elif key == ord('l'):
                 word_idx = min(len(words) - 1, word_idx + 5)
                 last_word_time = time.time()
+            elif key == ord('p'):
+                show_preview = not show_preview
             elif key == ord('e'):
                 # Determine file to edit
                 if filepath.startswith('/tmp/speedread-clipboard'):
@@ -181,9 +206,10 @@ def main(stdscr, filepath, initial_wpm):
                         f.write(text)
                 else:
                     target = filepath
-                # Suspend curses, open nvim, then restore
+                # Suspend curses, open nvim at current line (centered), then restore
                 curses.endwin()
-                subprocess.run(['nvim', target])
+                line = line_nums[word_idx] if word_idx < len(line_nums) else 1
+                subprocess.run(['nvim', f'+{line}', '-c', 'normal zz', target])
                 stdscr.refresh()
                 curses.curs_set(0)
                 paused = True  # Pause after returning

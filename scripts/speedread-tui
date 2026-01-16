@@ -42,6 +42,7 @@ while [[ $# -gt 0 ]]; do
 		echo "  j, [, ↓   Slow down (±10 WPM)"
 		echo "  k, ], ↑   Speed up (±10 WPM)"
 		echo "  space     Pause/resume"
+		echo "  p         Toggle preview (±10 words)"
 		echo "  e         Open in nvim"
 		echo "  q, Esc    Quit"
 		exit 0
