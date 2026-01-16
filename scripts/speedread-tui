@@ -1,0 +1,79 @@
+#!/bin/bash
+# speedread-tui - RSVP speed reading with fzf selection and tmux popup
+#
+# Usage:
+#   speedread-tui           # fzf select file in cwd
+#   speedread-tui file.md   # open specific file
+#   speedread-tui -w 500 file.md  # with custom WPM
+#
+# Keys: j/↓ slower, k/↑ faster, space pause, q/Esc quit
+
+set -e
+
+WPM=350
+FILE=""
+
+# Check dependencies
+_check_dep() {
+	command -v "$1" >/dev/null 2>&1 || {
+		echo "Required: $1 not found" >&2
+		exit 1
+	}
+}
+_check_dep speedread-keys
+_check_dep fzf
+
+# Parse args
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	-w | --wpm)
+		WPM="$2"
+		shift 2
+		;;
+	-h | --help)
+		echo "Usage: speedread-tui [-w WPM] [file]"
+		echo ""
+		echo "Options:"
+		echo "  -w, --wpm WPM   Words per minute (default: 350)"
+		echo ""
+		echo "Keys:"
+		echo "  j, [, ↓   Slow down"
+		echo "  k, ], ↑   Speed up"
+		echo "  space     Pause/resume"
+		echo "  q, Esc    Quit"
+		exit 0
+		;;
+	*)
+		FILE="$1"
+		shift
+		;;
+	esac
+done
+
+# If no file provided, use fzf to select
+if [[ -z "$FILE" ]]; then
+	# Use fd if available, else fall back to find
+	if command -v fd >/dev/null 2>&1; then
+		FILE=$(fd -e md -e txt -e org --type f 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
+	else
+		FILE=$(find . -type f \( -name '*.md' -o -name '*.txt' -o -name '*.org' \) 2>/dev/null | fzf --preview 'head -50 {}' --preview-window=right:50%) || exit 0
+	fi
+fi
+
+if [[ ! -f "$FILE" ]]; then
+	echo "File not found: $FILE" >&2
+	exit 1
+fi
+
+# Get absolute path for tmux popup
+FILE=$(readlink -f "$FILE")
+
+# Check if in tmux
+if [[ -n "$TMUX" ]]; then
+	# Use printf %q for safe quoting (handles special chars in filename)
+	QUOTED_FILE=$(printf '%q' "$FILE")
+	tmux display-popup -w 80% -h 60% -E "speedread-keys $QUOTED_FILE $WPM"
+else
+	# Not in tmux, run directly
+	speedread-keys "$FILE" "$WPM"
+fi

@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+"""RSVP speed reader with curses TUI.
+
+Centers words on screen with ORP (Optimal Recognition Point) highlight.
+
+Keys:
+  j, [, ↓   - slow down
+  k, ], ↑   - speed up
+  space     - pause/resume
+  q, Esc    - quit
+"""
+import curses
+import os
+import re
+import sys
+import time
+
+def _tokenize(text):
+    """Split text into words, preserving some punctuation context."""
+    # Split on whitespace, filter empty
+    return [w for w in re.split(r'\s+', text) if w]
+
+def _orp_index(word):
+    """Calculate Optimal Recognition Point (slightly left of center)."""
+    length = len(word)
+    if length <= 1:
+        return 0
+    elif length <= 5:
+        return 1
+    elif length <= 9:
+        return 2
+    elif length <= 13:
+        return 3
+    else:
+        return 4
+
+def _word_delay(word, base_delay):
+    """Adjust delay based on word length and punctuation."""
+    delay = base_delay
+    # Longer words get slightly more time
+    if len(word) > 8:
+        delay *= 1.2
+    # Punctuation at end gets pause
+    if word and word[-1] in '.!?':
+        delay *= 2.0
+    elif word and word[-1] in ',;:':
+        delay *= 1.5
+    return delay
+
+def main(stdscr, filepath, initial_wpm):
+    # Setup curses
+    curses.curs_set(0)  # Hide cursor
+    curses.use_default_colors()
+
+    # Initialize colors
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_RED, -1)      # ORP highlight
+    curses.init_pair(2, curses.COLOR_WHITE, -1)    # Normal text
+    curses.init_pair(3, curses.COLOR_CYAN, -1)     # Status bar
+
+    stdscr.nodelay(True)  # Non-blocking input
+    stdscr.timeout(10)    # 10ms timeout for getch
+
+    # Read and tokenize file
+    with open(filepath, 'r') as f:
+        text = f.read()
+    words = _tokenize(text)
+
+    if not words:
+        stdscr.addstr(0, 0, "No words found in file")
+        stdscr.refresh()
+        stdscr.getch()
+        return
+
+    # State
+    wpm = initial_wpm
+    word_idx = 0
+    paused = False
+    last_word_time = time.time()
+
+    while True:
+        height, width = stdscr.getmaxyx()
+        center_y = height // 2
+        center_x = width // 2
+
+        # Current word
+        word = words[word_idx] if word_idx < len(words) else ""
+        orp = _orp_index(word)
+
+        # Calculate position to center ORP at screen center
+        word_start_x = center_x - orp
+
+        # Clear and draw
+        stdscr.erase()
+
+        # Draw guide lines (subtle)
+        guide_y = center_y
+        if width > 10:
+            stdscr.addstr(guide_y - 1, center_x, "▼", curses.color_pair(3) | curses.A_DIM)
+            stdscr.addstr(guide_y + 1, center_x, "▲", curses.color_pair(3) | curses.A_DIM)
+
+        # Draw word with ORP highlight
+        if word and word_start_x >= 0 and word_start_x + len(word) < width:
+            for i, char in enumerate(word):
+                x = word_start_x + i
+                if i == orp:
+                    stdscr.addstr(center_y, x, char, curses.color_pair(1) | curses.A_BOLD)
+                else:
+                    stdscr.addstr(center_y, x, char, curses.color_pair(2))
+
+        # Status bar
+        progress = f"{word_idx + 1}/{len(words)}"
+        status = f" {wpm} WPM | {progress} "
+        if paused:
+            status = " PAUSED | " + status
+
+        status_x = max(0, width - len(status) - 1)
+        if height > 1:
+            stdscr.addstr(height - 1, status_x, status, curses.color_pair(3) | curses.A_DIM)
+
+        # Help hint
+        if height > 2:
+            hint = "j/k: speed | space: pause | q: quit"
+            hint_x = max(0, (width - len(hint)) // 2)
+            stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
+
+        stdscr.refresh()
+
+        # Handle input
+        try:
+            key = stdscr.getch()
+        except curses.error:
+            key = -1
+
+        if key != -1:
+            if key in (ord('q'), 27):  # q or Esc
+                break
+            elif key == ord(' '):
+                paused = not paused
+            elif key in (ord('j'), ord('['), curses.KEY_DOWN):
+                wpm = max(50, wpm - 25)
+            elif key in (ord('k'), ord(']'), curses.KEY_UP):
+                wpm = min(1500, wpm + 25)
+            elif key == curses.KEY_RESIZE:
+                stdscr.clear()
+
+        # Advance word if not paused
+        if not paused and word_idx < len(words):
+            base_delay = 60.0 / wpm
+            delay = _word_delay(word, base_delay)
+
+            if time.time() - last_word_time >= delay:
+                word_idx += 1
+                last_word_time = time.time()
+
+                # End of text
+                if word_idx >= len(words):
+                    paused = True
+                    word_idx = len(words) - 1
+
+def run():
+    if len(sys.argv) < 2:
+        print("Usage: speedread-keys <file> [wpm]", file=sys.stderr)
+        sys.exit(1)
+
+    filepath = sys.argv[1]
+    wpm = int(sys.argv[2]) if len(sys.argv) > 2 else 350
+
+    if not os.path.isfile(filepath):
+        print(f"File not found: {filepath}", file=sys.stderr)
+        sys.exit(1)
+
+    curses.wrapper(lambda stdscr: main(stdscr, filepath, wpm))
+
+if __name__ == "__main__":
+    run()

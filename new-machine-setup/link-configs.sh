@@ -116,6 +116,17 @@ if [ -f "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" ]; then
     _link_config "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
 fi
 
+# Speedread TUI
+if [ -f "$CONFIG_DIR/scripts/speedread-keys" ]; then
+    _link_config "$CONFIG_DIR/scripts/speedread-keys" "$HOME/.local/bin/speedread-keys"
+fi
+if [ -f "$CONFIG_DIR/scripts/speedread-tui" ]; then
+    _link_config "$CONFIG_DIR/scripts/speedread-tui" "$HOME/.local/bin/speedread-tui"
+fi
+if [ -f "$CONFIG_DIR/scripts/speedread-popup" ]; then
+    _link_config "$CONFIG_DIR/scripts/speedread-popup" "$HOME/.local/bin/speedread-popup"
+fi
+
 # =============================================================================
 # DESKTOP ENTRIES
 # =============================================================================

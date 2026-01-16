@@ -1,0 +1,16 @@
+#!/bin/bash
+# speedread-popup - Launch speedread-tui in floating terminal from focused window's cwd
+#
+# For i3 keybind: bindsym $mod+shift+r exec --no-startup-id ~/.local/bin/speedread-popup
+
+# Get focused window PID
+WIN_PID=$(xdotool getactivewindow getwindowpid 2>/dev/null)
+
+# Try to get cwd from /proc
+CWD="$HOME"
+if [[ -n "$WIN_PID" ]] && [[ -d "/proc/$WIN_PID/cwd" ]]; then
+    CWD=$(readlink -f "/proc/$WIN_PID/cwd" 2>/dev/null) || CWD="$HOME"
+fi
+
+# Launch kitty with speedread-tui (kitty class set for i3 floating rule)
+exec kitty --class speedread-popup --directory "$CWD" -e speedread-tui

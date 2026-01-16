@@ -127,6 +127,10 @@ exec --no-startup-id "echo enabled > /sys/bus/usb/devices/*/power/wakeup 2>/dev/
 for_window [window_role="GtkFileChooserDialog"] floating enable, resize set 900 700, move position center
 for_window [window_type="dialog"] floating enable
 
+# Speedread popup (RSVP speed reading)
+for_window [class="speedread-popup"] floating enable, resize set 85 ppt 85 ppt, move position center
+bindsym $mod+p exec --no-startup-id ~/.local/bin/speedread-popup
+
 # Auto-assign applications to specific workspaces
 assign [class="Spotify"] 5
 assign [class="google-chrome"] 7

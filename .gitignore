@@ -125,6 +125,9 @@ scripts/*
 !scripts/backup-repos
 !scripts/backup-simplenote
 !scripts/lock
+!scripts/speedread-keys
+!scripts/speedread-tui
+!scripts/speedread-popup
 
 !picom
 picom/*
