@@ -106,8 +106,9 @@ bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 # Lid suspend toggle (keep laptop awake when closed)
 bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
 
-# Voice dictation toggle (faster-whisper large-v3-turbo)
-bindsym $mod+v exec --no-startup-id ~/.config/new-machine-setup/voice-dictation
+# Voice dictation (faster-whisper large-v3-turbo)
+bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
+bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel
 
 bindsym $mod+s workspace 4; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 # bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"

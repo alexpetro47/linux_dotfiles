@@ -1,0 +1,220 @@
+#!/bin/bash
+#
+# Voice dictation transcription worker - runs in background
+#
+# Usage: voice-dictation-transcribe <session_dir>
+#
+# This script is spawned by voice-dictation after recording stops.
+# It transcribes the audio and pastes the result to the target tmux pane.
+#
+
+set -e
+
+SESSION_DIR="$1"
+MODEL="${WHISPER_MODEL:-large-v3-turbo}"
+COMPUTE_TYPE="${WHISPER_COMPUTE:-int8}"
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
+SESSIONS_DIR="$STATE_DIR/sessions"
+
+# Notification IDs
+NOTIFY_ID_TRANSCRIBE=91002
+
+# -----------------------------------------------------------------------------
+# Utilities
+# -----------------------------------------------------------------------------
+
+notify() {
+    local msg="$1"
+    local id="${2:-0}"
+    local urgency="${3:-normal}"
+    dunstify -r "$id" -u "$urgency" -t 2000 "Voice Dictation" "$msg" 2>/dev/null || \
+        notify-send -t 2000 -u "$urgency" "Voice Dictation" "$msg" 2>/dev/null || true
+}
+
+polybar_update() {
+    local state="$1"
+    case "$state" in
+        recording)
+            polybar-msg action voice-dictation hook 1 2>/dev/null || true
+            ;;
+        transcribing)
+            polybar-msg action voice-dictation hook 2 2>/dev/null || true
+            ;;
+        idle|*)
+            polybar-msg action voice-dictation hook 0 2>/dev/null || true
+            ;;
+    esac
+}
+
+count_active_transcriptions() {
+    local count=0
+    for dir in "$SESSIONS_DIR"/*/; do
+        [ -d "$dir" ] || continue
+        if [ -f "$dir/status" ]; then
+            local status
+            status=$(cat "$dir/status" 2>/dev/null || echo "")
+            if [ "$status" = "transcribing" ]; then
+                ((count++)) || true
+            fi
+        fi
+    done
+    echo "$count"
+}
+
+update_polybar_state() {
+    local active
+    active=$(count_active_transcriptions)
+    if [ "$active" -gt 0 ]; then
+        polybar_update transcribing
+    else
+        polybar_update idle
+    fi
+}
+
+pane_exists() {
+    local pane_id="$1"
+    [ -n "$pane_id" ] && tmux list-panes -a -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"
+}
+
+exit_copy_mode() {
+    local pane_id="$1"
+    # Check if pane is in copy mode and exit if so
+    local mode
+    mode=$(tmux display-message -t "$pane_id" -p '#{pane_mode}' 2>/dev/null || echo "")
+    if [ "$mode" = "copy-mode" ]; then
+        tmux send-keys -t "$pane_id" q 2>/dev/null || true
+        sleep 0.1
+    fi
+}
+
+paste_to_pane() {
+    local pane_id="$1"
+    local text="$2"
+
+    # Load text into tmux buffer
+    printf '%s' "$text" | tmux load-buffer -
+
+    # Exit copy mode if active
+    exit_copy_mode "$pane_id"
+
+    # Paste from buffer
+    tmux paste-buffer -t "$pane_id" 2>/dev/null
+}
+
+x11_window_exists() {
+    local window_id="$1"
+    [ -n "$window_id" ] && xdotool getwindowname "$window_id" >/dev/null 2>&1
+}
+
+type_to_x11_window() {
+    local window_id="$1"
+    local text="$2"
+
+    # Capture current window for snapback
+    local current_window
+    current_window=$(xdotool getactivewindow 2>/dev/null || echo "")
+
+    # Focus target window and type
+    xdotool windowactivate --sync "$window_id" 2>/dev/null || return 1
+    sleep 0.1
+    xdotool type --delay 10 -- "$text" 2>/dev/null
+
+    # Restore focus to original window
+    if [ -n "$current_window" ] && [ "$current_window" != "$window_id" ]; then
+        sleep 0.1
+        xdotool windowactivate "$current_window" 2>/dev/null || true
+    fi
+}
+
+cleanup() {
+    # Remove session directory
+    rm -rf "$SESSION_DIR"
+    # Update polybar state
+    update_polybar_state
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+if [ -z "$SESSION_DIR" ] || [ ! -d "$SESSION_DIR" ]; then
+    notify "Transcription failed: invalid session" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    exit 1
+fi
+
+AUDIO_FILE="$SESSION_DIR/recording.wav"
+
+if [ ! -f "$AUDIO_FILE" ] || [ ! -s "$AUDIO_FILE" ]; then
+    notify "Transcription failed: no audio" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    cleanup
+    exit 1
+fi
+
+# Read target info
+TARGET_PANE=""
+TARGET_X11=""
+if [ -f "$SESSION_DIR/target.pane" ]; then
+    TARGET_PANE=$(cat "$SESSION_DIR/target.pane")
+fi
+if [ -f "$SESSION_DIR/target.x11" ]; then
+    TARGET_X11=$(cat "$SESSION_DIR/target.x11")
+fi
+
+# Transcribe with faster-whisper
+TRANSCRIPT_FILE="$SESSION_DIR/recording.txt"
+
+whisper-ctranslate2 "$AUDIO_FILE" \
+    --model "$MODEL" \
+    --compute_type "$COMPUTE_TYPE" \
+    --output_format txt \
+    --output_dir "$SESSION_DIR" \
+    --language en \
+    --task transcribe \
+    --vad_filter True \
+    --word_timestamps False \
+    2>/dev/null || true
+
+# Read and clean transcript
+TEXT=""
+if [ -f "$TRANSCRIPT_FILE" ]; then
+    TEXT=$(tr '\n' ' ' < "$TRANSCRIPT_FILE" | sed 's/  */ /g; s/^ *//; s/ *$//')
+fi
+
+if [ -z "$TEXT" ]; then
+    notify "No speech detected" "$NOTIFY_ID_TRANSCRIBE" "low"
+    cleanup
+    exit 0
+fi
+
+# Always copy to clipboard as backup
+printf '%s' "$TEXT" | xclip -selection clipboard 2>/dev/null || true
+
+# Try targets in order: tmux pane > X11 window > clipboard only
+DELIVERED=false
+
+# 1. Try tmux pane (if available)
+if [ -n "$TARGET_PANE" ] && pane_exists "$TARGET_PANE"; then
+    if paste_to_pane "$TARGET_PANE" "$TEXT"; then
+        notify "Transcribed: ${TEXT:0:50}..." "$NOTIFY_ID_TRANSCRIBE"
+        DELIVERED=true
+    fi
+fi
+
+# 2. Fall back to X11 window
+if [ "$DELIVERED" = false ] && [ -n "$TARGET_X11" ] && x11_window_exists "$TARGET_X11"; then
+    if type_to_x11_window "$TARGET_X11" "$TEXT"; then
+        notify "Transcribed: ${TEXT:0:50}..." "$NOTIFY_ID_TRANSCRIBE"
+        DELIVERED=true
+    fi
+fi
+
+# 3. Clipboard fallback with appropriate message
+if [ "$DELIVERED" = false ]; then
+    if [ -n "$TARGET_PANE" ] || [ -n "$TARGET_X11" ]; then
+        notify "Window closed - copied to clipboard: ${TEXT:0:40}..." "$NOTIFY_ID_TRANSCRIBE"
+    else
+        notify "Copied to clipboard: ${TEXT:0:50}..." "$NOTIFY_ID_TRANSCRIBE"
+    fi
+fi
+
+cleanup

@@ -1,104 +1,284 @@
 #!/bin/bash
 #
-# Voice dictation toggle - Alt+V to start/stop recording and transcribe
-# Uses faster-whisper (large-v3-turbo) for high-quality offline transcription
+# Voice dictation v2 - non-blocking transcription with tmux pane isolation
+#
+# Usage:
+#   voice-dictation         # Toggle recording (start/stop)
+#   voice-dictation cancel  # Cancel recording (discard without transcribing)
+#
+# Features:
+#   - Background transcription (non-blocking)
+#   - Multiple concurrent recordings with tmux pane isolation
+#   - Visual indicators via polybar IPC (red=recording, green=transcribing)
+#   - Cancel button to abort without transcribing
+#
+# Keybindings (i3):
+#   Alt+V       - Toggle recording
+#   Alt+Shift+V - Cancel recording
+#
+# Future ideas (not implemented):
+#   - TTS output: --speak flag to read transcription aloud via Piper TTS
+#     Keybind: Alt+Ctrl+V for record-and-speak mode
+#   - Speedread integration: pipe transcript to speedread-tui popup (RSVP display)
+#     Could combine with TTS for simultaneous audio + visual
 #
 
 set -e
 
-AUDIO_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
-AUDIO_FILE="$AUDIO_DIR/recording.wav"
-PID_FILE="$AUDIO_DIR/recording.pid"
-WINDOW_FILE="$AUDIO_DIR/window.id"
-MODEL="${WHISPER_MODEL:-large-v3-turbo}"
-COMPUTE_TYPE="${WHISPER_COMPUTE:-int8}"
+# Configuration
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
+SESSIONS_DIR="$STATE_DIR/sessions"
+CURRENT_LINK="$STATE_DIR/current"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
-mkdir -p "$AUDIO_DIR"
+# Notification IDs for dunstify replacement
+NOTIFY_ID_RECORDING=91001
+NOTIFY_ID_TRANSCRIBE=91002
+
+mkdir -p "$SESSIONS_DIR"
+
+# -----------------------------------------------------------------------------
+# Utilities
+# -----------------------------------------------------------------------------
 
 notify() {
-    notify-send -t 2000 -u normal "Voice Dictation" "$1" 2>/dev/null || true
+    local msg="$1"
+    local id="${2:-0}"
+    local urgency="${3:-normal}"
+    dunstify -r "$id" -u "$urgency" -t 2000 "Voice Dictation" "$msg" 2>/dev/null || \
+        notify-send -t 2000 -u "$urgency" "Voice Dictation" "$msg" 2>/dev/null || true
 }
+
+polybar_update() {
+    local state="$1"
+    case "$state" in
+        recording)
+            # Red microphone icon
+            polybar-msg action voice-dictation hook 1 2>/dev/null || true
+            ;;
+        transcribing)
+            # Green spinner icon
+            polybar-msg action voice-dictation hook 2 2>/dev/null || true
+            ;;
+        idle|*)
+            # Hidden
+            polybar-msg action voice-dictation hook 0 2>/dev/null || true
+            ;;
+    esac
+}
+
+get_pane_from_x11_window() {
+    local window_id="$1"
+    [ -z "$window_id" ] && return 1
+
+    # Get terminal process PID from X11 window
+    local term_pid
+    term_pid=$(xprop -id "$window_id" _NET_WM_PID 2>/dev/null | awk '{print $3}')
+    [ -z "$term_pid" ] && return 1
+
+    # Find tmux client child process
+    local client_pid=""
+    local pid
+    for pid in $(pgrep -P "$term_pid" 2>/dev/null); do
+        if ps -o comm= -p "$pid" 2>/dev/null | grep -q "^tmux"; then
+            client_pid="$pid"
+            break
+        fi
+    done
+    [ -z "$client_pid" ] && return 1
+
+    # Map client PID to pane_id
+    tmux list-clients -F "#{client_pid} #{pane_id}" 2>/dev/null \
+        | awk -v cpid="$client_pid" '$1 == cpid {print $2}'
+}
+
+count_active_transcriptions() {
+    local count=0
+    for session_dir in "$SESSIONS_DIR"/*/; do
+        [ -d "$session_dir" ] || continue
+        if [ -f "$session_dir/status" ]; then
+            local status
+            status=$(cat "$session_dir/status" 2>/dev/null || echo "")
+            if [ "$status" = "transcribing" ]; then
+                ((count++)) || true
+            fi
+        fi
+    done
+    echo "$count"
+}
+
+# -----------------------------------------------------------------------------
+# Recording Control
+# -----------------------------------------------------------------------------
 
 start_recording() {
-    # Clean up any previous recording
-    rm -f "$AUDIO_FILE" "$PID_FILE" "$WINDOW_FILE"
+    # Generate unique session ID
+    local session_id
+    session_id=$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)
+    local session_dir="$SESSIONS_DIR/$session_id"
+    mkdir -p "$session_dir"
 
-    # Save current focused window to restore later
-    xdotool getactivewindow > "$WINDOW_FILE" 2>/dev/null || true
+    # Capture X11 window (works from i3 keybind context)
+    local x11_window
+    x11_window=$(xdotool getactivewindow 2>/dev/null || echo "")
+
+    # Derive tmux pane from X11 window (if terminal with tmux)
+    local pane_id=""
+    if [ -n "$x11_window" ]; then
+        pane_id=$(get_pane_from_x11_window "$x11_window") || true
+    fi
+
+    # Save target information
+    echo "$pane_id" > "$session_dir/target.pane"
+    echo "$x11_window" > "$session_dir/target.x11"
+    echo "recording" > "$session_dir/status"
 
     # Start recording in background (16kHz mono - optimal for Whisper)
-    rec -q -c 1 -r 16000 -b 16 "$AUDIO_FILE" &
-    echo $! > "$PID_FILE"
+    rec -q -c 1 -r 16000 -b 16 "$session_dir/recording.wav" &
+    echo $! > "$session_dir/recording.pid"
 
-    notify "Recording started... Alt+V to stop"
+    # Create symlink to current session
+    ln -sfn "$session_dir" "$CURRENT_LINK"
+
+    # Update visual indicators
+    polybar_update recording
+
+    local target_msg=""
+    if [ -n "$pane_id" ]; then
+        target_msg=" (tmux $pane_id)"
+    fi
+    notify "Recording started...$target_msg" "$NOTIFY_ID_RECORDING"
 }
 
-stop_and_transcribe() {
-    if [ ! -f "$PID_FILE" ]; then
-        notify "No recording in progress"
-        exit 1
+stop_recording() {
+    if [ ! -L "$CURRENT_LINK" ]; then
+        notify "No recording in progress" "$NOTIFY_ID_RECORDING" "low"
+        return 1
+    fi
+
+    local session_dir
+    session_dir=$(readlink -f "$CURRENT_LINK")
+
+    if [ ! -d "$session_dir" ]; then
+        rm -f "$CURRENT_LINK"
+        notify "No recording in progress" "$NOTIFY_ID_RECORDING" "low"
+        return 1
+    fi
+
+    local pid_file="$session_dir/recording.pid"
+    if [ ! -f "$pid_file" ]; then
+        rm -f "$CURRENT_LINK"
+        notify "No recording in progress" "$NOTIFY_ID_RECORDING" "low"
+        return 1
     fi
 
     # Stop recording
-    kill "$(cat "$PID_FILE")" 2>/dev/null || true
-    rm -f "$PID_FILE"
+    local pid
+    pid=$(cat "$pid_file")
+    kill "$pid" 2>/dev/null || true
+    rm -f "$pid_file"
 
-    # Wait for file to be written
+    # Remove current link (no longer recording)
+    rm -f "$CURRENT_LINK"
+
+    # Wait for audio file to be written
     sleep 0.3
 
-    if [ ! -f "$AUDIO_FILE" ] || [ ! -s "$AUDIO_FILE" ]; then
-        notify "No audio recorded"
-        exit 1
+    local audio_file="$session_dir/recording.wav"
+    if [ ! -f "$audio_file" ] || [ ! -s "$audio_file" ]; then
+        notify "No audio recorded" "$NOTIFY_ID_RECORDING" "low"
+        rm -rf "$session_dir"
+        polybar_update idle
+        return 1
     fi
 
-    notify "Transcribing..."
+    # Update status to transcribing
+    echo "transcribing" > "$session_dir/status"
+    polybar_update transcribing
+    notify "Transcribing..." "$NOTIFY_ID_TRANSCRIBE"
 
-    # Transcribe with faster-whisper
-    # Output to stdout in plain text format
-    TRANSCRIPT=$(whisper-ctranslate2 "$AUDIO_FILE" \
-        --model "$MODEL" \
-        --compute_type "$COMPUTE_TYPE" \
-        --output_format txt \
-        --output_dir "$AUDIO_DIR" \
-        --language en \
-        --task transcribe \
-        --vad_filter True \
-        --word_timestamps False \
-        2>/dev/null)
-
-    # Read the transcript file
-    TRANSCRIPT_FILE="$AUDIO_DIR/recording.txt"
-    if [ -f "$TRANSCRIPT_FILE" ]; then
-        TEXT=$(cat "$TRANSCRIPT_FILE" | tr '\n' ' ' | sed 's/  */ /g' | sed 's/^ *//;s/ *$//')
-
-        if [ -n "$TEXT" ]; then
-            # Restore focus to original window if saved
-            if [ -f "$WINDOW_FILE" ]; then
-                ORIG_WINDOW=$(cat "$WINDOW_FILE")
-                xdotool windowactivate --sync "$ORIG_WINDOW" 2>/dev/null || true
-            fi
-
-            # Type the text at cursor position
-            # Use xdotool with a small delay for reliability
-            sleep 0.1
-            xdotool type --delay 10 -- "$TEXT"
-            # Also copy to clipboard in case we're not in a text box
-            printf '%s' "$TEXT" | xclip -selection clipboard
-            notify "Transcribed: ${TEXT:0:50}..."
-        else
-            notify "No speech detected"
-        fi
-    else
-        notify "Transcription failed"
-    fi
-
-    # Cleanup
-    rm -f "$AUDIO_FILE" "$TRANSCRIPT_FILE" "$WINDOW_FILE" "$AUDIO_DIR"/*.json 2>/dev/null || true
+    # Spawn background transcription worker
+    nohup "$SCRIPT_DIR/voice-dictation-transcribe" "$session_dir" \
+        >/dev/null 2>&1 &
 }
 
-# Toggle logic
-if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-    stop_and_transcribe
-else
-    start_recording
-fi
+cancel_recording() {
+    if [ ! -L "$CURRENT_LINK" ]; then
+        notify "No recording to cancel" "$NOTIFY_ID_RECORDING" "low"
+        return 0
+    fi
+
+    local session_dir
+    session_dir=$(readlink -f "$CURRENT_LINK")
+
+    if [ -d "$session_dir" ]; then
+        # Kill recording process if running
+        local pid_file="$session_dir/recording.pid"
+        if [ -f "$pid_file" ]; then
+            local pid
+            pid=$(cat "$pid_file")
+            kill "$pid" 2>/dev/null || true
+        fi
+
+        # Clean up session
+        rm -rf "$session_dir"
+    fi
+
+    rm -f "$CURRENT_LINK"
+    polybar_update idle
+    notify "Recording cancelled" "$NOTIFY_ID_RECORDING"
+}
+
+is_recording() {
+    if [ ! -L "$CURRENT_LINK" ]; then
+        return 1
+    fi
+
+    local session_dir
+    session_dir=$(readlink -f "$CURRENT_LINK")
+
+    if [ ! -d "$session_dir" ]; then
+        rm -f "$CURRENT_LINK"
+        return 1
+    fi
+
+    local pid_file="$session_dir/recording.pid"
+    if [ ! -f "$pid_file" ]; then
+        return 1
+    fi
+
+    local pid
+    pid=$(cat "$pid_file")
+    if kill -0 "$pid" 2>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+case "${1:-toggle}" in
+    cancel)
+        cancel_recording
+        ;;
+    start)
+        if is_recording; then
+            notify "Already recording" "$NOTIFY_ID_RECORDING"
+        else
+            start_recording
+        fi
+        ;;
+    stop)
+        stop_recording
+        ;;
+    toggle|*)
+        if is_recording; then
+            stop_recording
+        else
+            start_recording
+        fi
+        ;;
+esac

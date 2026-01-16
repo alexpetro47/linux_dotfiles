@@ -116,6 +116,14 @@ if [ -f "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" ]; then
     _link_config "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
 fi
 
+# Voice dictation (v2 with background transcription)
+if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation" "$HOME/.local/bin/voice-dictation"
+fi
+if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" "$HOME/.local/bin/voice-dictation-transcribe"
+fi
+
 # Speedread TUI
 if [ -f "$CONFIG_DIR/scripts/speedread-keys" ]; then
     _link_config "$CONFIG_DIR/scripts/speedread-keys" "$HOME/.local/bin/speedread-keys"
