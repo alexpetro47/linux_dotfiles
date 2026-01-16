@@ -129,8 +129,9 @@ for_window [window_role="GtkFileChooserDialog"] floating enable, resize set 900 
 for_window [window_type="dialog"] floating enable
 
 # Speedread (RSVP speed reading)
-bindsym $mod+p exec --no-startup-id ~/.local/bin/speedread-popup
-bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.local/bin/speedread-clipboard
+for_window [class="speedread"] fullscreen enable
+bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
+bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
 
 # Auto-assign applications to specific workspaces
 assign [class="Spotify"] 5

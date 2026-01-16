@@ -67,4 +67,5 @@ fi
 CWD="${CWD:-$HOME}"
 
 # Launch kitty with speedread-tui (normal tiled window)
-exec kitty --class speedread --directory "$CWD" -e speedread-tui
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+exec kitty --class speedread --directory "$CWD" -e "$SCRIPT_DIR/speedread-tui"

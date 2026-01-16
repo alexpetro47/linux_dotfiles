@@ -6,6 +6,7 @@
 # Reads clipboard, writes to temp file, runs speedread-keys
 
 set -e
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 TMPFILE=""
 
@@ -19,8 +20,8 @@ command -v xclip >/dev/null 2>&1 || {
 	echo "Required: xclip not found" >&2
 	exit 1
 }
-command -v speedread-keys >/dev/null 2>&1 || {
-	echo "Required: speedread-keys not found" >&2
+[[ -x "$SCRIPT_DIR/speedread-keys" ]] || {
+	echo "Required: speedread-keys not found at $SCRIPT_DIR" >&2
 	exit 1
 }
 
@@ -40,4 +41,4 @@ TMPFILE=$(mktemp /tmp/speedread-clipboard.XXXXXX)
 echo "$CONTENT" >"$TMPFILE"
 
 # Run speedread-keys
-speedread-keys "$TMPFILE" 440
+"$SCRIPT_DIR/speedread-keys" "$TMPFILE" 440

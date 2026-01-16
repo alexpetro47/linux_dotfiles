@@ -10,6 +10,7 @@
 
 set -e
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 WPM=440
 FILE=""
 
@@ -20,7 +21,7 @@ _check_dep() {
 		exit 1
 	}
 }
-_check_dep speedread-keys
+[[ -x "$SCRIPT_DIR/speedread-keys" ]] || { echo "Required: speedread-keys not found" >&2; exit 1; }
 _check_dep fzf
 
 # Parse args
@@ -73,4 +74,4 @@ fi
 FILE=$(readlink -f "$FILE")
 
 # Run directly (no popup)
-speedread-keys "$FILE" "$WPM"
+"$SCRIPT_DIR/speedread-keys" "$FILE" "$WPM"

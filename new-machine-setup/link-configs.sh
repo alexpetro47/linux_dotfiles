@@ -124,19 +124,6 @@ if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" "$HOME/.local/bin/voice-dictation-transcribe"
 fi
 
-# Speedread TUI
-if [ -f "$CONFIG_DIR/scripts/speedread-keys" ]; then
-    _link_config "$CONFIG_DIR/scripts/speedread-keys" "$HOME/.local/bin/speedread-keys"
-fi
-if [ -f "$CONFIG_DIR/scripts/speedread-tui" ]; then
-    _link_config "$CONFIG_DIR/scripts/speedread-tui" "$HOME/.local/bin/speedread-tui"
-fi
-if [ -f "$CONFIG_DIR/scripts/speedread-popup" ]; then
-    _link_config "$CONFIG_DIR/scripts/speedread-popup" "$HOME/.local/bin/speedread-popup"
-fi
-if [ -f "$CONFIG_DIR/scripts/speedread-clipboard" ]; then
-    _link_config "$CONFIG_DIR/scripts/speedread-clipboard" "$HOME/.local/bin/speedread-clipboard"
-fi
 
 # =============================================================================
 # DESKTOP ENTRIES
