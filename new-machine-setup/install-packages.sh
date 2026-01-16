@@ -160,6 +160,21 @@ uv tool install pre-commit || true
 uv tool install whisper-ctranslate2 || true
 
 # =============================================================================
+# CODE Q/A TOOLS
+# =============================================================================
+log "Installing code Q/A tools..."
+
+# Python (via uv)
+uv tool install mypy || true
+uv tool install bandit || true
+
+# Bash
+sudo apt install -y shellcheck
+
+# Go-based tools (shfmt)
+go install mvdan.cc/sh/v3/cmd/shfmt@latest || true
+
+# =============================================================================
 # RUST/CARGO
 # =============================================================================
 if ! installed rustup; then
@@ -179,7 +194,7 @@ if ! installed cargo-binstall; then
 fi
 
 log "Installing cargo packages..."
-cargo binstall -y xh fd-find tinty || true
+cargo binstall -y xh fd-find tinty tree-sitter-cli || true
 
 # Tinty setup (centralized theming)
 if installed tinty; then
