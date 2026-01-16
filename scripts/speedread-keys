@@ -9,11 +9,13 @@ Keys:
   j, [, ↓   - slow down (±10 WPM)
   k, ], ↑   - speed up (±10 WPM)
   space     - pause/resume
+  e         - open in nvim
   q, Esc    - quit
 """
 import curses
 import os
 import re
+import subprocess
 import sys
 import time
 
@@ -48,6 +50,13 @@ def _word_delay(word, base_delay):
     elif word and word[-1] in ',;:':
         delay *= 1.5
     return delay
+
+def _slugify(words, n=5):
+    """Create a slug from first n words."""
+    slug_words = words[:n]
+    # Remove punctuation, lowercase, join with underscores
+    slug = "_".join(re.sub(r'[^\w]', '', w).lower() for w in slug_words if w)
+    return slug[:50] if slug else "untitled"
 
 def main(stdscr, filepath, initial_wpm):
     # Setup curses
@@ -122,7 +131,7 @@ def main(stdscr, filepath, initial_wpm):
 
         # Help hint
         if height > 2:
-            hint = "h/l: ±5 words | j/k: speed | space: pause | q: quit"
+            hint = "h/l: ±5 words | j/k: speed | space: pause | e: edit | q: quit"
             hint_x = max(0, (width - len(hint)) // 2)
             stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
 
@@ -162,6 +171,22 @@ def main(stdscr, filepath, initial_wpm):
             elif key == ord('l'):
                 word_idx = min(len(words) - 1, word_idx + 5)
                 last_word_time = time.time()
+            elif key == ord('e'):
+                # Determine file to edit
+                if filepath.startswith('/tmp/speedread-clipboard'):
+                    # Clipboard content - create named file
+                    slug = _slugify(words)
+                    target = f"/tmp/{slug}.md"
+                    with open(target, 'w') as f:
+                        f.write(text)
+                else:
+                    target = filepath
+                # Suspend curses, open nvim, then restore
+                curses.endwin()
+                subprocess.run(['nvim', target])
+                stdscr.refresh()
+                curses.curs_set(0)
+                paused = True  # Pause after returning
             elif key == curses.KEY_RESIZE:
                 stdscr.clear()
 
@@ -185,7 +210,7 @@ def run():
         sys.exit(1)
 
     filepath = sys.argv[1]
-    wpm = int(sys.argv[2]) if len(sys.argv) > 2 else 400
+    wpm = int(sys.argv[2]) if len(sys.argv) > 2 else 440
 
     if not os.path.isfile(filepath):
         print(f"File not found: {filepath}", file=sys.stderr)

@@ -10,7 +10,7 @@
 
 set -e
 
-WPM=400
+WPM=440
 FILE=""
 
 # Check dependencies
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
 		echo "Usage: speedread-tui [-w WPM] [file]"
 		echo ""
 		echo "Options:"
-		echo "  -w, --wpm WPM   Words per minute (default: 400)"
+		echo "  -w, --wpm WPM   Words per minute (default: 440)"
 		echo ""
 		echo "Keys:"
 		echo "  h         Skip back 5 words"
@@ -42,6 +42,7 @@ while [[ $# -gt 0 ]]; do
 		echo "  j, [, ↓   Slow down (±10 WPM)"
 		echo "  k, ], ↑   Speed up (±10 WPM)"
 		echo "  space     Pause/resume"
+		echo "  e         Open in nvim"
 		echo "  q, Esc    Quit"
 		exit 0
 		;;

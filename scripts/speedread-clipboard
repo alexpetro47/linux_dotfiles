@@ -40,4 +40,4 @@ TMPFILE=$(mktemp /tmp/speedread-clipboard.XXXXXX)
 echo "$CONTENT" >"$TMPFILE"
 
 # Run speedread-keys
-speedread-keys "$TMPFILE" 400
+speedread-keys "$TMPFILE" 440
