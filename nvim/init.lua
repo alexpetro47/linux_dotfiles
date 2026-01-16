@@ -431,20 +431,20 @@ require('lazy').setup({
     opts = {},
   },
 
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    opts = {
-      cmdline = {
-        enabled = true,
-        view = "cmdline_popup",
-      }
-    },
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      -- "rcarriga/nvim-notify",
-    }
-  },
+  -- DISABLED: noice.nvim has treesitter query incompatibility with @operator capture
+  -- {
+  --   "folke/noice.nvim",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     cmdline = {
+  --       enabled = true,
+  --       view = "cmdline_popup",
+  --     },
+  --   },
+  --   dependencies = {
+  --     "MunifTanjim/nui.nvim",
+  --   }
+  -- },
 
   {
     'windwp/nvim-autopairs',
@@ -510,6 +510,19 @@ require('lazy').setup({
             end,
           })
         end, opts("unzip file in place"))
+        vim.keymap.set("n", "i", function()
+          local node = api.tree.get_node_under_cursor()
+          if not node or node.type == "directory" then
+            vim.notify("Select a file, not a directory", vim.log.levels.WARN)
+            return
+          end
+          vim.fn.system('cp ' .. vim.fn.shellescape(node.absolute_path) .. ' ~/Downloads/')
+          if vim.v.shell_error == 0 then
+            vim.notify("Copied to ~/Downloads: " .. vim.fn.fnamemodify(node.absolute_path, ":t"))
+          else
+            vim.notify("Copy failed", vim.log.levels.ERROR)
+          end
+        end, opts("copy file to Downloads"))
       end
 
       require("nvim-tree").setup({
