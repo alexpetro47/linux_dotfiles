@@ -10,7 +10,7 @@ Keys:
   k, ], ↑   - speed up (±10 WPM)
   space     - pause/resume
   e         - open in nvim
-  p         - toggle preview (±10 words)
+  p         - toggle preview (context line)
   q, Esc    - quit
 """
 import curses
@@ -98,6 +98,7 @@ def main(stdscr, filepath, initial_wpm):
     paused = False
     last_word_time = time.time()
     show_preview = False
+    scroll_offset = 0.0  # Fractional character offset for smooth scrolling
 
     while True:
         height, width = stdscr.getmaxyx()
@@ -145,31 +146,47 @@ def main(stdscr, filepath, initial_wpm):
             hint_x = max(0, (width - len(hint)) // 2)
             stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
 
-        # Preview: last 10 words above, next 10 words below
-        if show_preview and height > 14:
-            # Previous 10 words (above)
-            if word_idx > 0:
-                start = max(0, word_idx - 10)
-                prev_words = words[start:word_idx]
-                prev_text = " ".join(prev_words)
-                if len(prev_text) > width - 4:
-                    prev_text = "..." + prev_text[-(width - 7):]
-                prev_x = max(0, (width - len(prev_text)) // 2)
-                prev_y = center_y - 6
-                if prev_y > 1:
-                    stdscr.addstr(prev_y, prev_x, prev_text, curses.color_pair(3) | curses.A_DIM)
+        # Preview: continuous context line centered on current word
+        if show_preview and height > 6:
+            preview_y = center_y + 4
+            if preview_y < height - 2:
+                # Build context: grab words around current, fit to width
+                # Current word will be centered, surrounded by context
+                half_width = (width - len(word) - 4) // 2
 
-            # Next 10 words (below)
-            if word_idx < len(words) - 1:
-                end = min(len(words), word_idx + 11)
-                next_words = words[word_idx + 1:end]
-                next_text = " ".join(next_words)
-                if len(next_text) > width - 4:
-                    next_text = next_text[:width - 7] + "..."
-                next_x = max(0, (width - len(next_text)) // 2)
-                next_y = center_y + 6
-                if next_y < height - 2:
-                    stdscr.addstr(next_y, next_x, next_text, curses.color_pair(3) | curses.A_DIM)
+                # Build left context (previous words)
+                left_words = []
+                left_len = 0
+                for i in range(word_idx - 1, -1, -1):
+                    w = words[i]
+                    needed = len(w) + 1  # word + space
+                    if left_len + needed > half_width:
+                        break
+                    left_words.insert(0, w)
+                    left_len += needed
+                left_text = " ".join(left_words)
+
+                # Build right context (next words)
+                right_words = []
+                right_len = 0
+                for i in range(word_idx + 1, len(words)):
+                    w = words[i]
+                    needed = len(w) + 1
+                    if right_len + needed > half_width:
+                        break
+                    right_words.append(w)
+                    right_len += needed
+                right_text = " ".join(right_words)
+
+                # Compose line: left ... [current] ... right
+                if left_text:
+                    line = left_text + " [" + word + "] " + right_text
+                else:
+                    line = "[" + word + "] " + right_text
+                line = line.strip()
+
+                line_x = max(0, (width - len(line)) // 2)
+                stdscr.addstr(preview_y, line_x, line, curses.color_pair(3) | curses.A_DIM)
 
         stdscr.refresh()
 
