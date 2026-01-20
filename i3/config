@@ -89,7 +89,9 @@ bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw
 bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
 bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
 bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
-bindsym $mod+b exec --no-startup-id brave-browser
+bindsym $mod+b exec --no-startup-id brave-browser 
+# bindsym $mod+b exec --no-startup-id brave-browser --remote-debugging-port=9222
+
 
 
 # Polybar toggle

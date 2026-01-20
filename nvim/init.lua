@@ -14,7 +14,7 @@ vim.wo.signcolumn = 'no'
 -- vim.wo.signcolumn = 'yes:1'
 vim.wo.number = true
 vim.o.scrolloff = 6
-vim.o.wrap = false
+vim.o.wrap = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.shiftwidth = 4
@@ -82,7 +82,8 @@ vim.keymap.set('n', '<leader>I', function()
     print('Failed to move file: ' .. result)
     return
   end
-  vim.api.nvim_put({'![](.media/' .. fname .. ')'}, 'c', true, true)
+  local abs_path = vim.fn.getcwd() .. '/.media/' .. fname
+  vim.api.nvim_put({'![](' .. abs_path .. ')'}, 'c', true, true)
 end, {desc = 'move clipboard image to .media/ and insert'})
 vim.keymap.set('n', '<leader>=', ':set shiftwidth=2<CR>', {noremap=true, silent=true, desc="reset shiftwidth 2"})
 vim.keymap.set('n', '<leader><', ':cd ..<CR>:pwd<CR>', {noremap=true, silent=true, desc="cd back 1 dir"})
@@ -140,7 +141,8 @@ vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 
 -- sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=100
+" autocmd FileType markdown setlocal textwidth=100
+" autocmd FileType markdown setlocal textwidth=60
 ]])
 
 
@@ -715,6 +717,10 @@ require('lazy').setup({
     config = function()
       require('telescope').setup {
         defaults = {
+          layout_config = {
+            width = 0.95,
+            height = 0.95,
+          },
           file_ignore_patterns = {
             "node_modules",
             "venv",
