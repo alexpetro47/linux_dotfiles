@@ -82,14 +82,14 @@ bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
 bindsym $mod+f exec --no-startup-id rofi -show drun
-bindsym $mod+r exec --no-startup-id "reaper & i3-msg 'workspace 4'"
-bindsym $mod+m exec --no-startup-id spotify
+bindsym $mod+r exec --no-startup-id "reaper & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+m exec --no-startup-id "spotify & i3-msg workspace 5 && sleep 0.3 && i3-msg fullscreen enable"
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
-bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
-bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
-bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
-bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
-bindsym $mod+b exec --no-startup-id brave-browser 
+bindsym $mod+shift+d exec --no-startup-id "brave-browser --app=https://excalidraw.com & i3-msg workspace 7 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+shift+c exec --no-startup-id "brave-browser --app=https://claude.com & i3-msg workspace 6 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+g exec --no-startup-id "brave-browser --app=https://gmail.com & i3-msg workspace 6 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+n exec --no-startup-id "brave-browser --app=https://app.simplenote.com & i3-msg workspace 6 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+b exec --no-startup-id "brave-browser & i3-msg workspace 2 && sleep 0.3 && i3-msg fullscreen enable"
 # bindsym $mod+b exec --no-startup-id brave-browser --remote-debugging-port=9222
 
 
@@ -137,7 +137,6 @@ bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
 bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
 
 # Auto-assign applications to specific workspaces
-assign [class="Spotify"] 5
 assign [class="google-chrome"] 7
 assign [class="Google-chrome"] 7
 
