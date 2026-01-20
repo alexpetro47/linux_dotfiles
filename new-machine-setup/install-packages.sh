@@ -64,6 +64,7 @@ sudo apt install -y \
     # TLP power management for battery optimization
     tlp \
     tlp-rdw \
+    ffmpeg \
 
 # =============================================================================
 # BROWSERS
@@ -356,6 +357,14 @@ if ! installed magick && ! installed convert; then
     sudo apt install -y imagemagick
 else
     log "ImageMagick already installed"
+fi
+
+# librsvg (rsvg-convert required for mdmath.nvim LaTeX rendering)
+if ! installed rsvg-convert; then
+    log "Installing librsvg2-bin..."
+    sudo apt install -y librsvg2-bin
+else
+    log "librsvg2-bin already installed"
 fi
 
 # =============================================================================

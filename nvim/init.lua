@@ -140,7 +140,7 @@ vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 
 -- sets text wrapping in markdown files
 vim.cmd([[
-autocmd FileType markdown setlocal textwidth=114
+autocmd FileType markdown setlocal textwidth=100
 ]])
 
 
@@ -822,6 +822,16 @@ require('lazy').setup({
         end
       })
     end
+  },
+
+  -- LaTeX math rendering (requires Kitty graphics protocol)
+  {
+    "Thiago4532/mdmath.nvim",
+    ft = "markdown",
+    build = function() require("mdmath").build() end,
+    opts = {
+      anticonceal = true,  -- reveal source when cursor is on equation
+    },
   },
 
   -- Image rendering in terminal (requires Kitty terminal + ImageMagick)
