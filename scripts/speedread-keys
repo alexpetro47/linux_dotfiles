@@ -11,6 +11,7 @@ Keys:
   space     - pause/resume
   e         - open in nvim
   p         - toggle preview (context line)
+  :##       - jump to word number
   q, Esc    - quit
 """
 import curses
@@ -21,17 +22,21 @@ import sys
 import time
 
 def _tokenize(text):
-    """Split text into words with line numbers."""
+    """Split text into words with line numbers and character positions."""
     words = []
     line_nums = []
+    char_positions = []  # Starting char position of each word in the stream
     line_num = 1
+    char_pos = 0
     for line in text.splitlines():
         for word in re.split(r'\s+', line):
             if word:
                 words.append(word)
                 line_nums.append(line_num)
+                char_positions.append(char_pos)
+                char_pos += len(word) + 1  # word + space
         line_num += 1
-    return words, line_nums
+    return words, line_nums, char_positions
 
 def _orp_index(word):
     """Calculate Optimal Recognition Point (slightly left of center)."""
@@ -84,7 +89,9 @@ def main(stdscr, filepath, initial_wpm):
     # Read and tokenize file
     with open(filepath, 'r') as f:
         text = f.read()
-    words, line_nums = _tokenize(text)
+    words, line_nums, char_positions = _tokenize(text)
+    # Build the full text stream for teleprompter preview
+    text_stream = " ".join(words)
 
     if not words:
         stdscr.addstr(0, 0, "No words found in file")
@@ -96,9 +103,12 @@ def main(stdscr, filepath, initial_wpm):
     wpm = initial_wpm
     word_idx = 0
     paused = False
-    last_word_time = time.time()
+    last_frame_time = time.time()
+    last_word_time = last_frame_time
     show_preview = False
-    scroll_offset = 0.0  # Fractional character offset for smooth scrolling
+    command_mode = False
+    command_buffer = ""
+    scroll_offset = 0.0  # Continuous character position for smooth teleprompter
 
     while True:
         height, width = stdscr.getmaxyx()
@@ -115,14 +125,14 @@ def main(stdscr, filepath, initial_wpm):
         # Clear and draw
         stdscr.erase()
 
-        # Draw guide lines (subtle)
+        # Draw guide lines (subtle) - only when not in preview mode
         guide_y = center_y
-        if width > 10:
+        if width > 10 and not show_preview:
             stdscr.addstr(guide_y - 1, center_x, "▼", curses.color_pair(3) | curses.A_DIM)
             stdscr.addstr(guide_y + 1, center_x, "▲", curses.color_pair(3) | curses.A_DIM)
 
-        # Draw word with ORP highlight
-        if word and word_start_x >= 0 and word_start_x + len(word) < width:
+        # Draw word with ORP highlight (only when not in preview mode)
+        if not show_preview and word and word_start_x >= 0 and word_start_x + len(word) < width:
             for i, char in enumerate(word):
                 x = word_start_x + i
                 if i == orp:
@@ -140,53 +150,31 @@ def main(stdscr, filepath, initial_wpm):
         if height > 1:
             stdscr.addstr(height - 1, status_x, status, curses.color_pair(3) | curses.A_DIM)
 
+        # Command mode prompt
+        if command_mode and height > 1:
+            cmd_prompt = ":" + command_buffer
+            stdscr.addstr(height - 1, 0, cmd_prompt, curses.color_pair(2))
+
         # Help hint
         if height > 2:
             hint = "h/l: ±5 | j/k: speed | space: pause | p: preview | e: edit | q: quit"
             hint_x = max(0, (width - len(hint)) // 2)
             stdscr.addstr(0, hint_x, hint, curses.color_pair(3) | curses.A_DIM)
 
-        # Preview: continuous context line centered on current word
-        if show_preview and height > 6:
-            preview_y = center_y + 4
-            if preview_y < height - 2:
-                # Build context: grab words around current, fit to width
-                # Current word will be centered, surrounded by context
-                half_width = (width - len(word) - 4) // 2
+        # Preview: teleprompter-style smooth scrolling (constant rate, no highlighting)
+        if show_preview and height > 2:
+            # Extract viewport from text stream, centered on scroll position
+            half_width = width // 2
+            start = max(0, int(scroll_offset) - half_width)
+            end = min(len(text_stream), int(scroll_offset) + half_width)
+            viewport = text_stream[start:end]
 
-                # Build left context (previous words)
-                left_words = []
-                left_len = 0
-                for i in range(word_idx - 1, -1, -1):
-                    w = words[i]
-                    needed = len(w) + 1  # word + space
-                    if left_len + needed > half_width:
-                        break
-                    left_words.insert(0, w)
-                    left_len += needed
-                left_text = " ".join(left_words)
-
-                # Build right context (next words)
-                right_words = []
-                right_len = 0
-                for i in range(word_idx + 1, len(words)):
-                    w = words[i]
-                    needed = len(w) + 1
-                    if right_len + needed > half_width:
-                        break
-                    right_words.append(w)
-                    right_len += needed
-                right_text = " ".join(right_words)
-
-                # Compose line: left ... [current] ... right
-                if left_text:
-                    line = left_text + " [" + word + "] " + right_text
-                else:
-                    line = "[" + word + "] " + right_text
-                line = line.strip()
-
-                line_x = max(0, (width - len(line)) // 2)
-                stdscr.addstr(preview_y, line_x, line, curses.color_pair(3) | curses.A_DIM)
+            # Draw viewport centered on screen
+            viewport_x = max(0, (width - len(viewport)) // 2)
+            try:
+                stdscr.addstr(center_y, viewport_x, viewport, curses.color_pair(2))
+            except curses.error:
+                pass  # Ignore if exceeds screen
 
         stdscr.refresh()
 
@@ -197,8 +185,32 @@ def main(stdscr, filepath, initial_wpm):
             key = -1
 
         if key != -1:
+            # Command mode input handling
+            if command_mode:
+                if key == 27:  # Escape - cancel
+                    command_mode = False
+                    command_buffer = ""
+                elif key in (10, 13, curses.KEY_ENTER):  # Enter - execute
+                    if command_buffer.isdigit():
+                        target = int(command_buffer) - 1  # 1-indexed to 0-indexed
+                        word_idx = max(0, min(len(words) - 1, target))
+                        scroll_offset = float(char_positions[word_idx])
+                        last_word_time = time.time()
+                        paused = True
+                    command_mode = False
+                    command_buffer = ""
+                elif key == curses.KEY_BACKSPACE or key == 127:  # Backspace
+                    command_buffer = command_buffer[:-1]
+                elif 48 <= key <= 57:  # 0-9
+                    command_buffer += chr(key)
+                continue  # Skip normal key handling when in command mode
+
             if key in (ord('q'), 27):  # q or Esc
                 break
+            elif key == ord(':'):
+                command_mode = True
+                command_buffer = ""
+                paused = True  # Pause while entering command
             elif key == ord(' '):
                 paused = not paused
             elif key in (ord('j'), ord('['), curses.KEY_DOWN):
@@ -207,9 +219,11 @@ def main(stdscr, filepath, initial_wpm):
                 wpm = min(1500, wpm + 10)
             elif key == ord('h'):
                 word_idx = max(0, word_idx - 5)
+                scroll_offset = float(char_positions[word_idx])
                 last_word_time = time.time()
             elif key == ord('l'):
                 word_idx = min(len(words) - 1, word_idx + 5)
+                scroll_offset = float(char_positions[word_idx])
                 last_word_time = time.time()
             elif key == ord('p'):
                 show_preview = not show_preview
@@ -226,21 +240,53 @@ def main(stdscr, filepath, initial_wpm):
                 # Suspend curses, open nvim at current line (centered), then restore
                 curses.endwin()
                 line = line_nums[word_idx] if word_idx < len(line_nums) else 1
-                subprocess.run(['nvim', f'+{line}', '-c', 'normal zz', target])
+                pos_file = '/tmp/speedread-nvim-pos'
+                # Autocmd saves cursor line on exit
+                subprocess.run([
+                    'nvim', f'+{line}', '-c', 'normal zz',
+                    '-c', f'autocmd VimLeave * call writefile([line(".")], "{pos_file}")',
+                    target
+                ])
+                # Resume from nvim cursor position
+                if os.path.exists(pos_file):
+                    try:
+                        with open(pos_file) as pf:
+                            target_line = int(pf.read().strip())
+                        os.remove(pos_file)
+                        # Find first word on target_line
+                        for i, ln in enumerate(line_nums):
+                            if ln >= target_line:
+                                word_idx = i
+                                scroll_offset = float(char_positions[word_idx])
+                                break
+                    except (ValueError, IOError):
+                        pass  # Keep current position on error
+                last_word_time = time.time()
                 stdscr.refresh()
                 curses.curs_set(0)
                 paused = True  # Pause after returning
             elif key == curses.KEY_RESIZE:
                 stdscr.clear()
 
-        # Advance word if not paused
+        # Update timing and scroll
+        now = time.time()
+        frame_delta = now - last_frame_time
+        last_frame_time = now
+
+        # Advance scroll and word if not paused
         if not paused and word_idx < len(words):
+            # Scroll at constant rate: ~5 chars per word average
+            chars_per_second = (wpm * 5.5) / 60.0
+            scroll_offset += chars_per_second * frame_delta
+            scroll_offset = min(scroll_offset, len(text_stream))
+
+            # Advance word based on timing (separate from scroll)
             base_delay = 60.0 / wpm
             delay = _word_delay(word, base_delay)
 
-            if time.time() - last_word_time >= delay:
+            if now - last_word_time >= delay:
                 word_idx += 1
-                last_word_time = time.time()
+                last_word_time = now
 
                 # End of text
                 if word_idx >= len(words):
