@@ -120,6 +120,8 @@ sudo update-grub && sudo reboot
 alacritty - terminal emulator (alternative to kitty, no image support)
 `sudo apt install alacritty`
 
+
+
 ## ML/Data Science
 
 Miniforge3 - conda distribution using conda-forge (avoids Anaconda licensing)
@@ -165,3 +167,6 @@ ImageMagick - image processing
 
 openjdk - java compiler and runtime (headless)
 `sudo apt install openjdk-21-jdk-headless`
+
+libfuse2 - required for AppImages
+`sudo apt install libfuse2`
