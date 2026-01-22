@@ -10,6 +10,7 @@ cmd trash ${{
 }}
 
 map <enter> open
-map x trash
+map x cut
+map d trash
 
 map a push :!touch<space>
