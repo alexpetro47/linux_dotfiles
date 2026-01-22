@@ -20,6 +20,25 @@ vim.o.smartcase = true
 vim.o.shiftwidth = 4
 vim.o.softtabstop = 4
 vim.o.tabstop = 4
+vim.opt.iskeyword:remove('_')  -- treat _ as word separator
+vim.opt.iskeyword:remove('-')  -- treat - as word separator
+
+-- Skip over _ and - separators (like spaces) for w/b/e motions
+local function skip_sep(motion)
+  return function()
+    for _ = 1, vim.v.count1 do
+      vim.cmd('normal! ' .. motion)
+      local char = vim.fn.getline('.'):sub(vim.fn.col('.'), vim.fn.col('.'))
+      while char == '_' or char == '-' do
+        vim.cmd('normal! ' .. motion)
+        char = vim.fn.getline('.'):sub(vim.fn.col('.'), vim.fn.col('.'))
+      end
+    end
+  end
+end
+vim.keymap.set({'n', 'v'}, 'w', skip_sep('w'), {noremap = true})
+vim.keymap.set({'n', 'v'}, 'b', skip_sep('b'), {noremap = true})
+vim.keymap.set({'n', 'v'}, 'e', skip_sep('e'), {noremap = true})
 vim.opt.termguicolors = true
 -- vim.o.smartindent = true
 -- vim.o.smarttab = true
