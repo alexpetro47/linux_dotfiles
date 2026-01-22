@@ -149,7 +149,7 @@ vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
-vim.keymap.set('n', '<leader>p', ':let @+ = "@" . expand("%") . " " <CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+vim.keymap.set('n', '<leader>p', ':let @+ = "@" . expand("%:p") . " " <CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>E', ':! xdg-open %:p:h &<CR>', {desc = 'open current buffer directory in file manager'})
 
