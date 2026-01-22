@@ -160,6 +160,28 @@ vim.api.nvim_create_autocmd("FileType", { pattern = "NvimTree", callback =
     require("nvim-tree.api").tree.get_node_under_cursor() if node and
       node.absolute_path then vim.fn.jobstart({"xdg-open", node.absolute_path}, {detach = true})
     end end, { buffer = args.buf, noremap = true, silent = true }) end, })
+--gx for regular buffers (detached to avoid timeout)
+vim.keymap.set('n', 'gx', function()
+  local line = vim.fn.getline('.')
+  local col = vim.fn.col('.')
+  local target
+  -- check for markdown link: [text](path) or ![text](path)
+  for start_pos, path in line:gmatch('()!?%[.-%]%((.-)%)') do
+    local end_pos = start_pos + #line:match('!?%[.-%]%(.-%)', start_pos) - 1
+    if col >= start_pos and col <= end_pos then
+      target = path
+      break
+    end
+  end
+  target = target or vim.fn.expand('<cfile>')
+  if target and target ~= '' then
+    -- resolve relative paths from buffer directory
+    if not target:match('^[a-z]+://') and not target:match('^/') then
+      target = vim.fn.expand('%:p:h') .. '/' .. target
+    end
+    vim.fn.jobstart({"xdg-open", target}, {detach = true})
+  end
+end, { desc = 'open file/URL under cursor' })
 
 --Distant / SSH
 vim.keymap.set('n', '<leader>Sl', ':DistantLaunch ssh://root@<UP>' , { desc = 'Distant Launch' })
@@ -514,17 +536,24 @@ require('lazy').setup({
         end, opts("unzip file in place"))
         vim.keymap.set("n", "i", function()
           local node = api.tree.get_node_under_cursor()
-          if not node or node.type == "directory" then
-            vim.notify("Select a file, not a directory", vim.log.levels.WARN)
-            return
-          end
-          vim.fn.system('cp ' .. vim.fn.shellescape(node.absolute_path) .. ' ~/Downloads/')
+          if not node then return end
+          vim.fn.system('cp -r ' .. vim.fn.shellescape(node.absolute_path) .. ' ~/Downloads/')
           if vim.v.shell_error == 0 then
             vim.notify("Copied to ~/Downloads: " .. vim.fn.fnamemodify(node.absolute_path, ":t"))
           else
             vim.notify("Copy failed", vim.log.levels.ERROR)
           end
-        end, opts("copy file to Downloads"))
+        end, opts("copy to Downloads"))
+        vim.keymap.set("n", "<leader>d", function()
+          local node = api.tree.get_node_under_cursor()
+          if not node then return end
+          vim.fn.system('cp -r ' .. vim.fn.shellescape(node.absolute_path) .. ' ~/Downloads/')
+          if vim.v.shell_error == 0 then
+            vim.notify("Copied to ~/Downloads: " .. vim.fn.fnamemodify(node.absolute_path, ":t"))
+          else
+            vim.notify("Copy failed", vim.log.levels.ERROR)
+          end
+        end, opts("copy to Downloads"))
       end
 
       require("nvim-tree").setup({
