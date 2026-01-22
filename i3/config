@@ -43,7 +43,8 @@ include ~/.config/i3/colors
 
 font pango:JetBrains Mono NF
 
-for_window [class="^.*"] border pixel 1
+default_border pixel 1
+default_floating_border pixel 4
 # for_window [class="^.*"] title_format ""
 focus_on_window_activation focus
 
@@ -78,7 +79,7 @@ bindsym $mod+Escape exec systemctl suspend
 bindsym $mod+Ctrl+Escape exec systemctl poweroff
 bindsym $mod+w kill
 bindsym --whole-window button2 kill
-bindsym $mod+ctrl+f floating toggle resize set 800 950, move position center
+bindsym $mod+ctrl+f floating toggle, border pixel 4, resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
 bindsym $mod+f exec --no-startup-id rofi -show drun
@@ -117,6 +118,7 @@ bindsym $mod+s workspace 4; exec --no-startup-id brave-browser --new-window "htt
 # bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 # bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+k exec --no-startup-id ~/.local/bin/kitty
+bindsym $mod+a exec --no-startup-id kitty -e ralph dashboard
 
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
