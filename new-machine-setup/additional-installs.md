@@ -1,6 +1,14 @@
 
 # ADDITIONAL INSTALLS
 
+## Networking
+
+tailscale - mesh VPN, access machines from anywhere
+```
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+```
+
 ## Desktop
 
 picom - compositor for transparency/shadows (disabled - causes idle crashes)
