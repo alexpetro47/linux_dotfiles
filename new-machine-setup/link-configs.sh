@@ -124,6 +124,11 @@ if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" "$HOME/.local/bin/voice-dictation-transcribe"
 fi
 
+# Ralf (ClawdBot CLI wrapper)
+if [ -f "$CONFIG_DIR/new-machine-setup/ralf" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/ralf" "$HOME/.local/bin/ralf"
+fi
+
 
 # =============================================================================
 # DESKTOP ENTRIES

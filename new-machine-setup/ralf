@@ -1,0 +1,16 @@
+#!/bin/bash
+# ralf - ClawdBot CLI wrapper
+# Usage: ralf message send -m "text" -t 8523754001 --channel telegram
+#
+# This wraps the clawdbot CLI for the "ralf" agent identity.
+# Install clawdbot first: npm install -g clawdbot
+
+CLAWDBOT_PATH="${CLAWDBOT_PATH:-$HOME/.npm-global/bin/clawdbot}"
+
+if [ ! -x "$CLAWDBOT_PATH" ]; then
+    echo "Error: clawdbot not found at $CLAWDBOT_PATH" >&2
+    echo "Install with: npm install -g clawdbot" >&2
+    exit 1
+fi
+
+exec "$CLAWDBOT_PATH" "$@"
