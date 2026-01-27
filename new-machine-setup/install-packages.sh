@@ -254,12 +254,12 @@ fi
 # =============================================================================
 # NODE/NPM
 # =============================================================================
-if ! installed node; then
-    log "Installing Node.js..."
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+if ! installed node || [[ "$(node -v | cut -d. -f1 | tr -d 'v')" -lt 22 ]]; then
+    log "Installing Node.js 22..."
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     sudo apt-get install -y nodejs
 else
-    log "Node.js already installed"
+    log "Node.js 22+ already installed"
 fi
 
 # Configure npm to use user directory (avoids sudo for global installs)
