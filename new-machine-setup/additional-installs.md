@@ -14,6 +14,70 @@ sudo tailscale up
 picom - compositor for transparency/shadows (disabled - causes idle crashes)
 `sudo apt install picom`
 
+## Windows on External SSD
+
+For software that requires Windows (e.g., Respondus LockDown Browser for proctored exams).
+Installs to external SSD - no changes to internal Linux partitions.
+
+### Why external SSD instead of VM?
+
+Respondus LockDown Browser detects and blocks virtual machines. A native Windows install
+on external storage is the safest approach that doesn't touch your Linux partitions.
+
+### Requirements
+
+- External USB 3.0+ SSD (128GB minimum, ~$25-35)
+- Spare USB flash drive (8GB+) for Windows installer
+- Windows 11 ISO: https://www.microsoft.com/software-download/windows11
+- Ventoy (to create bootable USB): https://www.ventoy.net/
+
+### Step 1: Create bootable installer with Ventoy
+
+```
+# Download and extract Ventoy
+curl -fLo /tmp/ventoy.tar.gz https://github.com/ventoy/Ventoy/releases/download/v1.0.99/ventoy-1.0.99-linux.tar.gz
+tar -xzf /tmp/ventoy.tar.gz -C /tmp
+
+# Install Ventoy to USB flash drive (WILL ERASE DRIVE)
+# Find your USB with: lsblk
+sudo /tmp/ventoy-1.0.99/Ventoy2Disk.sh -i /dev/sdX  # replace sdX with your USB
+
+# Copy Windows ISO to the Ventoy USB
+cp ~/Downloads/Win11_*.iso /media/$USER/Ventoy/
+```
+
+### Step 2: Install Windows to external SSD
+
+1. Connect both: Ventoy USB (installer) + external SSD (target)
+2. Reboot and enter boot menu (F12/F2/Esc depending on laptop)
+3. Boot from Ventoy USB, select Windows ISO
+4. At install screen: **Delete all partitions on the external SSD only**
+5. Select the unallocated space on external SSD, click Next
+6. Complete Windows installation
+
+**CRITICAL**: Only touch partitions on the external SSD. Your internal drive
+partitions should show your Linux install - do not modify these.
+
+### Step 3: Boot into Windows
+
+1. Connect external SSD
+2. Enter boot menu (F12/F2/Esc)
+3. Select the external SSD (usually shows as "UEFI: [SSD brand name]")
+4. Windows boots from external drive
+
+To return to Linux: reboot without external SSD, or select internal drive in boot menu.
+
+### Step 4: Install Respondus LockDown Browser
+
+In Windows, download from your school's LMS or: https://download.respondus.com/lockdown/download.php
+
+### Notes
+
+- First Windows boot is slow (driver setup). Subsequent boots are fast.
+- Windows may activate automatically. If not, you can use it unactivated (watermark only).
+- Keep external SSD plugged in during Windows updates.
+- Webcam should work natively for Respondus Monitor (video proctoring).
+
 ## Fonts
 
 FiraCode Nerd Font - alternative monospace font (ligatures)
