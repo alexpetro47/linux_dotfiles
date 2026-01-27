@@ -82,6 +82,7 @@ bindsym --whole-window button2 kill
 bindsym $mod+ctrl+f floating toggle, border pixel 4, resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
+bindsym $mod+t exec --no-startup-id telegram
 bindsym $mod+f exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id "reaper & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
 bindsym $mod+m exec --no-startup-id "spotify & i3-msg workspace 5 && sleep 0.3 && i3-msg fullscreen enable"

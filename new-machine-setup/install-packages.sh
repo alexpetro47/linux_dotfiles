@@ -65,6 +65,7 @@ sudo apt install -y \
     tlp \
     tlp-rdw \
     ffmpeg \
+    flatpak \
 
 # =============================================================================
 # BROWSERS
@@ -91,6 +92,36 @@ else
     log "Brave already installed"
 fi
 
+
+# =============================================================================
+# TELEGRAM DESKTOP (Flatpak - sandboxed, latest version)
+# =============================================================================
+if ! flatpak --user list --app | grep -q org.telegram.desktop; then
+    log "Installing Telegram Desktop via Flatpak..."
+    flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak --user install -y flathub org.telegram.desktop
+else
+    log "Telegram Desktop already installed"
+fi
+
+# CLI wrapper for telegram
+if [ ! -f "$HOME/.local/bin/telegram" ]; then
+    log "Creating telegram CLI wrapper..."
+    mkdir -p "$HOME/.local/bin"
+    cat > "$HOME/.local/bin/telegram" << 'EOF'
+#!/bin/bash
+exec flatpak run org.telegram.desktop "$@"
+EOF
+    chmod +x "$HOME/.local/bin/telegram"
+fi
+
+# Flatpak XDG_DATA_DIRS for app launchers (rofi, etc)
+if ! grep -q "flatpak/exports/share" "$HOME/.zshrc" 2>/dev/null; then
+    log "Adding flatpak exports to XDG_DATA_DIRS..."
+    echo '
+# Flatpak user apps (for rofi/app launchers)
+export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"' >> "$HOME/.zshrc"
+fi
 
 # LaTeX packages (skip with SKIP_LATEX=1)
 if [ "$SKIP_LATEX" != "1" ]; then

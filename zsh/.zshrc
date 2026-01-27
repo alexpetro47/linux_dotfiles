@@ -220,3 +220,6 @@ alias rd='ralph dashboard'
 alias rs='ralph status'
 alias rsp='ralph spawn'
 alias rk='ralph kill'
+
+# Flatpak user apps (for rofi/app launchers)
+export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
