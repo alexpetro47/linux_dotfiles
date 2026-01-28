@@ -46,7 +46,7 @@ font pango:JetBrains Mono NF
 default_border pixel 1
 default_floating_border pixel 4
 # for_window [class="^.*"] title_format ""
-focus_on_window_activation focus
+focus_on_window_activation none
 
 # Base16 colors: border, background, text, indicator, child_border
 client.focused          $base0D $base00 $base05 $base0D $base0D
