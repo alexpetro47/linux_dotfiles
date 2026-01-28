@@ -452,6 +452,16 @@ else
 fi
 
 # =============================================================================
+# TTYD (snap - for viewing/debugging TUI apps via Playwright)
+# =============================================================================
+if ! installed ttyd; then
+    log "Installing ttyd via snap..."
+    sudo snap install ttyd --classic
+else
+    log "ttyd already installed"
+fi
+
+# =============================================================================
 # BITWARDEN CLI (native binary)
 # =============================================================================
 if ! installed bw; then
