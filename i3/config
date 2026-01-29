@@ -125,6 +125,7 @@ exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
 exec --no-startup-id feh --bg-scale ~/Documents/os_styling/wallpaper.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec_always --no-startup-id "sleep 1 && ~/.local/bin/lid-suspend-sync"
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
 

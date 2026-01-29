@@ -1,0 +1,24 @@
+#!/bin/bash
+# lid-suspend-sync - Sync polybar icon with actual lid suspend state
+# Called on startup to ensure icon reflects reality
+
+INHIBIT_FILE="$HOME/.config/lid-suspend-inhibit"
+INHIBIT_PID_FILE="$HOME/.config/lid-suspend-inhibit.pid"
+
+# Check if we think we're inhibited
+if [ -f "$INHIBIT_FILE" ]; then
+    # Verify the inhibitor process is actually running
+    if [ -f "$INHIBIT_PID_FILE" ]; then
+        pid=$(cat "$INHIBIT_PID_FILE")
+        if kill -0 "$pid" 2>/dev/null; then
+            # Process running - show inhibited icon (hook 1)
+            polybar-msg action lid-suspend hook 1 2>/dev/null
+            exit 0
+        fi
+    fi
+    # Stale state - clean up
+    rm -f "$INHIBIT_FILE" "$INHIBIT_PID_FILE"
+fi
+
+# Not inhibited - show no icon (hook 0)
+polybar-msg action lid-suspend hook 0 2>/dev/null
