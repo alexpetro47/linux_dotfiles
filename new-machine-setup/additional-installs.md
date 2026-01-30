@@ -107,6 +107,36 @@ cargo build --release
 sudo cp target/release/demongrep ~/.local/bin 
 ```
 
+bws (Bitwarden Secrets Manager) - centralized secrets for API keys, .env variables
+```
+# 1. Install (already in install-packages.sh via cargo binstall)
+cargo binstall -y bws
+
+# 2. Create machine account + access token in Bitwarden web vault:
+#    - Secrets Manager → Machine Accounts → New
+#    - Generate access token for machine account
+
+# 3. Store token securely in GNOME keyring
+secret-tool store --label="bws" service bws account default
+# paste token, Ctrl+D
+
+# 4. zshrc already configured - provides:
+#    - BWS_ACCESS_TOKEN exported from keyring
+#    - Warning on startup if token missing
+#    - bws-list, bws-get, bws-projects aliases
+
+# 5. First-time project setup
+bws project create "dev-secrets"         # create project (note the UUID)
+
+# 6. Usage
+bws secret list -o table                 # list all secrets
+bws secret get <secret-id> | jq .value   # get specific secret value
+bws secret create "KEY" "value" <project-id>  # create secret (KEY VALUE PROJECT order)
+bws-list                                 # alias: table-formatted secret list
+bws-get <secret-id>                      # alias: just the value
+bws-projects                             # alias: list projects
+```
+
 rclone gdrive remote - for backup-repos script
 ```
 rclone config
@@ -236,6 +266,11 @@ ffmpeg - required for audio/video processing
 
 ImageMagick - image processing
 `sudo apt install imagemagick`
+
+tesseract OCR - text extraction with bounding boxes (for img-text-regions)
+`sudo apt install tesseract-ocr tesseract-ocr-eng`
+
+opencv - shape detection (for img-detect-shapes, installed via uv run inline)
 
 openjdk - java compiler and runtime (headless)
 `sudo apt install openjdk-21-jdk-headless`

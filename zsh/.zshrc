@@ -1,4 +1,7 @@
 
+# Source API keys from ~/.claude/.env
+[ -f "$HOME/.claude/.env" ] && export $(grep -v '^#' "$HOME/.claude/.env" | xargs)
+
 export EDITOR=nvim
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$BUN_INSTALL/bin:$PATH"
@@ -6,6 +9,17 @@ export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 export PATH="/usr/local/go/bin:$HOME/go/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 export SQLITE_VEC_PATH="$HOME/.local/lib/vec0.so"
+# Bitwarden Secrets Manager
+BWS_ACCESS_TOKEN=$(secret-tool lookup service bws account default 2>/dev/null)
+if [[ -n "$BWS_ACCESS_TOKEN" ]]; then
+  export BWS_ACCESS_TOKEN
+  # Convenience aliases
+  bws-get() { bws secret get "$1" | jq -r .value; }
+  bws-list() { bws secret list -o table; }
+  bws-projects() { bws project list -o table; }
+else
+  [[ -o interactive ]] && echo "⚠ BWS_ACCESS_TOKEN not found in keyring (run: secret-tool store --label='bws' service bws account default)"
+fi
 
 # Database connections (used by lazysql + usql)
 # export DB_LOCAL_PG="postgres://user:pass@localhost:5432/mydb"

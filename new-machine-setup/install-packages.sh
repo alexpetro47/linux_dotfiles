@@ -66,6 +66,7 @@ sudo apt install -y \
     tlp-rdw \
     ffmpeg \
     flatpak \
+    libsecret-tools \
 
 # =============================================================================
 # BROWSERS
@@ -190,6 +191,32 @@ uv tool install pytest || true
 uv tool install pyright || true
 uv tool install pre-commit || true
 uv tool install whisper-ctranslate2 || true
+uv tool install llm || true
+llm install llm-openrouter 2>/dev/null || true
+# rclip: semantic image search - isolated project (torch dep issues with uv tool install)
+if [ ! -f "$HOME/.local/share/rclip-env/.venv/bin/rclip" ]; then
+    log "Installing rclip (isolated environment)..."
+    mkdir -p "$HOME/.local/share/rclip-env"
+    cat > "$HOME/.local/share/rclip-env/pyproject.toml" << 'EOF'
+[project]
+name = "rclip-env"
+version = "0.1.0"
+requires-python = ">=3.11,<3.13"
+dependencies = ["rclip>=2.0.0"]
+
+[tool.uv]
+override-dependencies = ["torch>=2.0.0", "torchvision>=0.15.0"]
+EOF
+    (cd "$HOME/.local/share/rclip-env" && uv sync) || log "WARN: rclip install failed"
+    # Wrapper script
+    cat > "$HOME/.local/bin/rclip" << 'EOF'
+#!/bin/bash
+exec ~/.local/share/rclip-env/.venv/bin/rclip "$@"
+EOF
+    chmod +x "$HOME/.local/bin/rclip"
+else
+    log "rclip already installed"
+fi
 
 # =============================================================================
 # CODE Q/A TOOLS
@@ -226,7 +253,7 @@ if ! installed cargo-binstall; then
 fi
 
 log "Installing cargo packages..."
-cargo binstall -y xh fd-find tinty tree-sitter-cli || true
+cargo binstall -y xh fd-find tinty tree-sitter-cli bws || true
 
 # Tinty setup (centralized theming)
 if installed tinty; then
@@ -267,6 +294,17 @@ npm config set prefix ~/.local
 
 log "Installing npm global packages..."
 npm install -g markserv
+
+# =============================================================================
+# BUN
+# =============================================================================
+if ! installed bun; then
+    log "Installing Bun..."
+    curl -fsSL https://bun.sh/install | bash
+    export PATH="$HOME/.bun/bin:$PATH"
+else
+    log "Bun already installed"
+fi
 
 # SPOTIFY
 if ! installed spotify; then
