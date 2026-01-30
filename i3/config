@@ -82,7 +82,7 @@ bindsym --whole-window button2 kill
 bindsym $mod+ctrl+f floating toggle, border pixel 4, resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
-bindsym $mod+t exec --no-startup-id telegram
+bindsym $mod+t exec --no-startup-id "telegram & i3-msg workspace 3"
 bindsym $mod+f exec --no-startup-id rofi -show drun
 bindsym $mod+r exec --no-startup-id "reaper & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
 bindsym $mod+m exec --no-startup-id "spotify & i3-msg workspace 5 && sleep 0.3 && i3-msg fullscreen enable"
@@ -120,6 +120,7 @@ bindsym $mod+s workspace 4; exec --no-startup-id brave-browser --new-window "htt
 # bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+k exec --no-startup-id ~/.local/bin/kitty
 bindsym $mod+a exec --no-startup-id kitty -e ralph dashboard
+bindsym $mod+Shift+w exec --no-startup-id "cd ~/Documents/carl/webapp && bun dev & sleep 1 && brave-browser --app=http://localhost:5173 & i3-msg workspace 3 && sleep 0.3 && i3-msg fullscreen enable"
 
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
@@ -137,8 +138,8 @@ for_window [window_type="dialog"] floating enable
 
 # Speedread (RSVP speed reading)
 for_window [class="speedread"] fullscreen enable
-bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
-bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
+# bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
+# bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
 
 # Auto-assign applications to specific workspaces
 assign [class="google-chrome"] 7
