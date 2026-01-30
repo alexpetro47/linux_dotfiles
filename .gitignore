@@ -233,3 +233,6 @@ nsxiv/*
 !nsxiv/exec/
 nsxiv/exec/*
 !nsxiv/exec/key-handler
+
+!.docs/
+!.docs/**
