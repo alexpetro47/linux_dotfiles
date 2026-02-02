@@ -11,8 +11,7 @@
 set -e
 
 SESSION_DIR="$1"
-MODEL="${WHISPER_MODEL:-large-v3-turbo}"
-COMPUTE_TYPE="${WHISPER_COMPUTE:-int8}"
+MODEL="${WHISPER_MODEL:-whisper-large-v3-turbo}"
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
 SESSIONS_DIR="$STATE_DIR/sessions"
 
@@ -22,6 +21,30 @@ NOTIFY_ID_TRANSCRIBE=91002
 # -----------------------------------------------------------------------------
 # Utilities
 # -----------------------------------------------------------------------------
+
+get_groq_api_key() {
+    local cache_file="${XDG_RUNTIME_DIR:-/tmp}/groq-api-key"
+    local cache_ttl=3600  # 1 hour
+
+    # Use cached key if fresh
+    if [[ -f "$cache_file" ]]; then
+        local age=$(($(date +%s) - $(stat -c %Y "$cache_file" 2>/dev/null || echo 0)))
+        if [[ $age -lt $cache_ttl ]]; then
+            cat "$cache_file"
+            return 0
+        fi
+    fi
+
+    # Fetch from bws and cache
+    local key
+    key=$(bws secret list 2>/dev/null | jq -r '.[] | select(.key == "GROQ_API_KEY") | .value' 2>/dev/null)
+    if [[ -z "$key" || "$key" == "null" ]]; then
+        return 1
+    fi
+    echo "$key" > "$cache_file"
+    chmod 600 "$cache_file"
+    echo "$key"
+}
 
 notify() {
     local msg="$1"
@@ -97,8 +120,9 @@ paste_to_pane() {
     # Exit copy mode if active
     exit_copy_mode "$pane_id"
 
-    # Paste from buffer
+    # Paste from buffer and press Enter
     tmux paste-buffer -t "$pane_id" 2>/dev/null
+    tmux send-keys -t "$pane_id" Enter 2>/dev/null
 }
 
 x11_window_exists() {
@@ -118,6 +142,7 @@ type_to_x11_window() {
     xdotool windowactivate --sync "$window_id" 2>/dev/null || return 1
     sleep 0.1
     xdotool type --delay 10 -- "$text" 2>/dev/null
+    xdotool key Return 2>/dev/null
 
     # Restore focus to original window
     if [ -n "$current_window" ] && [ "$current_window" != "$window_id" ]; then
@@ -160,25 +185,37 @@ if [ -f "$SESSION_DIR/target.x11" ]; then
     TARGET_X11=$(cat "$SESSION_DIR/target.x11")
 fi
 
-# Transcribe with faster-whisper
-TRANSCRIPT_FILE="$SESSION_DIR/recording.txt"
-
-whisper-ctranslate2 "$AUDIO_FILE" \
-    --model "$MODEL" \
-    --compute_type "$COMPUTE_TYPE" \
-    --output_format txt \
-    --output_dir "$SESSION_DIR" \
-    --language en \
-    --task transcribe \
-    --vad_filter True \
-    --word_timestamps False \
-    2>/dev/null || true
-
-# Read and clean transcript
-TEXT=""
-if [ -f "$TRANSCRIPT_FILE" ]; then
-    TEXT=$(tr '\n' ' ' < "$TRANSCRIPT_FILE" | sed 's/  */ /g; s/^ *//; s/ *$//')
+# Get Groq API key from bws
+GROQ_API_KEY=$(get_groq_api_key)
+if [[ -z "$GROQ_API_KEY" ]]; then
+    notify "Error: GROQ_API_KEY not found in bws" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    cleanup
+    exit 1
 fi
+
+# Transcribe with Groq Whisper API (164x real-time speed)
+RESPONSE=$(curl -s -X POST "https://api.groq.com/openai/v1/audio/transcriptions" \
+    -H "Authorization: Bearer $GROQ_API_KEY" \
+    -H "Content-Type: multipart/form-data" \
+    -F "model=$MODEL" \
+    -F "file=@$AUDIO_FILE" \
+    -F "response_format=json" \
+    -F "language=en" \
+    2>/dev/null)
+
+# Extract text from response
+TEXT=$(echo "$RESPONSE" | jq -r '.text // empty' 2>/dev/null)
+
+# Check for API errors
+if [[ -z "$TEXT" ]]; then
+    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // "Unknown error"' 2>/dev/null)
+    notify "Transcription failed: $ERROR" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    cleanup
+    exit 1
+fi
+
+# Clean up whitespace
+TEXT=$(echo "$TEXT" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 
 if [ -z "$TEXT" ]; then
     notify "No speech detected" "$NOTIFY_ID_TRANSCRIBE" "low"
