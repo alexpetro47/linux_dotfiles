@@ -82,16 +82,16 @@ bindsym --whole-window button2 kill
 bindsym $mod+ctrl+f floating toggle, border pixel 4, resize set 800 950, move position center
 
 bindsym $mod+c exec --no-startup-id flameshot gui
-bindsym $mod+t exec --no-startup-id "telegram & i3-msg workspace 3"
+bindsym $mod+t exec --no-startup-id telegram
 bindsym $mod+f exec --no-startup-id rofi -show drun
-bindsym $mod+r exec --no-startup-id "reaper & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
-bindsym $mod+m exec --no-startup-id "spotify & i3-msg workspace 5 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+r exec --no-startup-id reaper
+bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
-bindsym $mod+shift+d exec --no-startup-id "brave-browser --app=https://excalidraw.com & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
-bindsym $mod+shift+c exec --no-startup-id "brave-browser --app=https://claude.com & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
-bindsym $mod+g exec --no-startup-id "brave-browser --app=https://gmail.com & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
-bindsym $mod+n exec --no-startup-id "brave-browser --app=https://app.simplenote.com & i3-msg workspace 4 && sleep 0.3 && i3-msg fullscreen enable"
-bindsym $mod+b exec --no-startup-id "brave-browser & i3-msg workspace 2 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
+bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
+bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
+bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
+bindsym $mod+b exec --no-startup-id brave-browser
 # bindsym $mod+b exec --no-startup-id brave-browser --remote-debugging-port=9222
 
 
@@ -115,12 +115,12 @@ bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
 bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel
 
-bindsym $mod+s workspace 4; exec --no-startup-id brave-browser --new-window "https://google.com/aimode"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
+bindsym $mod+s exec --no-startup-id brave-browser --new-window "https://google.com/aimode"
 # bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 # bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+k exec --no-startup-id ~/.local/bin/kitty
 bindsym $mod+a exec --no-startup-id kitty -e ralph dashboard
-bindsym $mod+Shift+w exec --no-startup-id "cd ~/Documents/carl/webapp && bun dev & sleep 1 && brave-browser --app=http://localhost:5173 & i3-msg workspace 3 && sleep 0.3 && i3-msg fullscreen enable"
+bindsym $mod+Shift+w exec --no-startup-id "cd ~/Documents/carl/webapp && bun dev & sleep 1 && brave-browser --app=http://localhost:5173"
 
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C
