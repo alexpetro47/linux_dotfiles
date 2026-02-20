@@ -5,12 +5,14 @@
 # Usage:
 #   voice-dictation         # Toggle recording (start/stop)
 #   voice-dictation cancel  # Cancel recording (discard without transcribing)
+#   voice-dictation sync    # Resync polybar indicator with actual state
 #
 # Features:
 #   - Background transcription (non-blocking)
 #   - Multiple concurrent recordings with tmux pane isolation
 #   - Visual indicators via polybar IPC (red=recording, green=transcribing)
 #   - Cancel button to abort without transcribing
+#   - 10-minute max recording duration (auto-stops and transcribes)
 #
 # Keybindings (i3):
 #   Alt+V       - Toggle recording
@@ -34,6 +36,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 # Notification IDs for dunstify replacement
 NOTIFY_ID_RECORDING=91001
 NOTIFY_ID_TRANSCRIBE=91002
+MAX_DURATION=600  # 10 minutes max recording
 
 mkdir -p "$SESSIONS_DIR"
 
@@ -135,7 +138,17 @@ start_recording() {
 
     # Start recording in background (16kHz mono - optimal for Whisper)
     rec -q -c 1 -r 16000 -b 16 "$session_dir/recording.wav" &
-    echo $! > "$session_dir/recording.pid"
+    local rec_pid=$!
+    echo "$rec_pid" > "$session_dir/recording.pid"
+
+    # Start max-duration watchdog (auto-stops and transcribes at limit)
+    (
+        sleep "$MAX_DURATION"
+        if kill -0 "$rec_pid" 2>/dev/null; then
+            "$0" stop
+        fi
+    ) &
+    echo $! > "$session_dir/watchdog.pid"
 
     # Create symlink to current session
     ln -sfn "$session_dir" "$CURRENT_LINK"
@@ -178,6 +191,13 @@ stop_recording() {
     kill "$pid" 2>/dev/null || true
     rm -f "$pid_file"
 
+    # Kill watchdog timer if running
+    local watchdog_file="$session_dir/watchdog.pid"
+    if [ -f "$watchdog_file" ]; then
+        kill "$(cat "$watchdog_file")" 2>/dev/null || true
+        rm -f "$watchdog_file"
+    fi
+
     # Remove current link (no longer recording)
     rm -f "$CURRENT_LINK"
 
@@ -218,6 +238,11 @@ cancel_recording() {
             local pid
             pid=$(cat "$pid_file")
             kill "$pid" 2>/dev/null || true
+        fi
+
+        # Kill watchdog timer if running
+        if [ -f "$session_dir/watchdog.pid" ]; then
+            kill "$(cat "$session_dir/watchdog.pid")" 2>/dev/null || true
         fi
 
         # Clean up session
@@ -273,6 +298,16 @@ case "${1:-toggle}" in
         ;;
     stop)
         stop_recording
+        ;;
+    sync)
+        # Resync polybar indicator with actual state (e.g., after polybar restart)
+        if is_recording; then
+            polybar_update recording
+        elif [ "$(count_active_transcriptions)" -gt 0 ]; then
+            polybar_update transcribing
+        else
+            polybar_update idle
+        fi
         ;;
     toggle|*)
         if is_recording; then

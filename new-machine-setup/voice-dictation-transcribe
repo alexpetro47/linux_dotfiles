@@ -35,6 +35,12 @@ get_groq_api_key() {
         fi
     fi
 
+    # Ensure BWS_ACCESS_TOKEN is set (not available in i3 keybind context)
+    if [[ -z "$BWS_ACCESS_TOKEN" ]]; then
+        BWS_ACCESS_TOKEN=$(secret-tool lookup service bws account default 2>/dev/null)
+        export BWS_ACCESS_TOKEN
+    fi
+
     # Fetch from bws and cache
     local key
     key=$(bws secret list 2>/dev/null | jq -r '.[] | select(.key == "GROQ_API_KEY") | .value' 2>/dev/null)
@@ -157,6 +163,9 @@ cleanup() {
     # Update polybar state
     update_polybar_state
 }
+
+# Ensure cleanup runs on any exit (including set -e failures)
+trap cleanup EXIT
 
 # -----------------------------------------------------------------------------
 # Main

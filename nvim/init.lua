@@ -150,6 +150,7 @@ vim.keymap.set('n', '<leader>h', ':cd %:p:h<CR>:pwd<CR>', {desc = 'cd here'})
 
 vim.keymap.set('v', 'L', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>p', ':let @+ = "@" . expand("%:p") . " " <CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
+vim.keymap.set('v', '<leader>p', '<Esc>:let @+ = "@" . expand("%:p") . ":" . line("\'<") . "-" . line("\'>")<CR>', { noremap = true, silent = true, desc = 'get absolute path with line range'})
 vim.keymap.set('n', '<leader>P', ':let @+ = expand("%:p")<CR>', { noremap = true, silent = true, desc = 'get absolute path to current file'})
 vim.keymap.set('n', '<leader>E', ':! xdg-open %:p:h &<CR>', {desc = 'open current buffer directory in file manager'})
 
@@ -161,7 +162,7 @@ vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 -- sets text wrapping in markdown files
 vim.cmd([[
 " autocmd FileType markdown setlocal textwidth=100
-" autocmd FileType markdown setlocal textwidth=60
+autocmd FileType markdown setlocal textwidth=59
 ]])
 
 
