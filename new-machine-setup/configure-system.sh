@@ -49,6 +49,10 @@ log "Enabling system services..."
 sudo systemctl enable NetworkManager 2>/dev/null || log "WARN: NetworkManager enable failed"
 sudo systemctl enable docker 2>/dev/null || log "WARN: docker enable failed"
 
+# Disable GNOME Remote Desktop - ships enabled by default on Ubuntu, not needed
+systemctl --user disable --now gnome-remote-desktop.service 2>/dev/null || true
+log "GNOME Remote Desktop disabled"
+
 # TLP power management - optimized for unplugged laptop use
 if command -v tlp &>/dev/null; then
     log "Enabling TLP power management..."

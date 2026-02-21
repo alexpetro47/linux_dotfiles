@@ -483,7 +483,7 @@ fi
 # =============================================================================
 if ! installed docker; then
     log "Installing Docker..."
-    sudo apt install -y docker.io docker-compose
+    sudo apt install -y docker.io docker-compose-v2
     sudo usermod -aG docker "$USER"
 else
     log "Docker already installed"
@@ -497,6 +497,16 @@ if ! installed ttyd; then
     sudo snap install ttyd --classic
 else
     log "ttyd already installed"
+fi
+
+# =============================================================================
+# OBSIDIAN (snap)
+# =============================================================================
+if ! installed obsidian; then
+    log "Installing Obsidian via snap..."
+    sudo snap install obsidian --classic
+else
+    log "Obsidian already installed"
 fi
 
 # =============================================================================
