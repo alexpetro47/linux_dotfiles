@@ -8,8 +8,7 @@
 # It transcribes the audio and pastes the result to the target tmux pane.
 #
 
-set -e
-
+# NOTE: no set -e — we handle errors explicitly so the user always gets notified
 SESSION_DIR="$1"
 MODEL="${WHISPER_MODEL:-whisper-large-v3-turbo}"
 STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/voice-dictation"
@@ -164,25 +163,35 @@ cleanup() {
     update_polybar_state
 }
 
-# Ensure cleanup runs on any exit (including set -e failures)
-trap cleanup EXIT
+fail() {
+    local msg="$1"
+    echo "FAIL: $msg" >&2
+    notify "Transcription failed: $msg" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    cleanup
+    exit 1
+}
+
+# Ensure cleanup + notification on any unexpected death
+trap 'fail "worker crashed unexpectedly"' EXIT
 
 # -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
 
+echo "Worker started: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Session: $SESSION_DIR"
+
 if [ -z "$SESSION_DIR" ] || [ ! -d "$SESSION_DIR" ]; then
-    notify "Transcription failed: invalid session" "$NOTIFY_ID_TRANSCRIBE" "critical"
-    exit 1
+    fail "invalid session"
 fi
 
 AUDIO_FILE="$SESSION_DIR/recording.wav"
 
 if [ ! -f "$AUDIO_FILE" ] || [ ! -s "$AUDIO_FILE" ]; then
-    notify "Transcription failed: no audio" "$NOTIFY_ID_TRANSCRIBE" "critical"
-    cleanup
-    exit 1
+    fail "no audio file"
 fi
+
+echo "Audio: $(du -h "$AUDIO_FILE" | cut -f1), $(soxi -d "$AUDIO_FILE" 2>/dev/null || echo 'unknown duration')"
 
 # Read target info
 TARGET_PANE=""
@@ -193,17 +202,18 @@ fi
 if [ -f "$SESSION_DIR/target.x11" ]; then
     TARGET_X11=$(cat "$SESSION_DIR/target.x11")
 fi
+echo "Target: pane=$TARGET_PANE x11=$TARGET_X11"
 
 # Get Groq API key from bws
-GROQ_API_KEY=$(get_groq_api_key)
+GROQ_API_KEY=$(get_groq_api_key) || true
 if [[ -z "$GROQ_API_KEY" ]]; then
-    notify "Error: GROQ_API_KEY not found in bws" "$NOTIFY_ID_TRANSCRIBE" "critical"
-    cleanup
-    exit 1
+    fail "GROQ_API_KEY not found in bws"
 fi
+echo "API key: ok (${#GROQ_API_KEY} chars)"
 
-# Transcribe with Groq Whisper API (164x real-time speed)
-RESPONSE=$(curl -s -X POST "https://api.groq.com/openai/v1/audio/transcriptions" \
+# Transcribe with Groq Whisper API
+echo "Calling Groq API (model=$MODEL)..."
+RESPONSE=$(curl -s --max-time 120 -X POST "https://api.groq.com/openai/v1/audio/transcriptions" \
     -H "Authorization: Bearer $GROQ_API_KEY" \
     -H "Content-Type: multipart/form-data" \
     -F "model=$MODEL" \
@@ -211,26 +221,39 @@ RESPONSE=$(curl -s -X POST "https://api.groq.com/openai/v1/audio/transcriptions"
     -F "response_format=json" \
     -F "language=en" \
     2>/dev/null)
+CURL_EXIT=$?
+
+if [[ $CURL_EXIT -ne 0 ]]; then
+    fail "curl failed (exit $CURL_EXIT) - network error or timeout"
+fi
+
+echo "API response: ${#RESPONSE} bytes"
 
 # Extract text from response
 TEXT=$(echo "$RESPONSE" | jq -r '.text // empty' 2>/dev/null)
 
 # Check for API errors
 if [[ -z "$TEXT" ]]; then
-    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // "Unknown error"' 2>/dev/null)
-    notify "Transcription failed: $ERROR" "$NOTIFY_ID_TRANSCRIBE" "critical"
-    cleanup
-    exit 1
+    ERROR=$(echo "$RESPONSE" | jq -r '.error.message // empty' 2>/dev/null)
+    if [[ -z "$ERROR" ]]; then
+        ERROR="empty response (raw: ${RESPONSE:0:200})"
+    fi
+    fail "$ERROR"
 fi
 
 # Clean up whitespace
 TEXT=$(echo "$TEXT" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
 
 if [ -z "$TEXT" ]; then
+    echo "No speech detected in audio"
     notify "No speech detected" "$NOTIFY_ID_TRANSCRIBE" "low"
+    # Disable the crash trap — this is a clean exit
+    trap - EXIT
     cleanup
     exit 0
 fi
+
+echo "Transcribed: ${#TEXT} chars"
 
 # Always copy to clipboard as backup
 printf '%s' "$TEXT" | xclip -selection clipboard 2>/dev/null || true
@@ -241,6 +264,7 @@ DELIVERED=false
 # 1. Try tmux pane (if available)
 if [ -n "$TARGET_PANE" ] && pane_exists "$TARGET_PANE"; then
     if paste_to_pane "$TARGET_PANE" "$TEXT"; then
+        echo "Delivered to tmux pane $TARGET_PANE"
         notify "Transcribed: ${TEXT:0:50}..." "$NOTIFY_ID_TRANSCRIBE"
         DELIVERED=true
     fi
@@ -249,6 +273,7 @@ fi
 # 2. Fall back to X11 window
 if [ "$DELIVERED" = false ] && [ -n "$TARGET_X11" ] && x11_window_exists "$TARGET_X11"; then
     if type_to_x11_window "$TARGET_X11" "$TEXT"; then
+        echo "Delivered to X11 window $TARGET_X11"
         notify "Transcribed: ${TEXT:0:50}..." "$NOTIFY_ID_TRANSCRIBE"
         DELIVERED=true
     fi
@@ -256,6 +281,7 @@ fi
 
 # 3. Clipboard fallback with appropriate message
 if [ "$DELIVERED" = false ]; then
+    echo "Clipboard fallback (pane/window unavailable)"
     if [ -n "$TARGET_PANE" ] || [ -n "$TARGET_X11" ]; then
         notify "Window closed - copied to clipboard: ${TEXT:0:40}..." "$NOTIFY_ID_TRANSCRIBE"
     else
@@ -263,4 +289,8 @@ if [ "$DELIVERED" = false ]; then
     fi
 fi
 
+echo "Done: $(date '+%Y-%m-%d %H:%M:%S')"
+
+# Disable the crash trap — we completed successfully
+trap - EXIT
 cleanup
