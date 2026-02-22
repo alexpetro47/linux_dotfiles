@@ -129,9 +129,8 @@ paste_to_pane() {
     # Exit copy mode if active
     exit_copy_mode "$pane_id"
 
-    # Paste from buffer and press Enter
+    # Paste from buffer (no auto-enter — let user review before submitting)
     tmux paste-buffer -t "$pane_id" 2>/dev/null
-    tmux send-keys -t "$pane_id" Enter 2>/dev/null
 }
 
 x11_window_exists() {
@@ -151,7 +150,6 @@ type_to_x11_window() {
     xdotool windowactivate --sync "$window_id" 2>/dev/null || return 1
     sleep 0.1
     xdotool type --delay 10 -- "$text" 2>/dev/null
-    xdotool key Return 2>/dev/null
 
     # Restore focus to original window
     if [ -n "$current_window" ] && [ "$current_window" != "$window_id" ]; then
