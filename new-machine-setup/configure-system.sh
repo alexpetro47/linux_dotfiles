@@ -89,6 +89,31 @@ if command -v tlp &>/dev/null; then
 fi
 
 # =============================================================================
+# BLUETOOTH (AirPods Pro compatibility)
+# =============================================================================
+if [ -f /etc/bluetooth/main.conf ]; then
+    log "Configuring Bluetooth for AirPods Pro..."
+
+    # ControllerMode=bredr forces Classic Bluetooth for initial pairing.
+    # AirPods advertise over BLE ("Find My") which can't carry A2DP audio.
+    # After pairing, can optionally switch back to dual.
+    if ! grep -q "^ControllerMode = bredr" /etc/bluetooth/main.conf; then
+        sudo sed -i 's/^#\?ControllerMode.*/ControllerMode = bredr/' /etc/bluetooth/main.conf
+        log "Set ControllerMode=bredr (required for AirPods audio)"
+    fi
+
+    # FastConnectable reduces reconnection time (trades power for speed)
+    if ! grep -q "^FastConnectable = true" /etc/bluetooth/main.conf; then
+        sudo sed -i 's/^#\?FastConnectable.*/FastConnectable = true/' /etc/bluetooth/main.conf
+        log "Enabled FastConnectable"
+    fi
+
+    sudo systemctl daemon-reload
+    sudo systemctl restart bluetooth 2>/dev/null || true
+    log "Bluetooth configured and restarted"
+fi
+
+# =============================================================================
 # DEFAULT APPLICATIONS
 # =============================================================================
 log "Setting default applications..."

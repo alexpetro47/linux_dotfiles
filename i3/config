@@ -123,8 +123,8 @@ bindsym $mod+s exec --no-startup-id brave-browser --new-window "https://google.c
 # bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
 # bindsym $mod+a exec --no-startup-id systemd-run --user --scope --property=CPUQuota=300% --property=MemoryMax=4G alacritty
 bindsym $mod+k exec --no-startup-id ~/.local/bin/kitty
-bindsym $mod+a exec --no-startup-id kitty -e ralph dashboard
-bindsym $mod+Shift+w exec --no-startup-id "cd ~/Documents/carl/webapp && bun dev & sleep 1 && brave-browser --app=http://localhost:5173"
+bindsym $mod+a exec --no-startup-id ~/.local/bin/airpods-toggle
+# bindsym $mod+Shift+w exec --no-startup-id "cd ~/Documents/carl/webapp && bun dev & sleep 1 && brave-browser --app=http://localhost:5173"
 
 exec --no-startup-id ~/.xsessionrc
 # exec --no-startup-id xcompmgr -C

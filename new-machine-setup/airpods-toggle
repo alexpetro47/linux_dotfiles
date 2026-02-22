@@ -1,0 +1,257 @@
+#!/bin/bash
+# airpods-toggle - Pair/connect/disconnect Apple AirPods via Bluetooth
+#
+# First run:  Scans for AirPods, pairs, trusts, connects, saves MAC
+# Subsequent: Toggles connect/disconnect
+#
+# Usage: airpods-toggle [pair|connect|disconnect|forget|status]
+#   (no args) = toggle connect/disconnect (or pair if no saved MAC)
+#   pair      = force re-pairing (scan + pair + trust + connect)
+#   connect   = force connect
+#   disconnect = force disconnect
+#   forget    = remove pairing and saved MAC
+#   status    = show current connection status
+
+MAC_FILE="$HOME/.config/bluetooth/airpods-mac"
+LOCK_FILE="/tmp/airpods-toggle.lock"
+
+notify() {
+    notify-send -u low -i bluetooth "AirPods" "$1" 2>/dev/null
+}
+
+notify_err() {
+    notify-send -u critical -i bluetooth "AirPods" "$1" 2>/dev/null
+}
+
+die() {
+    notify_err "$1"
+    echo "ERROR: $1" >&2
+    rm -f "$LOCK_FILE"
+    exit 1
+}
+
+# Prevent concurrent runs (bluetoothctl doesn't handle this well)
+if [ -f "$LOCK_FILE" ]; then
+    pid=$(cat "$LOCK_FILE" 2>/dev/null)
+    if kill -0 "$pid" 2>/dev/null; then
+        notify "Already running, please wait..."
+        exit 0
+    fi
+    rm -f "$LOCK_FILE"
+fi
+echo $$ > "$LOCK_FILE"
+trap 'rm -f "$LOCK_FILE"' EXIT
+
+# Ensure adapter is powered and pairable
+ensure_adapter() {
+    bluetoothctl power on &>/dev/null
+    bluetoothctl pairable on &>/dev/null
+}
+
+get_mac() {
+    if [ -f "$MAC_FILE" ]; then
+        cat "$MAC_FILE"
+    fi
+}
+
+save_mac() {
+    mkdir -p "$(dirname "$MAC_FILE")"
+    echo "$1" > "$MAC_FILE"
+}
+
+is_connected() {
+    local mac="$1"
+    bluetoothctl info "$mac" 2>/dev/null | grep -q "Connected: yes"
+}
+
+is_paired() {
+    local mac="$1"
+    bluetoothctl info "$mac" 2>/dev/null | grep -q "Paired: yes"
+}
+
+is_trusted() {
+    local mac="$1"
+    bluetoothctl info "$mac" 2>/dev/null | grep -q "Trusted: yes"
+}
+
+activate_a2dp() {
+    local mac="$1"
+    local card
+    card="bluez_card.${mac//:/_}"
+
+    # Wait for PipeWire to register the card
+    for _ in 1 2 3 4 5; do
+        if pactl list cards short 2>/dev/null | grep -q "$card"; then
+            break
+        fi
+        sleep 1
+    done
+
+    # Force A2DP sink profile (prevents "off" state)
+    pactl set-card-profile "$card" a2dp-sink 2>/dev/null
+
+    # Set as default audio sink
+    local sink
+    sink="bluez_output.${mac//:/_}.1"
+    pactl set-default-sink "$sink" 2>/dev/null
+}
+
+do_connect() {
+    local mac="$1"
+    ensure_adapter
+
+    if is_connected "$mac"; then
+        # Even if "connected", ensure audio profile is active
+        activate_a2dp "$mac"
+        notify "Already connected"
+        return 0
+    fi
+
+    # Ensure device is trusted (auto-accept connections)
+    if ! is_trusted "$mac"; then
+        bluetoothctl trust "$mac" &>/dev/null
+    fi
+
+    notify "Connecting..."
+
+    # Retry connection up to 3 times (AirPods can be slow to wake)
+    for _ in 1 2 3; do
+        if bluetoothctl connect "$mac" 2>/dev/null | grep -q "Connection successful"; then
+            # Give PipeWire time to see the device, then activate A2DP
+            sleep 2
+            activate_a2dp "$mac"
+            notify "Connected"
+            return 0
+        fi
+        sleep 2
+    done
+
+    notify_err "Connection failed — open AirPods case lid and retry"
+    return 1
+}
+
+do_disconnect() {
+    local mac="$1"
+    if ! is_connected "$mac"; then
+        notify "Already disconnected"
+        return 0
+    fi
+    bluetoothctl disconnect "$mac" &>/dev/null
+    notify "Disconnected"
+}
+
+do_pair() {
+    ensure_adapter
+    notify "Scanning for AirPods... (hold case button until white flash)"
+
+    # Start scanning
+    bluetoothctl --timeout 15 scan on &>/dev/null &
+    local scan_pid=$!
+
+    # Wait and collect AirPods-like devices
+    sleep 8
+
+    # Find devices with "AirPods" in the name
+    local devices
+    devices=$(bluetoothctl devices 2>/dev/null | grep -i "airpod")
+
+    kill "$scan_pid" 2>/dev/null
+    wait "$scan_pid" 2>/dev/null
+    bluetoothctl scan off &>/dev/null
+
+    if [ -z "$devices" ]; then
+        die "No AirPods found. Make sure:\n1. AirPods are in case\n2. Case lid is open\n3. Hold button until light flashes white"
+    fi
+
+    # If multiple, take the first match
+    local mac name
+    mac=$(echo "$devices" | head -1 | awk '{print $2}')
+    name=$(echo "$devices" | head -1 | cut -d' ' -f3-)
+
+    notify "Found: $name ($mac) — pairing..."
+
+    # Pair
+    if ! bluetoothctl pair "$mac" 2>/dev/null | grep -q "Pairing successful"; then
+        # Sometimes pairing reports failure but actually succeeds
+        sleep 2
+        if ! is_paired "$mac"; then
+            die "Pairing failed for $name"
+        fi
+    fi
+
+    # Trust (enables auto-reconnect)
+    bluetoothctl trust "$mac" &>/dev/null
+
+    # Save MAC for future toggles
+    save_mac "$mac"
+
+    # Connect
+    sleep 1
+    if do_connect "$mac"; then
+        notify "Paired and connected: $name"
+    fi
+}
+
+do_forget() {
+    local mac
+    mac=$(get_mac)
+    if [ -z "$mac" ]; then
+        notify "No AirPods saved"
+        return 0
+    fi
+    bluetoothctl untrust "$mac" &>/dev/null
+    bluetoothctl remove "$mac" &>/dev/null
+    rm -f "$MAC_FILE"
+    notify "Removed AirPods pairing"
+}
+
+do_status() {
+    local mac
+    mac=$(get_mac)
+    if [ -z "$mac" ]; then
+        echo "No AirPods configured (run: airpods-toggle pair)"
+        return
+    fi
+    echo "MAC: $mac"
+    bluetoothctl info "$mac" 2>/dev/null | grep -E "Name|Connected|Paired|Trusted|Battery"
+}
+
+# --- Main ---
+
+case "${1:-}" in
+    pair)
+        do_pair
+        ;;
+    connect)
+        mac=$(get_mac) || die "No AirPods saved — run: airpods-toggle pair"
+        [ -n "$mac" ] || die "No AirPods saved — run: airpods-toggle pair"
+        do_connect "$mac"
+        ;;
+    disconnect)
+        mac=$(get_mac) || die "No AirPods saved"
+        [ -n "$mac" ] || die "No AirPods saved"
+        do_disconnect "$mac"
+        ;;
+    forget)
+        do_forget
+        ;;
+    status)
+        do_status
+        ;;
+    "")
+        # Toggle mode
+        mac=$(get_mac)
+        if [ -z "$mac" ]; then
+            # First time — run pairing flow
+            do_pair
+        elif is_connected "$mac"; then
+            do_disconnect "$mac"
+        else
+            do_connect "$mac"
+        fi
+        ;;
+    *)
+        echo "Usage: airpods-toggle [pair|connect|disconnect|forget|status]"
+        exit 1
+        ;;
+esac

@@ -148,7 +148,7 @@ start_recording() {
     echo "recording" > "$session_dir/status"
 
     # Start recording in background (16kHz mono - optimal for Whisper)
-    rec -q -c 1 -r 16000 -b 16 "$session_dir/recording.wav" &
+    PULSE_PROP="media.role=Communication" rec -q -c 1 -r 16000 -b 16 "$session_dir/recording.wav" &
     local rec_pid=$!
     echo "$rec_pid" > "$session_dir/recording.pid"
 
