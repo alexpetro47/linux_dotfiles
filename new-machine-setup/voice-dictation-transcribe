@@ -17,6 +17,10 @@ SESSIONS_DIR="$STATE_DIR/sessions"
 # Notification IDs
 NOTIFY_ID_TRANSCRIBE=91002
 
+# Persistent transcript log (survives crashes and cleanup)
+TRANSCRIPT_DIR="${HOME}/.local/share/voice-dictation"
+mkdir -p "$TRANSCRIPT_DIR"
+
 # -----------------------------------------------------------------------------
 # Utilities
 # -----------------------------------------------------------------------------
@@ -166,7 +170,20 @@ cleanup() {
 fail() {
     local msg="$1"
     echo "FAIL: $msg" >&2
-    notify "Transcription failed: $msg" "$NOTIFY_ID_TRANSCRIBE" "critical"
+
+    # Preserve audio to recovery dir instead of deleting
+    if [ -d "$SESSION_DIR" ] && [ -f "$SESSION_DIR/recording.wav" ]; then
+        local ts
+        ts=$(date '+%Y%m%d-%H%M%S')
+        local recovery_dir="$TRANSCRIPT_DIR/recovery"
+        mkdir -p "$recovery_dir"
+        cp "$SESSION_DIR/recording.wav" "$recovery_dir/${ts}.wav"
+        cp "$SESSION_DIR/worker.log" "$recovery_dir/${ts}.log" 2>/dev/null || true
+        notify "Transcription failed: $msg — audio saved to ~/${recovery_dir#"$HOME"/}" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    else
+        notify "Transcription failed: $msg" "$NOTIFY_ID_TRANSCRIBE" "critical"
+    fi
+
     cleanup
     exit 1
 }
@@ -213,7 +230,7 @@ echo "API key: ok (${#GROQ_API_KEY} chars)"
 
 # Transcribe with Groq Whisper API
 echo "Calling Groq API (model=$MODEL)..."
-RESPONSE=$(curl -s --max-time 120 -X POST "https://api.groq.com/openai/v1/audio/transcriptions" \
+RESPONSE=$(curl -s --max-time 600 -X POST "https://api.groq.com/openai/v1/audio/transcriptions" \
     -H "Authorization: Bearer $GROQ_API_KEY" \
     -H "Content-Type: multipart/form-data" \
     -F "model=$MODEL" \
@@ -254,6 +271,11 @@ if [ -z "$TEXT" ]; then
 fi
 
 echo "Transcribed: ${#TEXT} chars"
+
+# Save transcript to persistent file (survives crashes, reboots, clipboard overwrites)
+TRANSCRIPT_FILE="$TRANSCRIPT_DIR/$(date '+%Y%m%d-%H%M%S').txt"
+printf '%s\n' "$TEXT" > "$TRANSCRIPT_FILE"
+echo "Saved: $TRANSCRIPT_FILE"
 
 # Always copy to clipboard as backup
 printf '%s' "$TEXT" | xclip -selection clipboard 2>/dev/null || true
