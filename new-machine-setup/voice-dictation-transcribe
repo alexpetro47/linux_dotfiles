@@ -146,10 +146,11 @@ type_to_x11_window() {
     local current_window
     current_window=$(xdotool getactivewindow 2>/dev/null || echo "")
 
-    # Focus target window and type
+    # Copy to clipboard and paste all at once (instead of slow xdotool type)
+    printf '%s' "$text" | xclip -selection clipboard 2>/dev/null || return 1
     xdotool windowactivate --sync "$window_id" 2>/dev/null || return 1
     sleep 0.1
-    xdotool type --delay 10 -- "$text" 2>/dev/null
+    xdotool key --delay 50 ctrl+v 2>/dev/null
 
     # Restore focus to original window
     if [ -n "$current_window" ] && [ "$current_window" != "$window_id" ]; then
