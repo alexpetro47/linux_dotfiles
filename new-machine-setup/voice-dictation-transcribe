@@ -208,6 +208,12 @@ if [ ! -f "$AUDIO_FILE" ] || [ ! -s "$AUDIO_FILE" ]; then
     fail "no audio file"
 fi
 
+# Re-encode WAV to fix headers (rec leaves corrupt headers when killed mid-write)
+FIXED_FILE="$SESSION_DIR/recording-fixed.wav"
+if ffmpeg -y -i "$AUDIO_FILE" -c:a pcm_s16le -ar 16000 -ac 1 "$FIXED_FILE" 2>/dev/null; then
+    mv "$FIXED_FILE" "$AUDIO_FILE"
+fi
+
 echo "Audio: $(du -h "$AUDIO_FILE" | cut -f1), $(soxi -d "$AUDIO_FILE" 2>/dev/null || echo 'unknown duration')"
 
 # Read target info
