@@ -235,5 +235,14 @@ nsxiv/*
 nsxiv/exec/*
 !nsxiv/exec/key-handler
 
+!wireplumber/
+wireplumber/*
+!wireplumber/bluetooth.lua.d/
+wireplumber/bluetooth.lua.d/*
+!wireplumber/bluetooth.lua.d/50-bluez-config.lua
+!wireplumber/policy.lua.d/
+wireplumber/policy.lua.d/*
+!wireplumber/policy.lua.d/11-bluetooth-autoswitch.lua
+
 !.docs/
 !.docs/**
