@@ -90,8 +90,9 @@ bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
 bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
+bindsym $mod+shift+g exec --no-startup-id brave-browser --app=https://gemini.com
 bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
-bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
+# bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
 bindsym $mod+b exec --no-startup-id brave-browser
 bindsym $mod+shift+t exec --no-startup-id google-chrome --app=https://teams.microsoft.com
 bindsym $mod+o exec --no-startup-id /snap/bin/obsidian
