@@ -196,10 +196,17 @@ stop_recording() {
         return 1
     fi
 
-    # Stop recording
+    # Brief delay before stopping — lets PulseAudio drain its buffer into sox
+    # so the last fraction of a second of speech isn't clipped
+    sleep 0.4
+
+    # Stop recording (SIGINT lets sox flush its audio buffer and finalize WAV)
     local pid
     pid=$(cat "$pid_file")
-    kill "$pid" 2>/dev/null || true
+    kill -INT "$pid" 2>/dev/null || true
+
+    # Wait for sox to finalize the WAV file
+    wait "$pid" 2>/dev/null || true
     rm -f "$pid_file"
 
     # Kill watchdog timer if running
@@ -211,9 +218,6 @@ stop_recording() {
 
     # Remove current link (no longer recording)
     rm -f "$CURRENT_LINK"
-
-    # Wait for audio file to be written
-    sleep 0.3
 
     local audio_file="$session_dir/recording.wav"
     if [ ! -f "$audio_file" ] || [ ! -s "$audio_file" ]; then
