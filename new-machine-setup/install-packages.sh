@@ -67,6 +67,7 @@ sudo apt install -y \
     ffmpeg \
     flatpak \
     libsecret-tools \
+    libheif-examples \
 
 # =============================================================================
 # BROWSERS

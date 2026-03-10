@@ -180,6 +180,8 @@ new-machine-setup/*
 !new-machine-setup/lid-suspend-toggle
 !new-machine-setup/lid-suspend-sync
 !new-machine-setup/airpods-toggle
+!new-machine-setup/screenshot
+!new-machine-setup/bliss.png
 !new-machine-setup/additional-installs.md
 !new-machine-setup/clone-repos.sh
 !new-machine-setup/clone-repos.txt

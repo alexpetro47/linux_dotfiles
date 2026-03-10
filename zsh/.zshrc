@@ -106,6 +106,7 @@ alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/
 
 # mini pc (UM890PRO) - via Tailscale
 alias pc="ssh alexpetro@alexpetro-um890pro"
+alias pcc="ssh carlbot@alexpetro-um890pro"
 alias pcsync="rsync -avhP --compress --partial"  # usage: pcsync file.txt alexpetro@alexpetro-um890pro:~/
 
 # alias sd="cd ~ && cd \$(find * -type d | fzf)"

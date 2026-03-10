@@ -228,12 +228,15 @@ vim.keymap.set('n', '<leader>F', function()
      { 'sh', '-c', 'ls -1t ~/Downloads | head -10' },
      {}
    ),
-   sorter = require('telescope.config').values.file_sorter({}),
+   sorter = require('telescope.sorters').empty(),
    previewer = require('telescope.config').values.file_previewer({}),
    initial_mode = "normal",
    attach_mappings = function(_, map)
      map('n', '<tab><tab>', function() end)
-     map('n', '<tab>', require('telescope.actions').toggle_selection)
+     map('n', '<tab>', function(bufnr)
+       require('telescope.actions').toggle_selection(bufnr)
+       require('telescope.actions').move_selection_previous(bufnr)
+     end)
      map('n', '<cr>', function(bufnr)
        local actions = require('telescope.actions')
        local picker = require('telescope.actions.state').get_current_picker(bufnr)

@@ -127,6 +127,11 @@ if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" "$HOME/.local/bin/voice-dictation-transcribe"
 fi
 
+# Screenshot (picom off → flameshot → picom on)
+if [ -f "$CONFIG_DIR/new-machine-setup/screenshot" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/screenshot" "$HOME/.local/bin/screenshot"
+fi
+
 # AirPods Bluetooth toggle
 if [ -f "$CONFIG_DIR/new-machine-setup/airpods-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/airpods-toggle" "$HOME/.local/bin/airpods-toggle"

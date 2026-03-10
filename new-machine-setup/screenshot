@@ -1,0 +1,9 @@
+#!/bin/bash
+# Kill picom so screenshots are fully opaque
+pkill picom 2>/dev/null
+
+# Take screenshot (blocks until flameshot closes)
+flameshot gui
+
+# Restart picom
+picom --daemon 2>/dev/null

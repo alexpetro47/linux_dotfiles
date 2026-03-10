@@ -264,8 +264,13 @@ ultralytics - YOLO object detection
 ffmpeg - required for audio/video processing
 `sudo apt install ffmpeg`
 
-ImageMagick - image processing
-`sudo apt install imagemagick`
+ImageMagick 7 (magick CLI) - image processing with modern CLI
+```
+# ImageMagick 6 (convert) comes from apt: sudo apt install imagemagick
+# ImageMagick 7 (magick) needs AppImage for latest CLI:
+curl -fLo ~/.local/bin/magick https://imagemagick.org/archive/binaries/magick
+chmod +x ~/.local/bin/magick
+```
 
 tesseract OCR - text extraction with bounding boxes (for img-text-regions)
 `sudo apt install tesseract-ocr tesseract-ocr-eng`
