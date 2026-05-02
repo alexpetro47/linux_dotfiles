@@ -109,6 +109,21 @@ Only `41641/udp` (Tailscale) should remain.
 
 Emergency fallback if you ever lose Tailscale access: DigitalOcean's web console (Droplet → Access → Launch Console).
 
+## 7. Lock down DNS
+
+By default the laptop still uses the local wifi's DNS resolver, so the network operator can see which hostnames you look up (content stays HTTPS-encrypted, but the metadata leaks). Push DNS through the tunnel:
+
+- https://login.tailscale.com/admin/dns
+- **Nameservers** → Add `1.1.1.1` (or `9.9.9.9`)
+- Enable **Override local DNS**
+
+Verify on the laptop — answers should come `via tailscale0`:
+```bash
+resolvectl query example.com
+```
+
+If it says `via wlan0` (or your wifi link name), DNS is leaking. Check `resolvectl status` — the `tailscale0` link should have `DNS Domain: ~.` (the `~.` is the catch-all marker that makes it handle all queries).
+
 ## Re-provisioning
 
 If the droplet dies or you migrate hosts: destroy it, create a fresh one (step 1), re-run step 2. If the new droplet's hostname matches an existing Tailscale node, delete the old one from the admin console first, or let `tailscale up` claim the name.
