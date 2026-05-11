@@ -105,7 +105,7 @@ bindsym $mod+shift+o exec --no-startup-id brave-browser --app=https://alexpetro-
 # bindsym $mod+Shift+b exec --no-startup-id polybar-msg cmd toggle
 
 # Theme toggle (gruvbox dark/light)
-# bindsym $mod+Shift+t exec --no-startup-id ~/.local/bin/toggle-theme
+# bindsym $mod+ctrl+t exec --no-startup-id ~/.local/bin/toggle-theme
 
 # Focus mode (disable notifications)
 bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
@@ -115,6 +115,9 @@ bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 
 # Lid suspend toggle (keep laptop awake when closed)
 bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
+
+# VPN toggle (Tailscale exit node - DigitalOcean droplet)
+bindsym $mod+i exec --no-startup-id ~/.local/bin/vpn-toggle
 
 # Voice dictation (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
@@ -132,6 +135,7 @@ exec --no-startup-id ~/.xsessionrc
 exec --no-startup-id feh --bg-scale ~/.config/new-machine-setup/bliss.png
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 exec_always --no-startup-id "sleep 1 && ~/.local/bin/lid-suspend-sync"
+exec_always --no-startup-id "sleep 1 && ~/.local/bin/vpn-sync"
 exec_always --no-startup-id "sleep 3 && xset r rate 250 40"
 exec_always --no-startup-id setxkbmap -option ctrl:nocaps -layout us
 

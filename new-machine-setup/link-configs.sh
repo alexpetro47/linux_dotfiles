@@ -98,6 +98,14 @@ if [ -f "$CONFIG_DIR/new-machine-setup/lid-suspend-sync" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/lid-suspend-sync" "$HOME/.local/bin/lid-suspend-sync"
 fi
 
+# VPN toggle and sync (Tailscale exit node)
+if [ -f "$CONFIG_DIR/new-machine-setup/vpn-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/vpn-toggle" "$HOME/.local/bin/vpn-toggle"
+fi
+if [ -f "$CONFIG_DIR/new-machine-setup/vpn-sync" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/vpn-sync" "$HOME/.local/bin/vpn-sync"
+fi
+
 # Backup scripts
 if [ -f "$CONFIG_DIR/scripts/backup" ]; then
     _link_config "$CONFIG_DIR/scripts/backup" "$HOME/.local/bin/backup"

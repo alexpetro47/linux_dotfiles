@@ -22,6 +22,15 @@ DigitalOcean: https://cloud.digitalocean.com
   - Hostname: leave as the default DO name (e.g. `ubuntu-s-1vcpu-512mb-10gb-sfo2`) or set your own — Tailscale will use whatever the OS hostname is at first `tailscale up`
 - Note the public IPv4.
 
+## 1a. (Optional) Reserve a stable IP
+
+A droplet's assigned IPv4 is static for the life of that droplet, but disappears when you destroy it. A Reserved IP is owned by your account and re-attachable to any droplet in the same region.
+
+- DO control panel → **Networking → Reserved IPs → Assign Reserved IP** → select the droplet.
+- Use **that** IP everywhere downstream (firewall rules, the `curl ifconfig.me` check in step 5, etc.) instead of the original droplet IP.
+- Free while attached to a running droplet; ~$4/mo if left unattached. Region-locked — pick the region you want long-term before reserving.
+- On re-provisioning: detach from the dead droplet, attach to the new one. Whitelists stay valid.
+
 ## 2. Bootstrap the droplet
 
 From your laptop:
@@ -92,6 +101,16 @@ Toggle off:
 ```bash
 sudo tailscale set --exit-node=
 ```
+
+### Hotkey toggle (Alt+i)
+
+To make the i3 binding `$mod+i` (which calls `~/.local/bin/vpn-toggle`) work without a sudo password prompt, grant your user operator rights on the Tailscale daemon — one-time setup per machine:
+
+```bash
+sudo tailscale set --operator=$USER
+```
+
+After this, `tailscale set --exit-node=...` works without sudo. The polybar `vpn` module shows a red 󰖂 when the exit node is **off** (you're exposed on the local IP) and is hidden when routing through the droplet.
 
 ## 6. Close public SSH
 
