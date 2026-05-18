@@ -1,0 +1,10 @@
+#!/bin/bash
+# picom-toggle - Start or kill the picom compositor
+
+if pgrep -x picom >/dev/null; then
+    pkill -x picom
+    notify-send -u low "Picom" "Compositor OFF"
+else
+    picom --daemon
+    notify-send -u low "Picom" "Compositor ON"
+fi

@@ -145,6 +145,11 @@ if [ -f "$CONFIG_DIR/new-machine-setup/airpods-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/airpods-toggle" "$HOME/.local/bin/airpods-toggle"
 fi
 
+# Picom compositor toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/picom-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/picom-toggle" "$HOME/.local/bin/picom-toggle"
+fi
+
 # Ralf (ClawdBot CLI wrapper)
 if [ -f "$CONFIG_DIR/new-machine-setup/ralf" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/ralf" "$HOME/.local/bin/ralf"

@@ -119,6 +119,9 @@ bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
 # VPN toggle (Tailscale exit node - DigitalOcean droplet)
 bindsym $mod+i exec --no-startup-id ~/.local/bin/vpn-toggle
 
+# Picom compositor toggle
+bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/picom-toggle
+
 # Voice dictation (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
 bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel

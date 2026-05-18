@@ -182,6 +182,7 @@ new-machine-setup/*
 !new-machine-setup/vpn-toggle
 !new-machine-setup/vpn-sync
 !new-machine-setup/airpods-toggle
+!new-machine-setup/picom-toggle
 !new-machine-setup/screenshot
 !new-machine-setup/bliss.png
 !new-machine-setup/additional-installs.md

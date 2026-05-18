@@ -41,6 +41,7 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+c` | Toggle screen recording (SSR) |
 | `Alt+Shift+a` | Toggle lid suspend (stay awake when closed) |
 | `Alt+i` | Toggle VPN (Tailscale exit node through DO droplet) |
+| `Alt+Shift+p` | Toggle picom compositor |
 
 ## Theme
 
