@@ -230,6 +230,7 @@ i3/colors
 !applications/
 applications/*
 !applications/jupyter-lab.desktop
+!applications/ffplay-wav.desktop
 
 !zathura/
 zathura/*
