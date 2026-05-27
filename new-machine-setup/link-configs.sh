@@ -150,6 +150,16 @@ if [ -f "$CONFIG_DIR/new-machine-setup/picom-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/picom-toggle" "$HOME/.local/bin/picom-toggle"
 fi
 
+# Audio stem separation toggle (record system audio -> Demucs 4 stems)
+if [ -f "$CONFIG_DIR/new-machine-setup/audio-stems-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/audio-stems-toggle" "$HOME/.local/bin/audio-stems-toggle"
+fi
+
+# Audio analysis helper (BPM/key/onset-slicing) used by audio-stems-toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/audio-analyze" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/audio-analyze" "$HOME/.local/bin/audio-analyze"
+fi
+
 # Ralf (ClawdBot CLI wrapper)
 if [ -f "$CONFIG_DIR/new-machine-setup/ralf" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/ralf" "$HOME/.local/bin/ralf"

@@ -122,6 +122,9 @@ bindsym $mod+i exec --no-startup-id ~/.local/bin/vpn-toggle
 # Picom compositor toggle
 bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/picom-toggle
 
+# Audio stem separation (record system audio, then split into vocals/drums/bass/other)
+bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/audio-stems-toggle
+
 # Voice dictation (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
 bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel

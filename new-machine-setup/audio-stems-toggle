@@ -1,0 +1,85 @@
+#!/bin/bash
+# audio-stems-toggle - Toggle system-audio recording; on stop, split into stems and prep for sampling.
+# Press once (Alt+Shift+s) to start capturing whatever is playing, press again to stop. Then:
+#   - Demucs (htdemucs_ft) separates into vocals / drums / bass / other
+#   - detects BPM + key (folder named <datetime>_<bpm>bpm_<key>_stems, plus a <bpm>bpm_<key> marker file)
+#   - converts each stem to SP-404-ready 48k/16-bit, peak-normalized to -1 dBFS, numbered in chop order
+#   - chops the drums stem into one-shots in drums_oneshots/
+# Output: ~/Downloads/<datetime>_<bpm>bpm_<key>_stems/
+
+PIDFILE="/tmp/audio-stems-rec.pid"
+WAVFILE="/tmp/audio-stems-rec.path"   # path of the wav for the current recording
+MODEL="htdemucs_ft"                   # fine-tuned 4-stem model (vocals/drums/bass/other)
+
+_notify() { dunstify -a "stems" -t 4000 -r 88888 -u low "$1" "$2"; }
+
+if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    # ---- STOP: end recording, then separate ----
+    pid=$(cat "$PIDFILE"); rm -f "$PIDFILE"
+    wav=$(cat "$WAVFILE" 2>/dev/null); rm -f "$WAVFILE"
+    kill -INT "$pid"
+    # wait for ffmpeg to flush and close the file (cap at ~5s)
+    for _ in $(seq 1 25); do kill -0 "$pid" 2>/dev/null || break; sleep 0.2; done
+
+    if [[ ! -s "$wav" ]]; then
+        _notify "Stems" "Recording was empty — aborted"
+        polybar-msg action stems hook 0 2>/dev/null || true
+        exit 1
+    fi
+
+    stamp=$(basename "${wav%.*}" | sed 's/^audio-stems-//')
+
+    _notify "Stems" "Separating + analyzing (this takes a minute)…"
+    polybar-msg action stems hook 2 2>/dev/null || true
+
+    # separate: vocals / drums / bass / other (16-bit WAV; --filename flattens the per-track subfolder)
+    tmpout=$(mktemp -d)
+    if ! demucs -n "$MODEL" --filename "{stem}.{ext}" -o "$tmpout" "$wav" &>/tmp/audio-stems-demucs.log; then
+        _notify "Stems" "Demucs failed — see /tmp/audio-stems-demucs.log"
+        polybar-msg action stems hook 0 2>/dev/null || true
+        rm -rf "$tmpout"
+        exit 1
+    fi
+
+    # analyze the source recording once for tempo + key (graceful fallback if it fails)
+    read -r bpm key _ < <(audio-analyze tempo-key "$wav" 2>/tmp/audio-stems-analyze.log) || true
+    [[ -n "$bpm" ]] || bpm="NA"
+    [[ -n "$key" ]] || key="NA"
+
+    # folder: ~/Downloads/<datetime>_<bpm>bpm_<key>_stems
+    dest="$HOME/Downloads/${stamp}_${bpm}bpm_${key}_stems"
+    mkdir -p "$dest"
+
+    # SP-404-ready: 48k/16-bit stereo, peak-normalized to -1 dBFS, numbered in chop/use order.
+    # Order = what you reach for when chopping: vocals (hook) first, then melody, bass, drums.
+    i=0
+    for stem in vocals other bass drums; do
+        i=$((i + 1))
+        src="$tmpout/$MODEL/$stem.wav"
+        [[ -f "$src" ]] || continue
+        out="$dest/$(printf '%02d' "$i")_${stem}.wav"
+        sox "$src" -b 16 "$out" rate 48000 norm -1 2>/dev/null || cp "$src" "$out"
+    done
+    rm -rf "$tmpout"
+
+    # chop the (normalized) drums stem into one-shots, alongside the full 04_drums.wav
+    drums="$dest/04_drums.wav"
+    [[ -f "$drums" ]] && audio-analyze slice "$drums" "$dest/drums_oneshots" &>/tmp/audio-stems-slice.log || true
+
+    # quick-glance marker: an empty file whose name encodes tempo + key
+    touch "$dest/${bpm}bpm_${key}"
+
+    _notify "Stems Ready" "$dest  •  ${bpm} BPM  ${key}"
+    polybar-msg action stems hook 0 2>/dev/null || true
+    thunar "$dest" &>/dev/null &
+else
+    # ---- START: capture the default sink's monitor (system audio) ----
+    monitor="$(pactl get-default-sink).monitor"
+    wav="/tmp/audio-stems-$(date +%Y-%m-%d_%H-%M-%S).wav"
+    echo "$wav" > "$WAVFILE"
+    # downmix to stereo 44.1k — what Demucs expects
+    ffmpeg -y -f pulse -i "$monitor" -ac 2 -ar 44100 "$wav" &>/tmp/audio-stems-ffmpeg.log &
+    echo $! > "$PIDFILE"
+    polybar-msg action stems hook 1 2>/dev/null || true
+    _notify "Recording" "System audio → $(basename "$wav")"
+fi

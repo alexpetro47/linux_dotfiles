@@ -42,6 +42,7 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+a` | Toggle lid suspend (stay awake when closed) |
 | `Alt+i` | Toggle VPN (Tailscale exit node through DO droplet) |
 | `Alt+Shift+p` | Toggle picom compositor |
+| `Alt+Shift+s` | Toggle audio recording → split into 4 stems (Demucs) |
 
 ## Theme
 

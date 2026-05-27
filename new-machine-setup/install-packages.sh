@@ -61,7 +61,8 @@ sudo apt install -y \
     thunar \
     sox \
     libsox-fmt-all \
-    # TLP power management for battery optimization
+    pulseaudio-utils \
+    dunst \
     tlp \
     tlp-rdw \
     ffmpeg \
@@ -194,6 +195,16 @@ uv tool install pre-commit || true
 uv tool install whisper-ctranslate2 || true
 uv tool install llm || true
 llm install llm-openrouter 2>/dev/null || true
+uv tool install demucs --with torchcodec || true   # audio stem separation (vocals/drums/bass/other); torchcodec needed for torchaudio>=2.9 file writes
+
+# pre-warm audio-analyze's deps (librosa etc., self-bootstrapped by uv) so the first chop isn't slow
+if [ -x "$HOME/.config/new-machine-setup/audio-analyze" ]; then
+    log "Pre-warming audio-analyze (librosa)..."
+    _aa_tmp=$(mktemp --suffix=.wav)
+    sox -n -r 48000 -c 2 "$_aa_tmp" synth 3 sine 220 2>/dev/null \
+        && "$HOME/.config/new-machine-setup/audio-analyze" tempo-key "$_aa_tmp" >/dev/null 2>&1 || true
+    rm -f "$_aa_tmp"
+fi
 # rclip: semantic image search - isolated project (torch dep issues with uv tool install)
 if [ ! -f "$HOME/.local/share/rclip-env/.venv/bin/rclip" ]; then
     log "Installing rclip (isolated environment)..."
