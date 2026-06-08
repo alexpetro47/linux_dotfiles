@@ -41,6 +41,9 @@ supported-systems = ["base16"]
 [[items]]
 name = "base16-i3"
 path = "https://github.com/tinted-theming/base16-i3"
+# "colors" variant emits only the `set $baseXX` vars. We append the custom
+# client.* border mapping in the same file (i3's `include` does NOT propagate
+# `set` vars to the parent, so the directives must sit beside the vars here).
 themes-dir = "colors"
-hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/i3/colors && i3-msg reload 2>/dev/null || true"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.config/i3/colors && printf '\\nclient.focused          $base0D $base00 $base05 $base0D $base0D\\nclient.unfocused        $base01 $base00 $base03 $base01 $base01\\nclient.urgent           $base08 $base08 $base00 $base08 $base08\\n' >> ~/.config/i3/colors && i3-msg reload 2>/dev/null || true"
 supported-systems = ["base16"]

@@ -1,0 +1,26 @@
+# cava - console audio visualizer
+# Visualizes whatever is playing out the default sink (source = auto picks its monitor).
+# Colors use 'default' so the bars inherit the terminal's base16 palette (tinty-themed).
+
+[general]
+framerate = 60
+autosens = 1
+overshoot = 20
+# bars = 0 -> auto-fit to window width
+
+[input]
+method = pulse
+source = auto
+
+[output]
+method = ncurses
+channels = stereo
+mono_option = average
+
+[color]
+gradient = 0
+foreground = default
+background = default
+
+[smoothing]
+noise_reduction = 0.77

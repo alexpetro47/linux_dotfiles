@@ -1,0 +1,14 @@
+#!/bin/bash
+# cava-popup - Toggle a floating cava spectrum visualizer of the system audio.
+#
+# For i3, pair with a float rule and keybind (see i3 config):
+#   for_window [class="cava"] floating enable, resize set 600 300, move position center, sticky enable
+#   bindsym $mod+Shift+m exec --no-startup-id ~/.local/bin/cava-popup
+
+# Toggle off if already running
+if pgrep -f "kitty --class cava" >/dev/null 2>&1; then
+    pkill -f "kitty --class cava"
+    exit 0
+fi
+
+exec kitty --class cava -e cava "$@"

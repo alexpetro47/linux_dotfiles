@@ -129,10 +129,17 @@ scripts/*
 !scripts/speedread-tui
 !scripts/speedread-popup
 !scripts/speedread-clipboard
+!scripts/chord-detector
+!scripts/chord-detector-popup
+!scripts/cava-popup
 
 !picom
 picom/*
 !picom/picom.conf
+
+!cava
+cava/*
+!cava/config
 
 !btop
 btop/*
@@ -184,6 +191,8 @@ new-machine-setup/*
 !new-machine-setup/airpods-toggle
 !new-machine-setup/picom-toggle
 !new-machine-setup/audio-stems-toggle
+!new-machine-setup/sdcard-toggle
+!new-machine-setup/chord-analyze-popup
 !new-machine-setup/audio-analyze
 !new-machine-setup/screenshot
 !new-machine-setup/bliss.png

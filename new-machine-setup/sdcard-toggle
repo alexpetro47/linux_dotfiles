@@ -1,0 +1,46 @@
+#!/bin/bash
+# sdcard-toggle - Mount/eject the removable SD card (in a USB reader) with a notification.
+#
+#   First press : mount the card -> "💾 <label> mounted at <path>"
+#   Press again : unmount        -> "⏏ <label> ejected — safe to remove"
+#   No card     : "No SD card detected"
+#
+# Unmount (not power-off): the card stays enumerated so the next press re-mounts
+# it — a clean inject<->eject toggle. Unmounting already flushes writes, so it is
+# safe to physically remove.
+#
+# Uses udisksctl (no sudo — polkit authorises removable media) + notify-send (dunst).
+# For i3 keybind: bindsym $mod+Shift+u exec --no-startup-id ~/.local/bin/sdcard-toggle
+
+ICON_IN="media-flash"
+ICON_OUT="media-eject"
+
+notify() { notify-send -a "SD Card" -i "$2" -t 4000 "$1" "$3"; }
+
+# First removable (RM=1) partition that has a filesystem — i.e. the card, not the OS disk.
+part=$(lsblk -rpno NAME,RM,TYPE,FSTYPE | awk '$2==1 && $3=="part" && $4!="" {print $1; exit}')
+
+if [[ -z "$part" ]]; then
+    notify "No SD card detected" "$ICON_OUT" "Insert a card and try again."
+    exit 0
+fi
+
+label=$(lsblk -no LABEL "$part" | tr -d ' ')
+[[ -z "$label" ]] && label="SD card"
+mp=$(findmnt -no TARGET "$part")
+
+if [[ -n "$mp" ]]; then
+    # Mounted -> unmount (keeps the device enumerated for a clean re-mount).
+    if udisksctl unmount -b "$part" >/dev/null 2>&1; then
+        notify "⏏ $label ejected" "$ICON_OUT" "Safe to remove."
+    else
+        notify "Could not eject $label" "$ICON_OUT" "Device busy — close open files."
+    fi
+else
+    # Not mounted -> mount it.
+    if out=$(udisksctl mount -b "$part" 2>&1); then
+        notify "💾 $label mounted" "$ICON_IN" "$(findmnt -no TARGET "$part")"
+    else
+        notify "Could not mount $label" "$ICON_IN" "$out"
+    fi
+fi

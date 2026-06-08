@@ -122,6 +122,19 @@ if [ -f "$CONFIG_DIR/scripts/lock" ]; then
     _link_config "$CONFIG_DIR/scripts/lock" "$HOME/.local/bin/lock"
 fi
 
+# Real-time chord/note detector (popup toggle + engine)
+if [ -f "$CONFIG_DIR/scripts/chord-detector" ]; then
+    _link_config "$CONFIG_DIR/scripts/chord-detector" "$HOME/.local/bin/chord-detector"
+fi
+if [ -f "$CONFIG_DIR/scripts/chord-detector-popup" ]; then
+    _link_config "$CONFIG_DIR/scripts/chord-detector-popup" "$HOME/.local/bin/chord-detector-popup"
+fi
+
+# cava audio visualizer popup toggle
+if [ -f "$CONFIG_DIR/scripts/cava-popup" ]; then
+    _link_config "$CONFIG_DIR/scripts/cava-popup" "$HOME/.local/bin/cava-popup"
+fi
+
 # Tmux sessionizer
 if [ -f "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" ]; then
     _link_config "$CONFIG_DIR/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/bin/tmux-sessionizer"
@@ -153,6 +166,16 @@ fi
 # Audio stem separation toggle (record system audio -> Demucs 4 stems)
 if [ -f "$CONFIG_DIR/new-machine-setup/audio-stems-toggle" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/audio-stems-toggle" "$HOME/.local/bin/audio-stems-toggle"
+fi
+
+# SD card mount/eject toggle
+if [ -f "$CONFIG_DIR/new-machine-setup/sdcard-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/sdcard-toggle" "$HOME/.local/bin/sdcard-toggle"
+fi
+
+# Chord/BPM/key analysis popup (captures stream -> full report)
+if [ -f "$CONFIG_DIR/new-machine-setup/chord-analyze-popup" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/chord-analyze-popup" "$HOME/.local/bin/chord-analyze-popup"
 fi
 
 # Audio analysis helper (BPM/key/onset-slicing) used by audio-stems-toggle

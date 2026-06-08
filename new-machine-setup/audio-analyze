@@ -7,6 +7,8 @@
 
   audio-analyze tempo-key <file>     -> prints "<bpm> <key> <camelot>"  e.g. "174 Amin 8A"
   audio-analyze slice <file> <outdir> -> writes onset-sliced one-shots, prints slice count
+  audio-analyze analyze <file>       -> full report: BPM, key, beat-synced chord
+                                        progression with roman numerals, song structure
 """
 import os
 import sys
@@ -27,6 +29,159 @@ CAMELOT = {
     "Dmin": "7A", "D#min": "2A", "Emin": "9A", "Fmin": "4A", "F#min": "11A",
     "Gmin": "6A", "G#min": "1A",
 }
+
+# Chord templates: (quality-suffix, pitch-class offsets from root, minor-ish?)
+CHORD_TEMPLATES = [
+    ("",     (0, 4, 7),      False),  # major
+    ("m",    (0, 3, 7),      True),   # minor
+    ("dim",  (0, 3, 6),      True),
+    ("aug",  (0, 4, 8),      False),
+    ("7",    (0, 4, 7, 10),  False),  # dominant 7
+    ("maj7", (0, 4, 7, 11),  False),
+    ("m7",   (0, 3, 7, 10),  True),
+    ("m7b5", (0, 3, 6, 10),  True),
+    ("6",    (0, 4, 7, 9),   False),
+    ("m6",   (0, 3, 7, 9),   True),
+    ("sus2", (0, 2, 7),      False),
+    ("sus4", (0, 5, 7),      False),
+]
+# Precompute normalized 12-d template vectors per root: (name, suffix, root, minorish, vec)
+_CHORDS = []
+for _root in range(12):
+    for _suf, _offs, _minor in CHORD_TEMPLATES:
+        _v = np.zeros(12)
+        for _o in _offs:
+            _v[(_root + _o) % 12] = 1.0
+        _v /= np.linalg.norm(_v)
+        _CHORDS.append((NOTES[_root] + _suf, _suf, _root, _minor, len(_offs), _v))
+
+# Uppercase roman numeral per semitone interval from tonic, for each key mode.
+ROMAN_MAJOR = ["I", "bII", "II", "bIII", "III", "IV", "#IV", "V", "bVI", "VI", "bVII", "VII"]
+ROMAN_MINOR = ["I", "bII", "II", "III", "#III", "IV", "#IV", "V", "VI", "#VI", "VII", "#VII"]
+
+
+def match_chord(chroma_col):
+    """Best (name, suffix, root, minorish) for one chroma vector, or None if flat."""
+    n = np.linalg.norm(chroma_col)
+    if n <= 1e-6:
+        return None
+    cn = chroma_col / n
+    best, best_score = None, -1.0
+    for name, suf, root, minor, size, vec in _CHORDS:
+        s = float(cn @ vec) - 0.012 * size  # slight nudge toward simpler chords
+        if s > best_score:
+            best_score, best = s, (name, suf, root, minor)
+    return best
+
+
+def roman(root, suffix, minorish, key_root, key_mode):
+    interval = (root - key_root) % 12
+    base = (ROMAN_MAJOR if key_mode == "maj" else ROMAN_MINOR)[interval]
+    if minorish:
+        base = base.lower()
+    sym = {"dim": "°", "aug": "+", "m7b5": "ø"}.get(suffix, "")
+    ext = {"7": "7", "maj7": "maj7", "m7": "7", "6": "6", "m6": "6",
+           "sus2": "sus2", "sus4": "sus4"}.get(suffix, "")
+    return base + sym + ext
+
+
+def detect_beat_chords(y, sr):
+    """Return (tempo, list of (time, chord_name, suffix, root, minorish)) per chord change."""
+    tempo, beats = librosa.beat.beat_track(y=y, sr=sr, trim=False)
+    tempo = int(round(float(np.atleast_1d(tempo)[0])))
+    chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+    if len(beats) < 2:
+        beat_chroma = chroma.mean(axis=1, keepdims=True)
+        beat_times = np.array([0.0])
+    else:
+        beat_chroma = librosa.util.sync(chroma, beats, aggregate=np.median)
+        beat_times = librosa.frames_to_time(beats, sr=sr)
+        if beat_chroma.shape[1] == len(beat_times) + 1:
+            beat_times = np.concatenate([[0.0], beat_times])
+    prog = []
+    for i in range(beat_chroma.shape[1]):
+        m = match_chord(beat_chroma[:, i])
+        if m is None:
+            continue
+        name, suf, root, minor = m
+        t = float(beat_times[i]) if i < len(beat_times) else float(beat_times[-1])
+        if prog and prog[-1][1] == name:   # collapse repeats
+            continue
+        prog.append((t, name, suf, root, minor))
+    return tempo, prog
+
+
+def detect_structure(y, sr):
+    """Coarse section segmentation -> list of (start, end, label)."""
+    chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+    tempo, beats = librosa.beat.beat_track(y=y, sr=sr, trim=False)
+    if len(beats) < 4:
+        return [(0.0, librosa.get_duration(y=y, sr=sr), "A")]
+    cs = librosa.util.sync(chroma, beats, aggregate=np.median)
+    ms = librosa.util.sync(mfcc, beats, aggregate=np.mean)
+    feat = np.vstack([librosa.util.normalize(cs, axis=0),
+                      librosa.util.normalize(ms, axis=0)])
+    k = int(min(6, max(2, cs.shape[1] // 12)))
+    bounds = librosa.segment.agglomerative(feat, k)            # beat indices of boundaries
+    bt = librosa.frames_to_time(beats, sr=sr)
+    dur = librosa.get_duration(y=y, sr=sr)
+    # label segments: group by mean-feature similarity so repeats share a letter
+    seg_bounds = [0] + [b for b in bounds.tolist() if 0 < b < cs.shape[1]] + [cs.shape[1]]
+    seg_bounds = sorted(set(seg_bounds))
+    labels, protos = [], []
+    for s, e in zip(seg_bounds, seg_bounds[1:]):
+        mv = feat[:, s:e].mean(axis=1)
+        mv /= (np.linalg.norm(mv) + 1e-9)
+        lab = None
+        for j, p in enumerate(protos):
+            if float(mv @ p) > 0.92:
+                lab = chr(ord("A") + j)
+                break
+        if lab is None:
+            protos.append(mv)
+            lab = chr(ord("A") + len(protos) - 1)
+        labels.append(lab)
+    out = []
+    for (s, e), lab in zip(zip(seg_bounds, seg_bounds[1:]), labels):
+        st = float(bt[s]) if s < len(bt) else dur
+        en = float(bt[e]) if e < len(bt) else dur
+        out.append((st, en, lab))
+    return out
+
+
+def _mmss(t):
+    return f"{int(t) // 60}:{int(t) % 60:02d}"
+
+
+def analyze_report(infile):
+    y, sr = librosa.load(infile, sr=22050, mono=True)
+    key = detect_key(y, sr)                       # e.g. "Cmaj" / "Amin"
+    key_root = NOTES.index(key[:-3]) if key[:-3] in NOTES else 0
+    key_mode = "maj" if key.endswith("maj") else "min"
+    tempo, prog = detect_beat_chords(y, sr)
+    sections = detect_structure(y, sr)
+    keyname = f"{key[:-3]} {'major' if key_mode == 'maj' else 'minor'}"
+
+    L = []
+    L.append("═" * 40)
+    L.append("  AUDIO ANALYSIS")
+    L.append("═" * 40)
+    L.append(f"  BPM:  {tempo}")
+    L.append(f"  Key:  {keyname}   (Camelot {CAMELOT.get(key, '?')})")
+    L.append("─" * 40)
+    L.append(f"  CHORD PROGRESSION  (roman in {keyname})")
+    if not prog:
+        L.append("    (no stable chords detected)")
+    for t, name, suf, root, minor in prog[:40]:
+        rn = roman(root, suf, minor, key_root, key_mode)
+        L.append(f"   {_mmss(t):>5}   {name:<7} {rn}")
+    L.append("─" * 40)
+    L.append("  STRUCTURE")
+    for st, en, lab in sections:
+        L.append(f"   {_mmss(st):>5}–{_mmss(en):<5}  {lab}")
+    L.append("═" * 40)
+    return "\n".join(L)
 
 
 def detect_bpm(y, sr):
@@ -82,6 +237,8 @@ def main():
         print(f"{detect_bpm(y, sr)} {key} {CAMELOT.get(key, '?')}")
     elif cmd == "slice":
         print(slice_oneshots(sys.argv[2], sys.argv[3]))
+    elif cmd == "analyze":
+        print(analyze_report(sys.argv[2]))
     else:
         sys.exit(f"unknown command: {cmd}")
 

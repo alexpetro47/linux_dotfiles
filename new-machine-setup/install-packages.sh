@@ -62,6 +62,8 @@ sudo apt install -y \
     sox \
     libsox-fmt-all \
     pulseaudio-utils \
+    cava \
+    libgtk-3-dev \
     dunst \
     tlp \
     tlp-rdw \

@@ -48,10 +48,10 @@ default_floating_border pixel 4
 # for_window [class="^.*"] title_format ""
 focus_on_window_activation none
 
-# Base16 colors: border, background, text, indicator, child_border
-client.focused          $base0D $base00 $base05 $base0D $base0D
-client.unfocused        $base01 $base00 $base03 $base01 $base01
-client.urgent           $base08 $base08 $base00 $base08 $base08
+# Window border colors are set by the tinty-managed include above
+# (~/.config/i3/colors), which emits client.* directives directly.
+# i3's `include` does not propagate `set` vars to this file, so the
+# directives must live in the included file, not here.
 
 bindsym Ctrl+j workspace 1
 bindsym Ctrl+k workspace 2
@@ -95,7 +95,7 @@ bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
 # bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
 bindsym $mod+b exec --no-startup-id brave-browser
 bindsym $mod+shift+t exec --no-startup-id google-chrome --app=https://teams.microsoft.com
-bindsym $mod+o exec --no-startup-id /snap/bin/obsidian
+# bindsym $mod+o exec --no-startup-id /snap/bin/obsidian
 bindsym $mod+shift+o exec --no-startup-id brave-browser --app=https://alexpetro-um890pro.tail1c3769.ts.net/chat
 # bindsym $mod+b exec --no-startup-id brave-browser --remote-debugging-port=9222
 
@@ -125,6 +125,18 @@ bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/picom-toggle
 # Audio stem separation (record system audio, then split into vocals/drums/bass/other)
 bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/audio-stems-toggle
 
+# Real-time note/chord detector popup (taps default sink monitor)
+bindsym $mod+Shift+e exec --no-startup-id ~/.local/bin/chord-detector-popup
+
+# cava audio spectrum visualizer popup
+bindsym $mod+Shift+m exec --no-startup-id ~/.local/bin/cava-popup
+
+# SD card mount/eject toggle (notifies injected/ejected status)
+bindsym $mod+Shift+u exec --no-startup-id ~/.local/bin/sdcard-toggle
+
+# Capture stream -> BPM/key/chord-progression/structure report popup
+bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/chord-analyze-popup
+
 # Voice dictation (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
 bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel
@@ -153,6 +165,15 @@ for_window [window_type="dialog"] floating enable
 
 # Speedread (RSVP speed reading)
 for_window [class="speedread"] fullscreen enable
+
+# Chord detector popup (floating, centered, sticky across workspaces)
+for_window [class="chord-detector"] floating enable, resize set 420 580, move position center, sticky enable
+
+# cava visualizer popup (floating, centered, sticky)
+for_window [class="cava"] floating enable, resize set 600 300, move position center, sticky enable
+
+# Chord/BPM/key analysis popup (floating, centered, sticky)
+for_window [class="chord-analyze"] floating enable, resize set 480 640, move position center, sticky enable
 # bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
 # bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
 

@@ -43,6 +43,10 @@ Scripts are designed for safe re-runs:
 | `Alt+i` | Toggle VPN (Tailscale exit node through DO droplet) |
 | `Alt+Shift+p` | Toggle picom compositor |
 | `Alt+Shift+s` | Toggle audio recording → split into 4 stems (Demucs) |
+| `Alt+Shift+e` | Toggle real-time note/chord detector popup (taps default sink) |
+| `Alt+Shift+m` | Toggle cava audio spectrum visualizer popup |
+| `Alt+Shift+u` | Mount SD card / press again to eject (notifies status) |
+| `Alt+Shift+x` | Capture stream → BPM/key/chord-progression/structure report popup (saved to ~/Music/analysis, opens Thunar) |
 
 ## Theme
 

@@ -235,7 +235,6 @@ vim.keymap.set('n', '<leader>F', function()
      map('n', '<tab><tab>', function() end)
      map('n', '<tab>', function(bufnr)
        require('telescope.actions').toggle_selection(bufnr)
-       require('telescope.actions').move_selection_previous(bufnr)
      end)
      map('n', '<cr>', function(bufnr)
        local actions = require('telescope.actions')
@@ -493,13 +492,14 @@ require('lazy').setup({
   --   }
   -- },
 
-  {
-    'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    config = function()
-      require('nvim-autopairs').setup({})
-    end
-  },
+  -- {
+  --   'windwp/nvim-autopairs',
+  --   enabled = false,
+  --   event = "InsertEnter",
+  --   config = function()
+  --     require('nvim-autopairs').setup({})
+  --   end
+  -- },
 
   {
     'nvim-tree/nvim-tree.lua',
@@ -892,46 +892,46 @@ require('lazy').setup({
     },
   },
 
-  -- Image rendering in terminal (requires Kitty terminal + ImageMagick)
-  {
-    "3rd/image.nvim",
-    build = false, -- don't build the rock
-    opts = {
-      backend = "kitty",
-      processor = "magick_cli", -- uses ImageMagick CLI
-      integrations = {
-        markdown = {
-          enabled = true,
-          clear_in_insert_mode = false,
-          download_remote_images = true,
-          only_render_image_at_cursor = false, -- render all visible images
-          filetypes = { "markdown", "vimwiki" },
-        },
-        neorg = {
-          enabled = false,
-        },
-        typst = {
-          enabled = false,
-        },
-        html = {
-          enabled = false,
-        },
-        css = {
-          enabled = false,
-        },
-      },
-      max_width = nil,
-      max_height = nil,
-      max_width_window_percentage = nil,
-      max_height_window_percentage = 60,
-      window_overlap_clear_enabled = true,
-      window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-      editor_only_render_when_focused = false,
-      tmux_show_only_in_active_window = true,
-      kitty_tmux_write_delay = 10,  -- more reliable rendering with Kitty+Tmux
-      hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" },
-    },
-  },
+  -- -- Image rendering in terminal (requires Kitty terminal + ImageMagick)
+  -- {
+  --   "3rd/image.nvim",
+  --   build = false, -- don't build the rock
+  --   opts = {
+  --     backend = "kitty",
+  --     processor = "magick_cli", -- uses ImageMagick CLI
+  --     integrations = {
+  --       markdown = {
+  --         enabled = true,
+  --         clear_in_insert_mode = false,
+  --         download_remote_images = true,
+  --         only_render_image_at_cursor = false, -- render all visible images
+  --         filetypes = { "markdown", "vimwiki" },
+  --       },
+  --       neorg = {
+  --         enabled = false,
+  --       },
+  --       typst = {
+  --         enabled = false,
+  --       },
+  --       html = {
+  --         enabled = false,
+  --       },
+  --       css = {
+  --         enabled = false,
+  --       },
+  --     },
+  --     max_width = nil,
+  --     max_height = nil,
+  --     max_width_window_percentage = nil,
+  --     max_height_window_percentage = 60,
+  --     window_overlap_clear_enabled = true,
+  --     window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
+  --     editor_only_render_when_focused = false,
+  --     tmux_show_only_in_active_window = true,
+  --     kitty_tmux_write_delay = 10,  -- more reliable rendering with Kitty+Tmux
+  --     hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" },
+  --   },
+  -- },
 
 }, {})
 

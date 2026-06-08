@@ -1,0 +1,67 @@
+#!/bin/bash
+# chord-analyze-popup - Capture what's streaming, then analyze BPM + key + chord
+# progression (with roman numerals) + song structure, in a sticky floating popup.
+# The report is saved to ~/Music/analysis/ and that folder is revealed in Thunar.
+#
+# Toggle: press once to open/run, press again to close.
+# For i3: bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/chord-analyze-popup
+#         for_window [class="chord-analyze"] floating enable, resize set 480 640, \
+#                    move position center, sticky enable
+
+DUR="${CHORD_ANALYZE_SECONDS:-25}"
+OUTDIR="$HOME/Music/analysis"
+
+# ---- launcher branch: spawn the sticky popup terminal ----------------------
+if [[ "$1" != "--run" ]]; then
+    if pgrep -f "kitty --class chord-analyze" >/dev/null 2>&1; then
+        pkill -f "kitty --class chord-analyze"
+        exit 0
+    fi
+    exec kitty --class chord-analyze -o font_size=12 -e "$(readlink -f "$0")" --run
+fi
+
+# ---- run branch: capture -> analyze -> show -> save -> reveal ---------------
+ANALYZE="$HOME/.local/bin/audio-analyze"
+[[ -x "$ANALYZE" ]] || ANALYZE="$HOME/.config/new-machine-setup/audio-analyze"
+
+# Pick the source with the most signal among sink monitors + USB inputs
+# (laptop playback OR the SP-404 instrument), excluding built-in mics.
+pick_source() {
+    local cands best="" bestamp=0 amp probe
+    probe=$(mktemp /tmp/.casrc-XXXXXX.wav)
+    cands=$( { echo "$(pactl get-default-sink).monitor"; pactl list short sources | cut -f2; } \
+             | awk '/\.monitor$/ || /usb-/' | awk '!seen[$0]++' )
+    for s in $cands; do
+        timeout 0.8 parecord -d "$s" --file-format=wav "$probe" 2>/dev/null
+        amp=$(sox "$probe" -n stat 2>&1 | awk -F: '/Maximum amplitude/{gsub(/ /,"",$2);print $2}')
+        [[ -z "$amp" ]] && amp=0
+        if awk -v a="$amp" -v b="$bestamp" 'BEGIN{exit !(a>b)}'; then bestamp=$amp; best=$s; fi
+    done
+    rm -f "$probe"
+    [[ -n "$best" ]] && echo "$best" || echo "$(pactl get-default-sink).monitor"
+}
+
+wav=$(mktemp /tmp/chord-analyze-XXXXXX.wav)
+mkdir -p "$OUTDIR"
+
+clear
+printf '\n  🎙  Finding the active audio source...\n'
+src=$(pick_source)
+clear
+printf '\n  🎙  Capturing %ss from:\n      %s\n\n      (keep playing)\n' "$DUR" "$src"
+timeout "$DUR" parecord -d "$src" --file-format=wav "$wav" 2>/dev/null
+
+printf '\n  ⏳  Analyzing — BPM, key, chords, structure...\n'
+report=$("$ANALYZE" analyze "$wav" 2>&1)
+
+ts=$(date +%Y-%m-%d_%H-%M-%S)
+txt="$OUTDIR/analysis-$ts.txt"
+printf '%s\n' "$report" > "$txt"
+mv "$wav" "$OUTDIR/analysis-$ts.wav" 2>/dev/null || rm -f "$wav"
+
+clear
+printf '%s\n\n' "$report"
+printf '  saved: %s\n' "$txt"
+command -v thunar >/dev/null 2>&1 && (thunar "$OUTDIR" >/dev/null 2>&1 &)
+printf '\n  [Enter to close]'
+read -r _

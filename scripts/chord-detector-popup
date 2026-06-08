@@ -1,0 +1,17 @@
+#!/bin/bash
+# chord-detector-popup - Launch the real-time chord detector in a floating terminal.
+#
+# Toggles: if a popup is already open, close it; otherwise open one.
+# For i3, pair with a float rule and keybind (see README / i3 config):
+#   for_window [class="chord-detector"] floating enable, resize set 420 560, move position center, sticky enable
+#   bindsym $mod+Shift+e exec --no-startup-id ~/.local/bin/chord-detector-popup
+
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
+# Toggle off if already running
+if pgrep -f "kitty --class chord-detector" >/dev/null 2>&1; then
+    pkill -f "kitty --class chord-detector"
+    exit 0
+fi
+
+exec kitty --class chord-detector -o font_size=14 -e "$SCRIPT_DIR/chord-detector" "$@"

@@ -3,3 +3,4 @@ set selection-clipboard clipboard
 
 # Enter also yanks selection to clipboard
 map <Return> feedkeys "y"
+
