@@ -105,9 +105,9 @@ alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/
 # alias noteSync="cd ~/Documents/code/simplenote_sync && uv run python simplenote_sync.py"  # DEPRECATED: script doesn't exist
 
 # mini pc (UM890PRO) - via Tailscale
-alias pc="ssh alexpetro@alexpetro-um890pro"
-alias pcc="ssh carlbot@alexpetro-um890pro"
-alias pcsync="rsync -avhP --compress --partial"  # usage: pcsync file.txt alexpetro@alexpetro-um890pro:~/
+# alias pc="ssh alexpetro@alexpetro-um890pro"
+# alias pcc="ssh carlbot@alexpetro-um890pro"
+# alias pcsync="rsync -avhP --compress --partial"  # usage: pcsync file.txt alexpetro@alexpetro-um890pro:~/
 
 # alias sd="cd ~ && cd \$(find * -type d | fzf)"
 # alias lc="git ls-files -z | xargs -0 wc -l 2>/dev/null"

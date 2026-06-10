@@ -22,7 +22,6 @@ See `README.md` for setup instructions.
 | New script | `new-machine-setup/<script>` + `.gitignore` whitelist + `link-configs.sh` symlink to `~/.local/bin/` |
 | Tool substitution | install script + `.zshrc` aliases |
 | Optional tool | `README.md` → Extras section |
-| Remote access (mini PC) | `.zshrc` aliases (`pc`, `pcsync`) |
 
 ## Idempotency
 
