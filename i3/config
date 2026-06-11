@@ -90,7 +90,7 @@ bindsym $mod+m exec --no-startup-id spotify
 bindsym $mod+e exec --no-startup-id thunar ~/Downloads
 bindsym $mod+shift+d exec --no-startup-id brave-browser --app=https://excalidraw.com
 bindsym $mod+shift+c exec --no-startup-id brave-browser --app=https://claude.com
-bindsym $mod+shift+g exec --no-startup-id brave-browser --app=https://gemini.google.com
+# bindsym $mod+shift+g exec --no-startup-id brave-browser --app=https://gemini.google.com
 bindsym $mod+g exec --no-startup-id brave-browser --app=https://gmail.com
 # bindsym $mod+n exec --no-startup-id brave-browser --app=https://app.simplenote.com
 bindsym $mod+b exec --no-startup-id brave-browser
@@ -110,8 +110,8 @@ bindsym $mod+shift+o exec --no-startup-id brave-browser --app=https://alexpetro-
 # Focus mode (disable notifications)
 bindsym $mod+Shift+n exec --no-startup-id ~/.local/bin/focus-toggle
 
-# Screen recording toggle (SimpleScreenRecorder)
-# bindsym $mod+Shift+c exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
+# Screen recording toggle (ffmpeg)
+bindsym Mod4+control+v exec --no-startup-id ~/.config/new-machine-setup/screen-record-toggle
 
 # Lid suspend toggle (keep laptop awake when closed)
 bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/lid-suspend-toggle
@@ -123,23 +123,29 @@ bindsym $mod+i exec --no-startup-id ~/.local/bin/vpn-toggle
 bindsym $mod+Shift+p exec --no-startup-id ~/.local/bin/picom-toggle
 
 # Audio stem separation (record system audio, then split into vocals/drums/bass/other)
-bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/audio-stems-toggle
+# bindsym $mod+Shift+s exec --no-startup-id ~/.local/bin/audio-stems-toggle
 
 # Real-time note/chord detector popup (taps default sink monitor)
-bindsym $mod+Shift+e exec --no-startup-id ~/.local/bin/chord-detector-popup
+# bindsym $mod+Shift+e exec --no-startup-id ~/.local/bin/chord-detector-popup
 
 # cava audio spectrum visualizer popup
-bindsym $mod+Shift+m exec --no-startup-id ~/.local/bin/cava-popup
+# bindsym $mod+Shift+m exec --no-startup-id ~/.local/bin/cava-popup
 
 # SD card mount/eject toggle (notifies injected/ejected status)
 bindsym $mod+Shift+u exec --no-startup-id ~/.local/bin/sdcard-toggle
 
 # Capture stream -> BPM/key/chord-progression/structure report popup
-bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/chord-analyze-popup
+# bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/chord-analyze-popup
 
 # Voice dictation (faster-whisper large-v3-turbo)
 bindsym $mod+v exec --no-startup-id ~/.local/bin/voice-dictation
 bindsym $mod+Shift+v exec --no-startup-id ~/.local/bin/voice-dictation cancel
+
+# Standup recorder (toggle mic+system capture -> per-day transcript log)
+bindsym $mod+Shift+g exec --no-startup-id ~/.local/bin/standup-record
+
+# Black hole break reminder (Ghostty shader terminal, grows until the :55 break)
+bindsym $mod+Shift+h exec --no-startup-id ~/.local/bin/blackhole-toggle
 
 bindsym $mod+s exec --no-startup-id brave-browser --new-window "https://google.com/aimode"
 # bindsym $mod+shift+s workspace 6; exec --no-startup-id brave-browser --new-window "https://grok.com"; exec --no-startup-id "sleep 0.5 && i3-msg fullscreen enable"
@@ -176,6 +182,12 @@ for_window [class="cava"] floating enable, resize set 600 300, move position cen
 for_window [class="chord-analyze"] floating enable, resize set 480 640, move position center, sticky enable
 # bindsym $mod+p exec --no-startup-id ~/.config/scripts/speedread-popup
 # bindsym $mod+Shift+p exec --no-startup-id kitty --class speedread -e ~/.config/scripts/speedread-clipboard
+
+# Desktop sprite toggle (animated on-screen character: wanders/idles/attacks/spins)
+bindsym $mod+p exec --no-startup-id ~/.local/bin/sprite-toggle
+
+# Desktop sprite window: float freely, follow across workspaces, no border
+for_window [class="desktop-sprite"] floating enable, sticky enable, border none
 
 # Auto-assign applications to specific workspaces
 assign [class="google-chrome"] 7

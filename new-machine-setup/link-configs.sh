@@ -148,6 +148,14 @@ if [ -f "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/voice-dictation-transcribe" "$HOME/.local/bin/voice-dictation-transcribe"
 fi
 
+# Standup recorder (crash-safe long-form capture -> chunked local transcription)
+if [ -f "$CONFIG_DIR/new-machine-setup/standup-record" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/standup-record" "$HOME/.local/bin/standup-record"
+fi
+if [ -f "$CONFIG_DIR/new-machine-setup/standup-transcribe-worker" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/standup-transcribe-worker" "$HOME/.local/bin/standup-transcribe-worker"
+fi
+
 # Screenshot (picom off → flameshot → picom on)
 if [ -f "$CONFIG_DIR/new-machine-setup/screenshot" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/screenshot" "$HOME/.local/bin/screenshot"
@@ -186,6 +194,16 @@ fi
 # Ralf (ClawdBot CLI wrapper)
 if [ -f "$CONFIG_DIR/new-machine-setup/ralf" ]; then
     _link_config "$CONFIG_DIR/new-machine-setup/ralf" "$HOME/.local/bin/ralf"
+fi
+
+# Desktop sprite toggle (animated on-screen character)
+if [ -f "$CONFIG_DIR/new-machine-setup/sprite-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/sprite-toggle" "$HOME/.local/bin/sprite-toggle"
+fi
+
+# Black hole break reminder toggle (Ghostty shader terminal)
+if [ -f "$CONFIG_DIR/new-machine-setup/blackhole-toggle" ]; then
+    _link_config "$CONFIG_DIR/new-machine-setup/blackhole-toggle" "$HOME/.local/bin/blackhole-toggle"
 fi
 
 

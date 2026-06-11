@@ -1,0 +1,27 @@
+#!/bin/bash
+# sprite-toggle - Spawn or dismiss the desktop sprite (animated on-screen character).
+#
+#   First press : spawn a sprite that wanders, idles, attacks, spins and hops
+#                 along the bottom of the screen (drag it; right-click closes it).
+#   Press again : dismiss all running sprites.
+#
+# A character is a folder under ~/.config/desktop-sprites/characters/ built by
+# build_characters.py. Pass a name to pick one; default is ryu.
+#   sprite-toggle            -> toggle the default (ryu)
+#   sprite-toggle pikachu    -> spawn pikachu (if built)
+#
+# Runs via uv (PySide6 declared inline in sprite.py) so no system Python is used.
+# For i3 keybind: bindsym $mod+p exec --no-startup-id ~/.local/bin/sprite-toggle
+
+SPRITE="$HOME/.config/desktop-sprites/sprite.py"
+CHAR="${1:-ryu}"
+
+# Match the running sprite process specifically (path contains sprite.py); the
+# literal "sprite.py" won't match this script's own argv (sprite-toggle).
+if pgrep -f "desktop-sprites/sprite.py" >/dev/null; then
+    pkill -f "desktop-sprites/sprite.py"
+    notify-send -a "Sprite" -i face-monkey -t 2500 "Sprite" "Dismissed"
+else
+    setsid bash -c "exec uv run --quiet '$SPRITE' '$CHAR'" >/dev/null 2>&1 </dev/null &
+    notify-send -a "Sprite" -i face-monkey -t 2500 "Sprite" "$CHAR is here"
+fi

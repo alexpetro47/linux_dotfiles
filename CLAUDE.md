@@ -37,7 +37,7 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+t` | Toggle theme (dark/light) |
 | `Alt+Shift+n` | Toggle focus mode (notifications) |
 | `Alt+Shift+b` | Toggle polybar |
-| `Alt+Shift+c` | Toggle screen recording (SSR) |
+| `Super+Ctrl+v` | Toggle screen recording (ffmpeg → ~/Downloads) |
 | `Alt+Shift+a` | Toggle lid suspend (stay awake when closed) |
 | `Alt+i` | Toggle VPN (Tailscale exit node through DO droplet) |
 | `Alt+Shift+p` | Toggle picom compositor |
@@ -46,6 +46,9 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+m` | Toggle cava audio spectrum visualizer popup |
 | `Alt+Shift+u` | Mount SD card / press again to eject (notifies status) |
 | `Alt+Shift+x` | Capture stream → BPM/key/chord-progression/structure report popup (saved to ~/Music/analysis, opens Thunar) |
+| `Alt+Shift+g` | Toggle standup recorder (mic+system → chunked Groq Whisper transcript at ~/Documents/standups/YYYY-MM-DD.md) |
+| `Alt+p` | Toggle desktop sprite (animated Ryu wanders/idles/attacks/spins on screen edges; drag to any edge, double-click to attack, right-click to close) |
+| `Alt+Shift+h` | Toggle black hole break reminder (Ghostty terminal with shader: hole drifts and lenses text, grows until the :55-:00 break each hour, fades when idle) |
 
 ## Theme
 

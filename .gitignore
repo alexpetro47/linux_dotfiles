@@ -184,6 +184,8 @@ new-machine-setup/*
 !new-machine-setup/toggle-theme
 !new-machine-setup/voice-dictation
 !new-machine-setup/voice-dictation-transcribe
+!new-machine-setup/standup-record
+!new-machine-setup/standup-transcribe-worker
 !new-machine-setup/lid-suspend-toggle
 !new-machine-setup/lid-suspend-sync
 !new-machine-setup/vpn-toggle
@@ -200,6 +202,23 @@ new-machine-setup/*
 !new-machine-setup/personal-vpn-setup.md
 !new-machine-setup/clone-repos.sh
 !new-machine-setup/clone-repos.txt
+!new-machine-setup/sprite-toggle
+!new-machine-setup/blackhole-toggle
+
+# Ghostty (only used for the black hole break-reminder shader)
+!ghostty/
+ghostty/*
+!ghostty/shaders/
+ghostty/shaders/*
+!ghostty/shaders/blackhole.glsl
+
+# Desktop sprites (engine + built characters; raw candidate rips stay local)
+!desktop-sprites/
+desktop-sprites/*
+!desktop-sprites/sprite.py
+!desktop-sprites/build_characters.py
+!desktop-sprites/characters/
+!desktop-sprites/characters/**
 
 !theme-mode
 !theme-schemes
