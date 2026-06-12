@@ -47,7 +47,7 @@ Scripts are designed for safe re-runs:
 | `Alt+Shift+u` | Mount SD card / press again to eject (notifies status) |
 | `Alt+Shift+x` | Capture stream → BPM/key/chord-progression/structure report popup (saved to ~/Music/analysis, opens Thunar) |
 | `Alt+Shift+g` | Toggle standup recorder (mic+system → chunked Groq Whisper transcript at ~/Documents/standups/YYYY-MM-DD.md) |
-| `Alt+p` | Toggle desktop sprite (animated Ryu wanders/idles/attacks/spins on screen edges; drag to any edge, double-click to attack, right-click to close) |
+| `Alt+p` | Toggle desktop sprite (animated Ryu wanders/idles/attacks/somersaults plus tatsu, shoryuken, hadouken, taunt, dash, moonwalk on screen edges; superhero landing when dropped from height; drag to any edge, double-click to attack, right-click to close) |
 | `Alt+Shift+h` | Toggle black hole break reminder (Ghostty terminal with shader: hole drifts and lenses text, grows until the :55-:00 break each hour, fades when idle) |
 
 ## Theme

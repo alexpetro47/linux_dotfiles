@@ -31,13 +31,34 @@ ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "candidates" / "streetfighter"
 BODY_H = 96  # target height (px) of the neutral standing figure
 
-# character -> {action: (source_gif, fps, loops?)}
+# character -> {action: (source_gif, fps, loops?[, anchor[, scale_ref[, frames]]])}
+#   frames: list of source frame indices (repeats allowed) to slice/reorder a
+#     gif, e.g. hold a pose by repeating its index.
+#   anchor "union" (default): crop all frames to the shared alpha bbox -- keeps
+#     in-canvas motion (e.g. a projectile flying off).
+#   anchor "frame": crop each frame to its own bbox, bottom-centered -- strips
+#     travel/arc baked into the gif so the engine's physics supply all motion.
+#   scale_ref: gif whose frame-0 standing figure defines the scale (for rips
+#     whose own frame 0 isn't a neutral stand).
+# New gifs ripped from fightersgeneration.com Ryu pages (characters3/ryu-a*.html;
+# ryu-cfe-jump2 from np7/char/gifs/ryu/). ry-s4.gif is the SF3 stance, used as
+# the scale reference for the SF3-native rips. NOTE: justnopoint.com/zweifuss
+# hosts the same rips but with corrupted palettes -- don't use that mirror.
 CHARACTERS = {
     "ryu": {
         "idle":  ("ryustand.gif", 12, True),
         "walk":  ("ryu-walk.gif", 14, True),
         "punch": ("ryupunch.gif", 18, False),
         "kick":  ("ryukick.gif", 14, False),
+        "flip":     ("ryu-cfe-jump2.gif", 40, False, "frame"),
+        "tatsu":    ("ryu-hurricane-ts.gif", 17, False, "frame", "ry-s4.gif"),
+        "shoryu":   ("ryu-shoryukens.gif", 24, False, "frame", "ry-s4.gif"),
+        "hadouken": ("ryu-fireballs.gif", 14, False, "union", "ry-s4.gif"),
+        "taunt":    ("ryu-ts-taunt1.gif", 12, False, "union", "ry-s4.gif"),
+        "dashf":    ("ryu-dashf.gif", 14, False, "frame", "ry-s4.gif"),
+        # superhero landing: shoryuken windup crouch held, then the rise frame
+        "land":     ("ryu-shoryukens.gif", 10, False, "frame", "ry-s4.gif",
+                     [0, 0, 0, 0, 0, 0, 0, 1]),
     },
 }
 
@@ -64,11 +85,12 @@ def union_bbox(frames):
     return tuple(box) if box else None
 
 
-def build_action(frames, scale):
+def build_action(frames, scale, anchor="union"):
     box = union_bbox(frames)
     out = []
     for f in frames:
-        c = f.crop(box)
+        b = f.getbbox() if anchor == "frame" else box
+        c = f.crop(b or box)
         w = max(1, round(c.width * scale))
         h = max(1, round(c.height * scale))
         out.append(c.resize((w, h), Image.LANCZOS))
@@ -82,12 +104,18 @@ def main():
         manifest = {"name": char, "body_height": BODY_H, "actions": {}}
 
         # scale factor per action keyed off frame-0 neutral-stance height
-        for action, (gif, fps, loop) in actions.items():
+        for action, spec in actions.items():
+            gif, fps, loop = spec[:3]
+            anchor = spec[3] if len(spec) > 3 else "union"
+            scale_ref = spec[4] if len(spec) > 4 else gif
             frames = load_frames(SRC / gif)
-            f0_box = frames[0].getbbox()
-            f0_h = (f0_box[3] - f0_box[1]) if f0_box else frames[0].height
+            if len(spec) > 5:
+                frames = [frames[i] for i in spec[5]]
+            ref0 = load_frames(SRC / scale_ref)[0]
+            f0_box = ref0.getbbox()
+            f0_h = (f0_box[3] - f0_box[1]) if f0_box else ref0.height
             scale = BODY_H / f0_h
-            built = build_action(frames, scale)
+            built = build_action(frames, scale, anchor)
 
             adir = cdir / action
             adir.mkdir(parents=True, exist_ok=True)

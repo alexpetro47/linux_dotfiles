@@ -8,7 +8,10 @@ Desktop sprite engine.
 
 Spawns a frameless, transparent, always-on-top character that lives on the edges
 of your screen and runs a randomized chain of behaviors: idle, wander, attacks,
-spin, hop.
+hop, somersault, tatsu, shoryuken, hadouken, taunt, moonwalk, dash.
+
+New moves are procedural: physics + rotation applied over the existing frame
+sets, so they work for any character without new art.
 
 Edge-relative gravity: the sprite sticks to one screen edge (bottom/top/left/
 right). Gravity pulls it onto that surface and it walks *along* the edge, rotated
@@ -25,6 +28,7 @@ Controls:
     double-click   trigger a random attack
 
 Run:  uv run sprite.py [character] [--edge bottom|top|left|right] [--duration N]
+                       [--demo behavior1,behavior2]   (cycle only those behaviors)
 """
 
 import json
@@ -44,7 +48,7 @@ DT = 1.0 / FPS
 GRAVITY = 2200.0
 WALK_SPEED = 80.0
 HOP_V = 620.0
-SPIN_TIME = 0.7
+LAND_LIFT = 140.0  # drop height (logical px) that earns a superhero landing
 
 WIN = 200          # square window: fits the largest frame in any rotation + spin
 MARGIN = 60        # keep this far from the perpendicular screen edges
@@ -69,9 +73,10 @@ class Character:
 
 
 class Sprite(QWidget):
-    def __init__(self, character, edge="bottom"):
+    def __init__(self, character, edge="bottom", demo=None):
         super().__init__()
         self.char = character
+        self.demo = demo
 
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
                             | Qt.Tool | Qt.WindowDoesNotAcceptFocus)
@@ -94,6 +99,7 @@ class Sprite(QWidget):
         self.frame = 0
         self.frame_t = 0.0
         self.spin_angle = 0.0
+        self.spin_rate = 0.0
         self.spinning = False
 
         self.behavior = "idle"
@@ -128,6 +134,10 @@ class Sprite(QWidget):
         return QPointF(s.right() - self.lift, self.t)        # right
 
     # --- behavior chain --------------------------------------------------
+    def _action_duration(self, action):
+        a = self.char.actions[action]
+        return len(a["frames"]) / a["fps"]
+
     def _set_action(self, action):
         if action != self.action and self.char.has(action):
             self.action, self.frame, self.frame_t = action, 0, 0.0
@@ -138,7 +148,7 @@ class Sprite(QWidget):
         if name == "idle":
             self.vt = 0.0
             self._set_action("idle")
-            self.behavior_t = random.uniform(1.4, 3.4)
+            self.behavior_t = 0.6 if self.demo else random.uniform(1.4, 3.4)
         elif name == "wander":
             self.facing = random.choice([-1, 1])
             self.vt = self.facing * WALK_SPEED
@@ -149,24 +159,95 @@ class Sprite(QWidget):
             choices = [a for a in ("punch", "kick") if self.char.has(a)]
             self._set_action(random.choice(choices) if choices else "idle")
             self.behavior_t = 0.0
-        elif name == "spin":
-            self.vt = 0.0
-            self.spinning = True
-            self.spin_angle = 0.0
-            self._set_action("idle")
-            self.behavior_t = SPIN_TIME
         elif name == "hop":
             self.vlift = HOP_V
             self.on_surface = False
             self.vt = random.choice([-1, 1]) * WALK_SPEED * 0.6
             self._set_action("idle")
             self.behavior_t = 0.0
+        elif name == "somersault":
+            self.facing = random.choice([-1, 1])
+            self.on_surface = False
+            self.behavior_t = 0.0
+            if self.char.has("flip"):
+                # real tuck-and-roll frames; arc timed so he lands as it ends
+                self._set_action("flip")
+                self.vlift = GRAVITY * self._action_duration("flip") / 2
+                self.vt = self.facing * WALK_SPEED * 2.2
+            else:
+                # fallback: rotate the idle frame through the arc; 35% backflip
+                v = HOP_V * random.uniform(0.95, 1.2)
+                self.vlift = v
+                back = random.random() < 0.35
+                self.vt = self.facing * WALK_SPEED * (-0.9 if back else 1.7)
+                self.spinning, self.spin_angle = True, 0.0
+                self.spin_rate = (-360.0 if back else 360.0) * GRAVITY / (2 * v)
+                self._set_action("idle")
+        elif name == "tatsu":
+            # hurricane kick: glide along the edge while the spin plays
+            self.facing = random.choice([-1, 1])
+            self.vt = self.facing * WALK_SPEED * 2.6
+            if self.char.has("tatsu"):
+                self._set_action("tatsu")
+                self.behavior_t = self._action_duration("tatsu")
+            else:
+                self._set_action("kick" if self.char.has("kick") else "idle")
+                self.behavior_t = random.uniform(0.9, 1.5)
+        elif name == "shoryuken":
+            self.on_surface = False
+            self.vt = self.facing * WALK_SPEED * 0.5
+            self.behavior_t = 0.0
+            if self.char.has("shoryu"):
+                self._set_action("shoryu")
+                self.vlift = GRAVITY * self._action_duration("shoryu") / 2
+            else:
+                self._set_action("punch" if self.char.has("punch") else "idle")
+                self.vlift = HOP_V * 1.25
+        elif name in ("hadouken", "taunt", "win", "land"):
+            self.vt = 0.0
+            self._set_action(name)
+            self.behavior_t = 0.0
+        elif name == "fall":
+            self.vt = 0.0
+            self._set_action("idle")
+            self.behavior_t = 0.0
+        elif name == "moonwalk":
+            self.facing = random.choice([-1, 1])
+            self.vt = -self.facing * WALK_SPEED * 0.75
+            self._set_action("walk" if self.char.has("walk") else "idle")
+            self.behavior_t = random.uniform(1.5, 3.0)
+        elif name == "dash":
+            self.facing = random.choice([-1, 1])
+            self.vt = self.facing * WALK_SPEED * 3.4
+            if self.char.has("dashf"):
+                self._set_action("dashf")
+                self.behavior_t = self._action_duration("dashf")
+            else:
+                # static forward lean (spin machinery with rate 0)
+                self.spinning, self.spin_angle, self.spin_rate = True, 14.0, 0.0
+                self._set_action("walk" if self.char.has("walk") else "idle")
+                self.behavior_t = random.uniform(0.5, 0.9)
 
     def _next_behavior(self):
-        pool = ["idle", "idle", "wander", "wander", "wander", "spin", "hop"]
+        w = {"idle": 3.0, "wander": 4.0, "hop": 1.0,
+             "moonwalk": 1.0, "dash": 1.0,
+             "somersault": 0.35}          # big jump: kept rare
         if any(self.char.has(a) for a in ("punch", "kick")):
-            pool += ["attack", "attack"]
-        self._set_behavior(random.choice(pool))
+            w["attack"] = 1.5
+        if self.char.has("tatsu") or self.char.has("kick"):
+            w["tatsu"] = 0.35
+        if self.char.has("shoryu") or self.char.has("punch"):
+            w["shoryuken"] = 0.25         # big jump too
+        if self.char.has("hadouken"):
+            w["hadouken"] = 0.35
+        if self.char.has("taunt"):
+            w["taunt"] = 0.6
+        if self.char.has("win"):
+            w["win"] = 0.6
+        if self.demo:
+            w = {b: 1.0 for b in self.demo}
+        names = list(w)
+        self._set_behavior(random.choices(names, [w[n] for n in names])[0])
 
     # --- main loop -------------------------------------------------------
     def _tick(self):
@@ -192,16 +273,23 @@ class Sprite(QWidget):
         return (not a["loop"]) and self.frame >= len(a["frames"]) - 1
 
     def _advance_behavior(self):
-        if self.behavior == "spin":
-            self.spin_angle += 360.0 / SPIN_TIME * DT
-        if self.behavior == "attack":
+        if self.spinning:
+            self.spin_angle += self.spin_rate * DT
+        if self.behavior in ("attack", "hadouken", "taunt", "win", "land"):
             if self._action_finished():
                 self._set_behavior("idle")
             return
-        if self.behavior == "hop":
+        if self.behavior == "fall":
+            if self.on_surface:
+                self._set_behavior("land")
+            return
+        if self.behavior in ("hop", "somersault", "shoryuken"):
             if self.on_surface:
                 self._set_behavior("idle")
             return
+        if self.behavior == "tatsu" and self.action == "kick" \
+                and self._action_finished():
+            self.frame, self.frame_t = 0, 0.0     # fallback: re-fire the kick
         self.behavior_t -= DT
         if self.behavior_t <= 0:
             self._next_behavior()
@@ -275,7 +363,11 @@ class Sprite(QWidget):
             return
         self.drag_grab = None
         self._snap_to_nearest_edge()
-        self._set_behavior("idle")
+        if (not self.on_surface and self.lift > LAND_LIFT
+                and self.char.has("land")):
+            self._set_behavior("fall")
+        else:
+            self._set_behavior("idle")
 
     def _snap_to_nearest_edge(self):
         s = self.scr
@@ -310,17 +402,23 @@ class Sprite(QWidget):
 
 
 def main():
-    pos = [a for a in sys.argv[1:] if not a.startswith("-")]
+    argv = sys.argv[1:]
+    vals = {argv[i + 1] for i, a in enumerate(argv)
+            if a in ("--edge", "--duration", "--demo") and i + 1 < len(argv)}
+    pos = [a for a in argv if not a.startswith("-") and a not in vals]
     name = pos[0] if pos else "ryu"
     edge = "bottom"
     if "--edge" in sys.argv:
         edge = sys.argv[sys.argv.index("--edge") + 1]
+    demo = None
+    if "--demo" in sys.argv:
+        demo = sys.argv[sys.argv.index("--demo") + 1].split(",")
 
     app = QApplication(sys.argv)
     app.setApplicationName("desktop-sprite")
     app.setDesktopFileName("desktop-sprite")
 
-    sprite = Sprite(Character(name), edge=edge)
+    sprite = Sprite(Character(name), edge=edge, demo=demo)
     sprite.show()
 
     if "--duration" in sys.argv:

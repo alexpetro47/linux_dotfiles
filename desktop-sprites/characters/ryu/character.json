@@ -37,6 +37,69 @@
         132,
         111
       ]
+    },
+    "flip": {
+      "frames": 28,
+      "fps": 40,
+      "loop": false,
+      "size": [
+        53,
+        96
+      ]
+    },
+    "tatsu": {
+      "frames": 27,
+      "fps": 17,
+      "loop": false,
+      "size": [
+        72,
+        89
+      ]
+    },
+    "shoryu": {
+      "frames": 17,
+      "fps": 24,
+      "loop": false,
+      "size": [
+        66,
+        67
+      ]
+    },
+    "hadouken": {
+      "frames": 14,
+      "fps": 14,
+      "loop": false,
+      "size": [
+        126,
+        96
+      ]
+    },
+    "taunt": {
+      "frames": 18,
+      "fps": 12,
+      "loop": false,
+      "size": [
+        107,
+        97
+      ]
+    },
+    "dashf": {
+      "frames": 6,
+      "fps": 14,
+      "loop": false,
+      "size": [
+        78,
+        80
+      ]
+    },
+    "land": {
+      "frames": 8,
+      "fps": 10,
+      "loop": false,
+      "size": [
+        66,
+        67
+      ]
     }
   }
 }
