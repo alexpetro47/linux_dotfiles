@@ -198,6 +198,7 @@ new-machine-setup/*
 !new-machine-setup/audio-analyze
 !new-machine-setup/screenshot
 !new-machine-setup/bliss.png
+!new-machine-setup/jesus.jpg
 !new-machine-setup/additional-installs.md
 !new-machine-setup/personal-vpn-setup.md
 !new-machine-setup/clone-repos.sh
