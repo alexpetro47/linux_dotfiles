@@ -1,24 +1,69 @@
 #!/bin/bash
-# Toggle screen recording using ffmpeg (no external config needed)
+# Toggle screen recording using ffmpeg
+# Start: zenity setup dialog (area full/region via slop, fps, optional system audio)
+# Stop: finalize file, notify that the clip landed in ~/Downloads
 
 PIDFILE="/tmp/screenrec.pid"
+FILEFILE="/tmp/screenrec.file"
 OUTPUT_DIR="$HOME/Downloads"
 
 _notify() {
-    dunstify -a "screenrec" -t 2000 -r 99999 -u low "$1" "$2"
+    dunstify -a "screenrec" -t 4000 -r 99999 -u low "$1" "$2"
 }
 
 if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
     # Running - stop recording
-    kill -INT "$(cat "$PIDFILE")"
+    pid=$(cat "$PIDFILE")
+    kill -INT "$pid"
+    # Wait for ffmpeg to finalize the container before notifying
+    for _ in $(seq 50); do
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 0.1
+    done
     rm -f "$PIDFILE"
-    # Find most recent recording
-    latest=$(ls -t "$OUTPUT_DIR"/screenrec_*.mp4 2>/dev/null | head -1)
-    _notify "Recording Saved" "$latest"
+    polybar-msg action screenrec hook 0 2>/dev/null
+    output_file=$(cat "$FILEFILE" 2>/dev/null)
+    rm -f "$FILEFILE"
+    if [[ -s "$output_file" ]]; then
+        size=$(du -h "$output_file" | cut -f1)
+        _notify "Clipped → Downloads" "$(basename "$output_file") ($size)"
+    else
+        _notify "Recording Failed" "No output file was written"
+    fi
 else
-    # Start recording
+    # Setup GUI
+    form=$(zenity --forms --title="Screen Record" --text="Setup" \
+        --add-combo="Area" --combo-values="Full screen|Select region" \
+        --add-combo="FPS" --combo-values="30|60" \
+        --add-combo="Audio" --combo-values="None|System audio") || exit 0
+    IFS='|' read -r area fps audio <<< "$form"
+    fps=${fps:-30}
+
+    grab_args=(-f x11grab -framerate "$fps")
+    label="full screen"
+    if [[ "$area" == "Select region" ]]; then
+        geom=$(slop -f "%x %y %w %h") || exit 0
+        read -r x y w h <<< "$geom"
+        # libx264 yuv420p needs even dimensions
+        w=$((w - w % 2)); h=$((h - h % 2))
+        grab_args+=(-video_size "${w}x${h}" -i ":0.0+${x},${y}")
+        label="${w}x${h} region"
+    else
+        grab_args+=(-i :0)
+    fi
+
+    audio_args=()
+    if [[ "$audio" == "System audio" ]]; then
+        audio_args=(-f pulse -i "$(pactl get-default-sink).monitor" -c:a aac -b:a 192k)
+        label+=" + audio"
+    fi
+
     output_file="$OUTPUT_DIR/screenrec_$(date +%Y-%m-%d_%H-%M-%S).mp4"
-    ffmpeg -y -f x11grab -framerate 30 -i :0 -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p "$output_file" &>/dev/null &
+    ffmpeg -y "${grab_args[@]}" "${audio_args[@]}" \
+        -c:v libx264 -preset ultrafast -crf 18 -pix_fmt yuv420p \
+        "$output_file" &>/dev/null &
     echo $! > "$PIDFILE"
-    _notify "Recording Started" "$(basename "$output_file")"
+    echo "$output_file" > "$FILEFILE"
+    polybar-msg action screenrec hook 1 2>/dev/null
+    _notify "Recording Started" "$label → $(basename "$output_file")"
 fi

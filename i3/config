@@ -192,4 +192,6 @@ for_window [class="desktop-sprite"] floating enable, sticky enable, border none
 # Auto-assign applications to specific workspaces
 assign [class="google-chrome"] 7
 # assign [class="Google-chrome"] 7
+# Playwright MCP browser (launched with --class=PlaywrightMCP) lands on ws7, no focus steal
+assign [class="PlaywrightMCP"] 7
 

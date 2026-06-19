@@ -4,6 +4,7 @@
 
 INHIBIT_FILE="$HOME/.config/lid-suspend-inhibit"
 INHIBIT_PID_FILE="$HOME/.config/lid-suspend-inhibit.pid"
+CAFFEINE_PID_FILE="$HOME/.config/lid-suspend-caffeine.pid"
 
 # Check if we think we're inhibited
 if [ -f "$INHIBIT_FILE" ]; then
@@ -17,7 +18,7 @@ if [ -f "$INHIBIT_FILE" ]; then
         fi
     fi
     # Stale state - clean up
-    rm -f "$INHIBIT_FILE" "$INHIBIT_PID_FILE"
+    rm -f "$INHIBIT_FILE" "$INHIBIT_PID_FILE" "$CAFFEINE_PID_FILE"
 fi
 
 # Not inhibited - show no icon (hook 0)

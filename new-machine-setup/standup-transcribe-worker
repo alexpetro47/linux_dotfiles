@@ -1,0 +1,163 @@
+#!/bin/bash
+#
+# standup-transcribe-worker <session_dir>
+#
+# Spawned by standup-record. Watches a session's chunk directory and, for each
+# COMPLETED Opus segment, sends it to the Groq Whisper API and appends a
+# timestamped line to the day's Markdown log. Idempotent and resumable: a chunk
+# is marked <chunk>.done only after a SUCCESSFUL transcription, so a network
+# outage or missing key just defers it — the audio stays on disk and the chunk
+# is retried on the next loop pass or by `standup-record reconcile`. Exits once
+# ffmpeg has stopped and every chunk is transcribed.
+#
+
+SESSION_DIR="$1"
+[ -n "$SESSION_DIR" ] && [ -d "$SESSION_DIR" ] || exit 1
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+STANDUP_DIR="${HOME}/Documents/standups"
+CHUNK_SECS="${STANDUP_CHUNK_SECS:-120}"
+MODEL="${STANDUP_GROQ_MODEL:-whisper-large-v3-turbo}"
+CHUNKS="$SESSION_DIR/chunks"
+DATE_STR=$(cat "$SESSION_DIR/date" 2>/dev/null || date +%Y-%m-%d)
+STARTED=$(cat "$SESSION_DIR/started_epoch" 2>/dev/null || echo 0)
+LOG="$STANDUP_DIR/$DATE_STR.md"
+
+rec_alive() {
+    [ -f "$SESSION_DIR/rec.pid" ] && kill -0 "$(cat "$SESSION_DIR/rec.pid")" 2>/dev/null
+}
+
+# Per-chunk notification showing the freshly transcribed snippet.
+notify() {
+    dunstify -r 92002 -u low -t 4000 "Standup transcript" "$1" 2>/dev/null || \
+        notify-send -t 4000 "Standup transcript" "$1" 2>/dev/null || true
+}
+
+# Resolve the Groq API key from bws (shared 1h cache with voice-dictation).
+get_groq_api_key() {
+    local cache_file="${XDG_RUNTIME_DIR:-/tmp}/groq-api-key"
+    local cache_ttl=3600
+
+    if [[ -f "$cache_file" ]]; then
+        local age=$(($(date +%s) - $(stat -c %Y "$cache_file" 2>/dev/null || echo 0)))
+        if [[ $age -lt $cache_ttl ]]; then
+            cat "$cache_file"
+            return 0
+        fi
+    fi
+
+    if [[ -z "$BWS_ACCESS_TOKEN" ]]; then
+        BWS_ACCESS_TOKEN=$(secret-tool lookup service bws account default 2>/dev/null)
+        export BWS_ACCESS_TOKEN
+    fi
+
+    local key
+    key=$(bws secret list 2>/dev/null | jq -r '.[] | select(.key == "GROQ_API_KEY") | .value' 2>/dev/null)
+    if [[ -z "$key" || "$key" == "null" ]]; then
+        return 1
+    fi
+    echo "$key" > "$cache_file"
+    chmod 600 "$cache_file"
+    echo "$key"
+}
+
+# Per-session header, written lazily before the first transcript line so silent
+# or never-transcribed sessions don't leave an orphan header in the log.
+ensure_header() {
+    [ -f "$SESSION_DIR/.header_written" ] && return
+    local sess_start
+    sess_start=$(date -d "@$STARTED" '+%H:%M' 2>/dev/null || echo "?")
+    { echo; echo "## Session ${sess_start}"; echo; } >> "$LOG"
+    touch "$SESSION_DIR/.header_written"
+}
+
+transcribe_chunk() {
+    local chunk="$1" idx="$2"
+    local base resp curl_exit text err offset ts
+    base=$(basename "$chunk")
+
+    resp=$(curl -s --max-time 120 -X POST \
+        "https://api.groq.com/openai/v1/audio/transcriptions" \
+        -H "Authorization: Bearer $GROQ_API_KEY" \
+        -F "model=$MODEL" \
+        -F "file=@$chunk" \
+        -F "response_format=json" \
+        -F "language=en" 2>/dev/null)
+    curl_exit=$?
+
+    # Network/transport failure → leave un-done so it retries later.
+    if [ "$curl_exit" -ne 0 ]; then
+        echo "[chunk $base] curl failed (exit $curl_exit) — will retry" >> "$SESSION_DIR/worker.log"
+        return 1
+    fi
+
+    text=$(printf '%s' "$resp" | jq -r '.text // empty' 2>/dev/null)
+
+    if [ -z "$text" ]; then
+        err=$(printf '%s' "$resp" | jq -r '.error.message // empty' 2>/dev/null)
+        if [ -n "$err" ] || [ -z "$resp" ]; then
+            echo "[chunk $base] Groq error: ${err:-empty response} — will retry" >> "$SESSION_DIR/worker.log"
+            return 1
+        fi
+        # Genuine silence: valid response, no speech. Mark done, write nothing.
+        touch "$chunk.done"
+        return 0
+    fi
+
+    text=$(printf '%s' "$text" | tr '\n' ' ' | sed 's/  */ /g; s/^ *//; s/ *$//')
+    offset=$((idx * CHUNK_SECS))
+    ts=$(date -d "@$((STARTED + offset))" '+%H:%M:%S' 2>/dev/null \
+         || printf '%02d:%02d' $((offset / 60)) $((offset % 60)))
+
+    ensure_header
+    printf '[%s] %s\n' "$ts" "$text" >> "$LOG"
+    notify "[$ts] ${text:0:90}"
+    touch "$chunk.done"
+}
+
+# Resolve the key once for the session. If absent, exit cleanly — the audio is
+# preserved and `standup-record reconcile` will retry once the key is available.
+GROQ_API_KEY=$(get_groq_api_key)
+if [ -z "$GROQ_API_KEY" ]; then
+    notify "No GROQ_API_KEY in bws — audio saved, transcription deferred"
+    echo "[worker] no GROQ_API_KEY; exiting (chunks left for reconcile)" >> "$SESSION_DIR/worker.log"
+    rm -f "$SESSION_DIR/worker.pid"
+    "$SCRIPT_DIR/standup-record" sync 2>/dev/null || true
+    exit 1
+fi
+
+while :; do
+    progressed=0
+    shopt -s nullglob
+    chunks=("$CHUNKS"/chunk-*.opus)
+    shopt -u nullglob
+    n=${#chunks[@]}
+
+    for i in "${!chunks[@]}"; do
+        chunk="${chunks[$i]}"
+        [ -f "$chunk.done" ] && continue
+        # The highest-index chunk may still be open while ffmpeg records.
+        if rec_alive && [ "$i" -eq $((n - 1)) ]; then
+            continue
+        fi
+        base=$(basename "$chunk"); num=${base#chunk-}; num=${num%.opus}
+        idx=$((10#$num))
+        transcribe_chunk "$chunk" "$idx" && progressed=1
+    done
+
+    if ! rec_alive; then
+        remaining=0
+        for c in "$CHUNKS"/chunk-*.opus; do
+            [ -e "$c" ] || continue
+            [ -f "$c.done" ] || remaining=1
+        done
+        [ "$remaining" -eq 0 ] && break
+    fi
+
+    [ "$progressed" -eq 0 ] && sleep 5
+done
+
+echo "[worker] session complete $(date '+%Y-%m-%d %H:%M:%S')" >> "$SESSION_DIR/worker.log"
+rm -f "$SESSION_DIR/worker.pid"
+# Reconcile the polybar indicator (clears it unless another session is active).
+"$SCRIPT_DIR/standup-record" sync 2>/dev/null || true

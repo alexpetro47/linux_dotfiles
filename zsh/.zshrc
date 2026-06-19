@@ -139,8 +139,6 @@ alias musicImport="rclone copy -v google_drive:music/workspace ~/Documents/prod/
 
 
 
-alias dcomp='docker-compose'
-
 # alias br='bun dev '
 # alias bc='rm -rf .next && echo "nextjs cache and error log cleared"'
 # alias bC='rm -rf .next node_modules bun.lockb && bun install && echo "nextjs cache and error log cleared"'

@@ -1,0 +1,227 @@
+#!/bin/bash
+#
+# standup-record - crash-safe long-form audio capture with chunked
+# background transcription. A self-hosted "Granola" for daily standups.
+#
+# How it stays crash-safe:
+#   ffmpeg mixes your mic + the system audio (sink monitor) into a stream of
+#   FINALIZED Opus segments written to persistent disk. Each closed segment is
+#   the source of truth, so a crash/power loss costs at most one in-progress
+#   chunk. A background worker sends each completed chunk to the Groq Whisper
+#   API and appends to a per-day Markdown log you can later hand to Claude to
+#   summarize. Transcription is decoupled from capture: if the worker, network,
+#   or key is unavailable, the audio still survives and `standup-record
+#   reconcile` re-transcribes the gaps.
+#
+# Usage:
+#   standup-record             # toggle start/stop
+#   standup-record start
+#   standup-record stop
+#   standup-record status
+#   standup-record reconcile   # re-transcribe orphaned chunks after a crash
+#   standup-record sync        # resync polybar indicator (called on polybar launch)
+#
+# Output:
+#   ~/Documents/standups/YYYY-MM-DD.md        # transcript log (per day)
+#   ~/Documents/standups/sessions/<id>/chunks # finalized Opus segments
+#
+# Env overrides:
+#   STANDUP_CHUNK_SECS  segment length in seconds (default 120)
+#   STANDUP_GROQ_MODEL  Groq Whisper model (default whisper-large-v3-turbo)
+#
+# Requires a GROQ_API_KEY secret in bws (same key as voice-dictation).
+#
+
+set -e
+
+STANDUP_DIR="${HOME}/Documents/standups"
+SESSIONS_DIR="$STANDUP_DIR/sessions"
+CURRENT_LINK="$SESSIONS_DIR/current"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+CHUNK_SECS="${STANDUP_CHUNK_SECS:-120}"
+NOTIFY_ID=92001
+
+mkdir -p "$SESSIONS_DIR"
+
+notify() {
+    local msg="$1" urgency="${2:-normal}"
+    dunstify -r "$NOTIFY_ID" -u "$urgency" -t 3000 "Standup Record" "$msg" 2>/dev/null || \
+        notify-send -t 3000 -u "$urgency" "Standup Record" "$msg" 2>/dev/null || true
+}
+
+# Polybar IPC indicator (module/standup). recording=red dot, transcribing=hourglass.
+polybar_update() {
+    case "$1" in
+        recording)    polybar-msg action standup hook 1 2>/dev/null || true ;;
+        transcribing) polybar-msg action standup hook 2 2>/dev/null || true ;;
+        idle|*)       polybar-msg action standup hook 0 2>/dev/null || true ;;
+    esac
+}
+
+rec_alive() {
+    local d="$1"
+    [ -f "$d/rec.pid" ] && kill -0 "$(cat "$d/rec.pid")" 2>/dev/null
+}
+
+worker_alive() {
+    local d="$1"
+    [ -f "$d/worker.pid" ] && kill -0 "$(cat "$d/worker.pid")" 2>/dev/null
+}
+
+is_recording() {
+    [ -L "$CURRENT_LINK" ] || return 1
+    local d
+    d=$(readlink -f "$CURRENT_LINK") || return 1
+    [ -d "$d" ] || { rm -f "$CURRENT_LINK"; return 1; }
+    rec_alive "$d"
+}
+
+any_worker_alive() {
+    local d
+    for d in "$SESSIONS_DIR"/*/; do
+        [ -d "$d" ] || continue
+        worker_alive "${d%/}" && return 0
+    done
+    return 1
+}
+
+spawn_worker() {
+    local d="$1"
+    worker_alive "$d" && return 0
+    nohup "$SCRIPT_DIR/standup-transcribe-worker" "$d" >>"$d/worker.log" 2>&1 &
+    echo $! > "$d/worker.pid"
+}
+
+start_recording() {
+    if is_recording; then
+        notify "Already recording"
+        return 0
+    fi
+
+    local date_str stamp session_dir
+    date_str=$(date +%Y-%m-%d)
+    stamp=$(date +%H%M%S)
+    session_dir="$SESSIONS_DIR/${date_str}_${stamp}"
+    mkdir -p "$session_dir/chunks"
+    date +%s > "$session_dir/started_epoch"
+    echo "$date_str" > "$session_dir/date"
+
+    # System audio = default sink's monitor; voice = default source (mic).
+    local mon mic
+    mon="$(pactl get-default-sink).monitor"
+    mic="$(pactl get-default-source)"
+    echo "mic=$mic mon=$mon" > "$session_dir/sources"
+
+    # -nostdin: ffmpeg must not swallow the controlling terminal's stdin.
+    # amix merges mic + system into one mono 16k track (ideal for whisper).
+    # segment muxer finalizes each chunk on disk -> crash-safe.
+    ffmpeg -nostdin -y \
+        -f pulse -i "$mic" \
+        -f pulse -i "$mon" \
+        -filter_complex "[0:a][1:a]amix=inputs=2:duration=longest:normalize=0,aresample=async=1" \
+        -ac 1 -ar 16000 -c:a libopus -b:a 24k \
+        -f segment -segment_time "$CHUNK_SECS" -reset_timestamps 1 \
+        "$session_dir/chunks/chunk-%04d.opus" \
+        >>"$session_dir/ffmpeg.log" 2>&1 &
+    echo $! > "$session_dir/rec.pid"
+
+    ln -sfn "$session_dir" "$CURRENT_LINK"
+    spawn_worker "$session_dir"
+    polybar_update recording
+
+    notify "Recording (mic + system) - chunks every ${CHUNK_SECS}s"
+}
+
+stop_recording() {
+    if ! is_recording; then
+        notify "Not recording" low
+        return 0
+    fi
+    local d pid
+    d=$(readlink -f "$CURRENT_LINK")
+    pid=$(cat "$d/rec.pid")
+
+    # SIGINT lets the segment muxer close the final chunk cleanly.
+    kill -INT "$pid" 2>/dev/null || true
+    local i
+    for i in $(seq 1 50); do
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 0.1
+    done
+
+    rm -f "$CURRENT_LINK"
+    # Worker sees ffmpeg gone, drains the remaining chunks, then exits on its own.
+    spawn_worker "$d"
+    polybar_update transcribing
+    notify "Stopped - transcribing remaining chunks in background"
+}
+
+reconcile() {
+    # After a crash/reboot: any session whose ffmpeg AND worker are both dead
+    # but still has untranscribed chunks gets a fresh worker to drain it.
+    local d found=0
+    for d in "$SESSIONS_DIR"/*/; do
+        [ -d "$d" ] || continue
+        d="${d%/}"
+        [ "$d" = "$(readlink -f "$CURRENT_LINK" 2>/dev/null)" ] && continue
+        rec_alive "$d" && continue
+        worker_alive "$d" && continue
+        local c pending=0
+        for c in "$d"/chunks/chunk-*.opus; do
+            [ -e "$c" ] || continue
+            [ -f "$c.done" ] || pending=1
+        done
+        if [ "$pending" -eq 1 ]; then
+            # Clear the recording symlink/pid so the worker treats ffmpeg as done.
+            rm -f "$d/rec.pid"
+            spawn_worker "$d"
+            found=$((found + 1))
+        fi
+    done
+    if [ "$found" -gt 0 ]; then
+        polybar_update transcribing
+        notify "Resuming transcription for $found orphaned session(s)"
+    else
+        echo "Nothing to reconcile."
+    fi
+}
+
+# Resync the polybar indicator with actual state (called on polybar (re)launch).
+sync_indicator() {
+    if is_recording; then
+        polybar_update recording
+    elif any_worker_alive; then
+        polybar_update transcribing
+    else
+        polybar_update idle
+    fi
+}
+
+status() {
+    if is_recording; then
+        local d started elapsed n
+        d=$(readlink -f "$CURRENT_LINK")
+        started=$(cat "$d/started_epoch" 2>/dev/null || echo 0)
+        elapsed=$(( $(date +%s) - started ))
+        n=$(find "$d/chunks" -name 'chunk-*.opus' 2>/dev/null | wc -l)
+        printf 'RECORDING  %dm%02ds elapsed, %d chunk(s)\n  %s\n' \
+            $((elapsed / 60)) $((elapsed % 60)) "$n" "$d"
+    else
+        echo "idle"
+    fi
+}
+
+case "${1:-toggle}" in
+    start)      start_recording ;;
+    stop)       stop_recording ;;
+    status)     status ;;
+    reconcile)  reconcile ;;
+    sync)       sync_indicator ;;
+    toggle|*)
+        if is_recording; then
+            stop_recording
+        else
+            start_recording
+        fi
+        ;;
+esac

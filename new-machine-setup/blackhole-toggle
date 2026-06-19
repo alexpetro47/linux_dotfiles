@@ -1,0 +1,21 @@
+#!/bin/bash
+# blackhole-toggle - Spawn or collapse a Ghostty window running the black hole
+# break-reminder shader (github.com/s0xDk/ghostty-blackhole). The hole grows
+# over each hour, collapses for the :55-:00 break, and fades out when the
+# terminal sits idle.
+
+SHADER="$HOME/.config/ghostty/shaders/blackhole.glsl"
+
+if pgrep -f 'class=blackhole.terminal' >/dev/null; then
+    pkill -f 'class=blackhole.terminal'
+    notify-send -u low "Black hole" "Collapsed"
+else
+    if ! command -v ghostty >/dev/null; then
+        notify-send -u critical "Black hole" "ghostty not installed: sudo snap install ghostty --classic"
+        exit 1
+    fi
+    ghostty --class=blackhole.terminal \
+        --custom-shader="$SHADER" \
+        --custom-shader-animation=true >/dev/null 2>&1 &
+    notify-send -u low "Black hole" "Spawned"
+fi

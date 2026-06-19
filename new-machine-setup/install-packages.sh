@@ -44,6 +44,8 @@ sudo apt install -y \
     cbonsai \
     xclip \
     xdotool \
+    slop \
+    zenity \
     inotify-tools \
     curl \
     zip \
@@ -521,6 +523,16 @@ if ! installed obsidian; then
     sudo snap install obsidian --classic
 else
     log "Obsidian already installed"
+fi
+
+# =============================================================================
+# GHOSTTY (snap - terminal for the black hole break-reminder shader, needs 1.3+)
+# =============================================================================
+if ! installed ghostty; then
+    log "Installing Ghostty via snap..."
+    sudo snap install ghostty --classic
+else
+    log "Ghostty already installed"
 fi
 
 # =============================================================================
