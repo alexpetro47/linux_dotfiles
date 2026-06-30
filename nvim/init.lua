@@ -162,7 +162,7 @@ vim.g["sneak#use_ic_scs"] = 1 --case insensitive
 -- sets text wrapping in markdown files
 vim.cmd([[
 " autocmd FileType markdown setlocal textwidth=100
-autocmd FileType markdown setlocal textwidth=59
+autocmd FileType markdown setlocal textwidth=80
 ]])
 
 
@@ -318,7 +318,8 @@ vim.keymap.set('n', '<leader><leader>', ":lua require'telescope.builtin'.oldfile
 vim.keymap.set('n', '<leader>sh', ":lua require'telescope.builtin'.help_tags()<CR>" , { desc = 'search help'})
 vim.keymap.set('n', '<leader>sg', ":lua require'telescope.builtin'.live_grep({ additional_args = { '--hidden' } })<CR>" , { desc = 'search grep' })
 vim.keymap.set('n', '<leader>sf', ":lua require'telescope.builtin'.fd({ hidden = true })<CR>" , { desc = 'search files' })
-vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>" , { desc = 'search document symbols' })
+vim.keymap.set('n', '<leader>ss', ":lua require'telescope.builtin'.lsp_dynamic_workspace_symbols()<CR>" , { desc = 'search workspace symbols' })
+vim.keymap.set('n', '<leader>sd', ":lua require'telescope.builtin'.lsp_document_symbols()<CR>" , { desc = 'search document symbols' })
 vim.keymap.set('n', 'gr', ":lua require'telescope.builtin'.lsp_references()<CR>" , { desc = 'search references' })
 vim.keymap.set('n', '<leader>sd', function()
   require('telescope.builtin').find_files({
@@ -645,6 +646,24 @@ require('lazy').setup({
 
       vim.lsp.config('pyright', {})
       vim.lsp.enable('pyright')
+
+      -- ctags-lsp: lexical (ctags-backed) symbol search, no runtime/deps needed.
+      -- Pin root to ~/Documents/ALIDA so one index spans all sibling repos
+      -- (cross-repo workspace symbols); other projects fall back to per-repo .git.
+      local alida = vim.fn.expand('~/Documents/ALIDA')
+      vim.lsp.config('ctags_lsp', {
+        cmd = { 'ctags-lsp' },
+        filetypes = { 'python', 'javascript', 'typescript', 'typescriptreact', 'sql' },
+        root_dir = function(bufnr, on_dir)
+          local fname = vim.api.nvim_buf_get_name(bufnr)
+          if fname:sub(1, #alida) == alida then
+            on_dir(alida)
+          else
+            on_dir(vim.fs.root(bufnr, '.git') or vim.fn.getcwd())
+          end
+        end,
+      })
+      vim.lsp.enable('ctags_lsp')
     end
   },
 
@@ -935,7 +954,7 @@ require('lazy').setup({
 
 }, {})
 
--- Highlight on yank 
+-- Highlight on yank
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
@@ -943,5 +962,26 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
   group = highlight_group,
   pattern = '*',
+})
+
+-- JSON: decode the string under the cursor into a rendered markdown scratch split
+local function json_string_preview()
+  local node = vim.treesitter.get_node()
+  while node and node:type() ~= "string" do node = node:parent() end
+  if not node then return vim.notify("no JSON string under cursor", vim.log.levels.WARN) end
+  local ok, decoded = pcall(vim.json.decode, vim.treesitter.get_node_text(node, 0))
+  if not ok then return vim.notify("could not decode string", vim.log.levels.ERROR) end
+  vim.cmd("botright vnew")
+  local buf = vim.api.nvim_get_current_buf()
+  vim.bo[buf].buftype, vim.bo[buf].bufhidden, vim.bo[buf].filetype = "nofile", "wipe", "markdown"
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(decoded, "\n", { plain = true }))
+  vim.bo[buf].modifiable = false
+end
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "json",
+  callback = function(args)
+    vim.keymap.set("n", "<leader>jp", json_string_preview,
+      { buffer = args.buf, desc = "preview JSON string as markdown" })
+  end,
 })
 
